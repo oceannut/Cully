@@ -177,7 +177,7 @@ namespace ThinkInBio.Cully
         /// <param name="tasksFetch">获取指定活动的任务集合的操作定义。</param>
         /// <param name="action">更新操作定义。</param>
         public void Complete(Func<long, Activity> activityFetch,
-            Func<long, Task[]> tasksFetch,
+            Func<long, ICollection<Task>> tasksFetch,
             Action<Activity, Task> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
@@ -189,7 +189,7 @@ namespace ThinkInBio.Cully
                 throw new ArgumentException();
             }
             Activity activity = activityFetch(this.ActivityId);
-            Task[] tasks = tasksFetch(this.ActivityId);
+            ICollection<Task> tasks = tasksFetch(this.ActivityId);
             Complete(activity, tasks, action);
         }
 
@@ -218,10 +218,10 @@ namespace ThinkInBio.Cully
             }
             Update(null);
 
-            bool allTaskCompleted = false;
+            bool allOtherTaskCompleted = false;
             if (tasks != null && tasks.Count > 0)
             {
-                allTaskCompleted = tasks.All((e) =>
+                allOtherTaskCompleted = tasks.All((e) =>
                 {
                     if (this.ActivityId != e.ActivityId)
                     {
@@ -237,9 +237,9 @@ namespace ThinkInBio.Cully
                     }
                 });
             }
-            if (allTaskCompleted)
+            if (allOtherTaskCompleted)
             {
-                activity.IsCompleted = allTaskCompleted;
+                activity.IsCompleted = allOtherTaskCompleted;
             }
             if (action != null)
             {
@@ -250,19 +250,50 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 恢复任务。
         /// </summary>
+        /// <param name="activityFetch">获取活动的操作定义。</param>
         /// <param name="action">更新操作定义。</param>
-        public void Resume(Action<Task> action)
+        public void Resume(Func<long, Activity> activityFetch, 
+            Action<Activity, Task> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
                 throw new InvalidOperationException();
             }
-            this.IsCompleted = true;
+            if (activityFetch == null)
+            {
+                throw new ArgumentException();
+            }
+            Activity activity = activityFetch(this.ActivityId);
+            Resume(activity, action);
+        }
+
+        /// <summary>
+        /// 恢复任务。
+        /// </summary>
+        /// <param name="activity">所属的活动。</param>
+        /// <param name="action">更新操作定义。</param>
+        public void Resume(Activity activity, 
+            Action<Activity, Task> action)
+        {
+            if (this.Id == 0 || this.ActivityId == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (activity == null || this.ActivityId != activity.Id)
+            {
+                throw new ArgumentException("activity");
+            }
+            this.IsCompleted = false;
             if (this.IsUnderway)
             {
                 this.IsUnderway = false;
             }
-            Update(action);
+            Update(null);
+            activity.IsCompleted = false;
+            if (action != null)
+            {
+                action(activity, this);
+            }
         }
 
         /// <summary>
@@ -280,6 +311,77 @@ namespace ThinkInBio.Cully
             if (action != null)
             {
                 action(this);
+            }
+        }
+
+        /// <summary>
+        /// 删除任务。
+        /// </summary>
+        /// <param name="activityFetch">获取活动的操作定义。</param>
+        /// <param name="tasksFetch">获取指定活动的任务集合的操作定义。</param>
+        /// <param name="action">删除操作定义。</param>
+        public void Delete(Func<long, Activity> activityFetch,
+            Func<long, ICollection<Task>> tasksFetch,
+            Action<Activity, Task> action)
+        {
+            if (this.Id == 0 || this.ActivityId == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (activityFetch == null || tasksFetch == null)
+            {
+                throw new ArgumentException();
+            }
+            Activity activity = activityFetch(this.ActivityId);
+            ICollection<Task> tasks = tasksFetch(this.ActivityId);
+            Delete(activity, tasks, action);
+        }
+
+        /// <summary>
+        /// 删除任务。
+        /// </summary>
+        /// <param name="activity">所属的活动。</param>
+        /// <param name="tasks">与本任务同属一个活动的任务集合。</param>
+        /// <param name="action">删除操作定义。</param>
+        public void Delete(Activity activity,
+            ICollection<Task> tasks,
+            Action<Activity, Task> action)
+        {
+            if (this.Id == 0 || this.ActivityId == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (activity == null || this.ActivityId != activity.Id)
+            {
+                throw new ArgumentException("activity");
+            }
+
+            bool allOtherTaskCompleted = false;
+            if (tasks != null && tasks.Count > 0)
+            {
+                allOtherTaskCompleted = tasks.All((e) =>
+                {
+                    if (this.ActivityId != e.ActivityId)
+                    {
+                        throw new ArgumentException("tasks");
+                    }
+                    if (e.Id != this.Id)
+                    {
+                        return e.IsCompleted;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                });
+            }
+            if (allOtherTaskCompleted)
+            {
+                activity.IsCompleted = allOtherTaskCompleted;
+            }
+            if (action != null)
+            {
+                action(activity, this);
             }
         }
 
