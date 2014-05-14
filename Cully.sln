@@ -3,6 +3,41 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Cully", "ThinkInBio.Cully\ThinkInBio.Cully.csproj", "{8CFE9260-99A3-4080-BD35-8E457452F31C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Cully.BLL", "ThinkInBio.Cully.BLL\ThinkInBio.Cully.BLL.csproj", "{F20B436E-8C19-498A-BC48-F27FF6AE11A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Cully.DAL", "ThinkInBio.Cully.DAL\ThinkInBio.Cully.DAL.csproj", "{2B9C818B-0773-45D8-99EB-C80F90EB30C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Cully.MySQL", "ThinkInBio.Cully.MySQL\ThinkInBio.Cully.MySQL.csproj", "{D683213E-EC79-4A8E-B5CB-A4FA656391E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Cully.WSL", "ThinkInBio.Cully.WSL\ThinkInBio.Cully.WSL.csproj", "{7D01DA26-A8CC-4062-BDE8-DE64CFC1360F}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "web\", "{BD2F26C6-5BA3-4613-9155-DDE05CBA2A98}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/web"
+		Debug.AspNetCompiler.PhysicalPath = "web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/web"
+		Release.AspNetCompiler.PhysicalPath = "web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "15453"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonApp", "CommonApp", "{8BFD42A2-01FD-445F-B89E-B24A55398952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Common", "..\CommonApp\ThinkInBio.Common\ThinkInBio.Common.csproj", "{375D399D-647F-4C17-A152-1A8F54EED356}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.CommonApp", "..\CommonApp\ThinkInBio.CommonApp\ThinkInBio.CommonApp.csproj", "{5F6BF361-0265-433F-990E-351BBFA9EA1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,8 +48,40 @@ Global
 		{8CFE9260-99A3-4080-BD35-8E457452F31C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CFE9260-99A3-4080-BD35-8E457452F31C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CFE9260-99A3-4080-BD35-8E457452F31C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F20B436E-8C19-498A-BC48-F27FF6AE11A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F20B436E-8C19-498A-BC48-F27FF6AE11A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F20B436E-8C19-498A-BC48-F27FF6AE11A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F20B436E-8C19-498A-BC48-F27FF6AE11A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B9C818B-0773-45D8-99EB-C80F90EB30C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B9C818B-0773-45D8-99EB-C80F90EB30C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B9C818B-0773-45D8-99EB-C80F90EB30C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B9C818B-0773-45D8-99EB-C80F90EB30C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D683213E-EC79-4A8E-B5CB-A4FA656391E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D683213E-EC79-4A8E-B5CB-A4FA656391E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D683213E-EC79-4A8E-B5CB-A4FA656391E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D683213E-EC79-4A8E-B5CB-A4FA656391E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D01DA26-A8CC-4062-BDE8-DE64CFC1360F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D01DA26-A8CC-4062-BDE8-DE64CFC1360F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D01DA26-A8CC-4062-BDE8-DE64CFC1360F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D01DA26-A8CC-4062-BDE8-DE64CFC1360F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD2F26C6-5BA3-4613-9155-DDE05CBA2A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD2F26C6-5BA3-4613-9155-DDE05CBA2A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD2F26C6-5BA3-4613-9155-DDE05CBA2A98}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD2F26C6-5BA3-4613-9155-DDE05CBA2A98}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{375D399D-647F-4C17-A152-1A8F54EED356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375D399D-647F-4C17-A152-1A8F54EED356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375D399D-647F-4C17-A152-1A8F54EED356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375D399D-647F-4C17-A152-1A8F54EED356}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F6BF361-0265-433F-990E-351BBFA9EA1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F6BF361-0265-433F-990E-351BBFA9EA1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F6BF361-0265-433F-990E-351BBFA9EA1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F6BF361-0265-433F-990E-351BBFA9EA1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{375D399D-647F-4C17-A152-1A8F54EED356} = {8BFD42A2-01FD-445F-B89E-B24A55398952}
+		{5F6BF361-0265-433F-990E-351BBFA9EA1D} = {8BFD42A2-01FD-445F-B89E-B24A55398952}
 	EndGlobalSection
 EndGlobal

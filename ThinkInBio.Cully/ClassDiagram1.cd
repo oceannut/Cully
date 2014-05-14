@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="ThinkInBio.Cully.Project" Collapsed="true">
-    <Position X="9.5" Y="1.25" Width="1.5" />
+  <Class Name="ThinkInBio.Cully.Project">
+    <Position X="8" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAACAABgAAAAAAAAAAQIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQCAIACAABgAAAAAAAAAAQIAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Project.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ThinkInBio.Cully.Task" Collapsed="true">
-    <Position X="7.75" Y="2.25" Width="1.5" />
+  <Class Name="ThinkInBio.Cully.Task">
+    <Position X="6" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAACAgAAAEAAAAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQCAIAKAgAAAEJAAAAAQAAIACEAABAAAAAAAAggBAA=</HashCode>
       <FileName>Task.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ThinkInBio.Cully.Activity" Collapsed="true">
-    <Position X="7.75" Y="1.25" Width="1.5" />
+  <Class Name="ThinkInBio.Cully.Activity">
+    <Position X="4" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAACAAAgAAAAAAAAAAQIBAAAAABAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQCAIACAAAgQAAAAAAAgAQIBAEAABBAAAAAAAAAAAA=</HashCode>
       <FileName>Activity.cs</FileName>
     </TypeIdentifier>
   </Class>
