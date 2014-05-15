@@ -14,20 +14,39 @@ namespace ThinkInBio.Cully
 
         #region properties
 
+        /// <summary>
+        /// 编号。
+        /// </summary>
         public long Id { get; set; }
 
+        /// <summary>
+        /// 名称。
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// 描述。
+        /// </summary>
         public string Description { get; set; }
 
+        /// <summary>
+        /// 创建时间。
+        /// </summary>
         public DateTime Creation { get; set; }
 
+        /// <summary>
+        /// 修改时间。
+        /// </summary>
         public DateTime Modification { get; set; }
 
         #endregion
 
         #region methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public Activity CreateActivity()
         {
             if (this.Id == 0)

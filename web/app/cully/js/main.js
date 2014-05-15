@@ -3,19 +3,29 @@
 define(function (require) {
 
     require('route');
+    require('./project-controllers');
 
-    angular.module('CullyApp', ['ngRoute'])
+    angular.module('CullyApp', ['ngRoute', 'project.controllers'])
         .config(['$routeProvider', function ($routeProvider) {
 
             $routeProvider.
-                when('/home/', {
-                    templateUrl: 'partials/home.htm'
+                when('/overview/', {
+                    templateUrl: 'partials/overview.htm'
                 }).
                 when('/project-list/', {
-                    templateUrl: 'partials/project-list.htm'
+                    templateUrl: 'partials/project-list.htm',
+                    controller: 'ProjectListCtrl'
+                }).
+                when('/project-add/', {
+                    templateUrl: 'partials/project-add.htm',
+                    controller: 'ProjectAddCtrl'
+                }).
+                when('/project-details/', {
+                    templateUrl: 'partials/project-details.htm',
+                    controller: 'ProjectDetailsCtrl'
                 }).
                 otherwise({
-                    redirectTo: '/home/'
+                    redirectTo: '/overview/'
                 });
 
         } ]);
