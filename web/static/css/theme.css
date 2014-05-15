@@ -1,0 +1,60 @@
+﻿body
+{
+    background-color: #eee;
+}
+
+.story
+{
+    margin-top: 80px;
+}
+
+/* Padding for spacing */
+.inner
+{
+    padding: 30px;
+}
+
+/*
+ * Footer
+ */
+
+.mastfoot
+{
+    color: #222; /* IE8 proofing */
+    color: rgba(32,32,32,.5);
+    text-align: center;
+}
+
+/*
+ * Affix and center
+ */
+@media (min-width: 768px)
+{
+    /* Pull out the header and footer */
+    .mastfoot
+    {
+        position: fixed;
+        bottom: 0;
+    }
+    /* Handle the widths */
+    .mastfoot
+    {
+        width: 100%; /* Must be percentage or pixels for horizontal alignment */
+    }
+}
+
+@media (min-width: 992px)
+{
+    .mastfoot
+    {
+        width: 700px;
+    }
+}
+
+@media (min-width: 1200px)
+{
+    .mastfoot
+    {
+        width: 960px;
+    }
+}
