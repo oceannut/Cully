@@ -4,8 +4,10 @@ define(function (require) {
 
     require('route');
     require('./project-controllers');
+    require('../../../static/js/utils');
+    require('../../../static/js/configs');
 
-    angular.module('CullyApp', ['ngRoute', 'project.controllers'])
+    angular.module('CullyApp', ['ngRoute', 'project.controllers', 'utils', 'configs'])
         .config(['$routeProvider', function ($routeProvider) {
 
             $routeProvider.
@@ -24,15 +26,25 @@ define(function (require) {
                     templateUrl: 'partials/project-details.htm',
                     controller: 'ProjectDetailsCtrl'
                 }).
+                when('/activity-add/', {
+                    templateUrl: 'partials/activity-add.htm',
+                    controller: 'ActivityAddCtrl'
+                }).
                 otherwise({
-                    redirectTo: '/overview/'
+                    redirectTo: '/project-list/'
                 });
 
-        } ]);
+        } ])
+        .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil',
+            function ($scope, currentUser, urlUtil) {
+
+                currentUser.username = urlUtil.getUrlParam('username');
+
+            } ]);
 
     return {
         init: function () {
-            angular.bootstrap(document.body, ['CullyApp']);
+            angular.bootstrap(document, ['CullyApp']);
         }
     }
 

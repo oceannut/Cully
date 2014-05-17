@@ -40,6 +40,11 @@ namespace ThinkInBio.Cully
         public bool IsCompleted { get; internal set; }
 
         /// <summary>
+        /// 创建人。
+        /// </summary>
+        public string Creator { get; set; }
+
+        /// <summary>
         /// 创建时间。
         /// </summary>
         public DateTime Creation { get; internal set; }
