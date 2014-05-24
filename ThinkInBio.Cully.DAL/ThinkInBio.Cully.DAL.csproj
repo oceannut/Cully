@@ -40,8 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IActivityDao.cs" />
+    <Compile Include="IParticipantDao.cs" />
     <Compile Include="IProjectDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.Common\ThinkInBio.Common.csproj">
+      <Project>{375D399D-647F-4C17-A152-1A8F54EED356}</Project>
+      <Name>ThinkInBio.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThinkInBio.Cully\ThinkInBio.Cully.csproj">
+      <Project>{8CFE9260-99A3-4080-BD35-8E457452F31C}</Project>
+      <Name>ThinkInBio.Cully</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

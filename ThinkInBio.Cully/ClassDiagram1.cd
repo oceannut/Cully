@@ -1,24 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="ThinkInBio.Cully.Project">
-    <Position X="8" Y="1" Width="1.5" />
+  <Class Name="ThinkInBio.Cully.Project" Collapsed="true">
+    <Position X="4" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQCAIACAABgAAAAAAAAAAQIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQCAIACAABgAAAAAAAAAAQIAAAAAAAAEAAAAAAAAAA=</HashCode>
       <FileName>Project.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ThinkInBio.Cully.Task">
-    <Position X="6" Y="1" Width="1.5" />
+  <Class Name="ThinkInBio.Cully.Task" Collapsed="true">
+    <Position X="5.75" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQCAIAKAgAAAEJAAAAAQAAIACEAABAAAAAAAAggBAA=</HashCode>
       <FileName>Task.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ThinkInBio.Cully.Activity">
+  <Class Name="ThinkInBio.Cully.Activity" Collapsed="true">
     <Position X="4" Y="1" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQCAIACAAAgQAAAAAAAgAQIBAEAABBAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAQCAIACAAAgQAAAAAAAgAQIBAEAABBAEAAAAAAAAAA=</HashCode>
       <FileName>Activity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ThinkInBio.Cully.Participant" Collapsed="true">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAACAAAAAAAAAAAAAAAIBCAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Participant.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Microsoft YaHei" Size="9" />

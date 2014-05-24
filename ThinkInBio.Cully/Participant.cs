@@ -6,12 +6,6 @@ using System.Text;
 namespace ThinkInBio.Cully
 {
 
-    public enum TargetType
-    {
-        Project,
-        Activity
-    }
-
     /// <summary>
     /// 参与者。
     /// </summary>
@@ -28,12 +22,7 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 
         /// </summary>
-        public long Target { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public TargetType Type { get; set; }
+        public long ProjectId { get; set; }
 
         /// <summary>
         /// 成员。
@@ -44,11 +33,6 @@ namespace ThinkInBio.Cully
         /// 创建时间。
         /// </summary>
         public DateTime Creation { get; set; }
-
-        /// <summary>
-        /// 修改时间。
-        /// </summary>
-        public DateTime Modification { get; set; }
 
         #endregion
 

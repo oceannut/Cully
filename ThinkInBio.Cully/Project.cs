@@ -95,6 +95,38 @@ namespace ThinkInBio.Cully
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            Project target = obj as Project;
+            if (target == null)
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, target))
+            {
+                return true;
+            }
+            if (Id == 0 || target.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            return this.Id.Equals(target.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 31;
+            if (Id > 0)
+            {
+                hashCode += Id.GetHashCode() * 2 + 31;
+            }
+            return hashCode;
+        }
+
         #endregion
 
     }

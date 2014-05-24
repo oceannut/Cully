@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.3.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\references\MySQL\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,7 +44,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivityDao.cs" />
+    <Compile Include="DbHelper.cs" />
+    <Compile Include="ParticipantDao.cs" />
+    <Compile Include="ProjectDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.Common\ThinkInBio.Common.csproj">
+      <Project>{375D399D-647F-4C17-A152-1A8F54EED356}</Project>
+      <Name>ThinkInBio.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.MySQL\ThinkInBio.MySQL.csproj">
+      <Project>{9B7A6DFA-ACB1-4CE6-A7D8-02323AFD83E4}</Project>
+      <Name>ThinkInBio.MySQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThinkInBio.Cully.DAL\ThinkInBio.Cully.DAL.csproj">
+      <Project>{2B9C818B-0773-45D8-99EB-C80F90EB30C9}</Project>
+      <Name>ThinkInBio.Cully.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ThinkInBio.Cully\ThinkInBio.Cully.csproj">
+      <Project>{8CFE9260-99A3-4080-BD35-8E457452F31C}</Project>
+      <Name>ThinkInBio.Cully</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tables.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

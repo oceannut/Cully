@@ -20,13 +20,21 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/project/{name}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Project SaveProject(string name, string description);
+        Project SaveProject(string name, string description, string[] staffs);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/activity/{name}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Activity SaveActivity(string name, string description, string projectId, string[] staffs);
 
         [OperationContract]
         [WebGet(UriTemplate = "/activity/user/{user}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Activity[] GetActivityList(string user);
+        Activity[] GetActivityList(string user, string offset, string len);
 
     }
 
