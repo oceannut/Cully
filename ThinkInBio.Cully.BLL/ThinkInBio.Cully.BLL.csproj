@@ -40,8 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Impl\TeamService.cs" />
-    <Compile Include="ITeamService.cs" />
+    <Compile Include="Impl\ProjectService.cs" />
+    <Compile Include="IProjectService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -42,11 +42,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Impl\TeamWcfService.cs" />
-    <Compile Include="ITeamWcfService.cs" />
+    <Compile Include="Impl\ProjectWcfService.cs" />
+    <Compile Include="IProjectWcfService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ThinkInBio.Cully.BLL\ThinkInBio.Cully.BLL.csproj">
+      <Project>{F20B436E-8C19-498A-BC48-F27FF6AE11A0}</Project>
+      <Name>ThinkInBio.Cully.BLL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ThinkInBio.Cully\ThinkInBio.Cully.csproj">
       <Project>{8CFE9260-99A3-4080-BD35-8E457452F31C}</Project>
       <Name>ThinkInBio.Cully</Name>

@@ -10,5 +10,8 @@ namespace ThinkInBio.Cully.DAL
 {
     public interface IParticipantDao : IDao<Participant>
     {
+
+        IList<Participant> GetList(long projectId);
+
     }
 }

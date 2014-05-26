@@ -12,12 +12,33 @@ namespace ThinkInBio.Cully
     public class Project
     {
 
+        #region events
+
+        internal event Action<long> IdChanged;
+
+        #endregion
+
         #region properties
 
+        private long id;
         /// <summary>
         /// 编号。
         /// </summary>
-        public long Id { get; set; }
+        public long Id
+        {
+            get { return id; }
+            set
+            {
+                if (id != value)
+                {
+                    id = value;
+                    if (IdChanged != null)
+                    {
+                        IdChanged(id);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 名称。
@@ -71,9 +92,42 @@ namespace ThinkInBio.Cully
             DateTime timeStamp = DateTime.Now;
             this.Creation = timeStamp;
             this.Modification = timeStamp;
+
             if (action != null)
             {
                 action(this);
+            }
+        }
+
+        /// <summary>
+        /// 保存项目。
+        /// </summary>
+        /// <param name="participants">参与人。</param>
+        /// <param name="action">保存操作定义。</param>
+        public void Save(ICollection<string> participants, 
+            Action<Project, ICollection<Participant>> action)
+        {
+            DateTime timeStamp = DateTime.Now;
+            this.Creation = timeStamp;
+            this.Modification = timeStamp;
+
+            List<Participant> participantList = new List<Participant>();
+            if (participants != null && participants.Count > 0)
+            {
+                List<string> list = new List<string>();
+                list.AddRange(participants.Distinct<string>());
+                foreach (string item in list)
+                {
+                    Participant participant = new Participant(this);
+                    participant.Staff = item;
+                    participant.Save(timeStamp, null);
+                    participantList.Add(participant);
+                }
+            }
+
+            if (action != null)
+            {
+                action(this, participantList);
             }
         }
 
@@ -119,12 +173,11 @@ namespace ThinkInBio.Cully
 
         public override int GetHashCode()
         {
-            int hashCode = 31;
-            if (Id > 0)
+            if (Id == 0)
             {
-                hashCode += Id.GetHashCode() * 2 + 31;
+                return 0;
             }
-            return hashCode;
+            return Id.GetHashCode();
         }
 
         #endregion

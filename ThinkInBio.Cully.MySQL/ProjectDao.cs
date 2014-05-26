@@ -15,7 +15,7 @@ namespace ThinkInBio.Cully.MySQL
     public class ProjectDao : GenericDao<Project>, IProjectDao
     {
 
-        internal string DataSource { get; set; }
+        private string dataSource;
 
         public ProjectDao(string dataSource)
         {
@@ -23,33 +23,12 @@ namespace ThinkInBio.Cully.MySQL
             {
                 throw new ArgumentNullException();
             }
-            this.DataSource = dataSource;
+            this.dataSource = dataSource;
         }
 
-        public override void Save(Project entity)
+        public override bool Save(Project entity)
         {
-//            using (IDbConnection connection = DbHelper.CreateConnection(DataSource))
-//            {
-//                connection.Open();
-//                using (IDbCommand command = connection.CreateCommand())
-//                {
-//                    command.CommandText = @"insert into cyProject (id,name,description,creator,creation,modification) 
-//                                                values (NULL,@name,@description,@creator,@creation,@modification)";
-//                    command.Parameters.Add(DbHelper.CreateParameter("name", entity.Name));
-//                    command.Parameters.Add(DbHelper.CreateParameter("description", entity.Description));
-//                    command.Parameters.Add(DbHelper.CreateParameter("creator", entity.Creator));
-//                    command.Parameters.Add(DbHelper.CreateParameter("creation", entity.Creation));
-//                    command.Parameters.Add(DbHelper.CreateParameter("modification", entity.Modification));
-
-//                    if (command.ExecuteNonQuery() == 1)
-//                    {
-//                        command.CommandText = "select LAST_INSERT_ID()";
-//                        entity.Id = Convert.ToInt64(command.ExecuteScalar());
-//                    }
-//                }
-//            }
-
-            DbTemplate.Save(DataSource,
+            return DbTemplate.Save(dataSource,
                 (command) =>
                 {
                     command.CommandText = @"insert into cyProject (id,name,description,creator,creation,modification) 
@@ -68,108 +47,175 @@ namespace ThinkInBio.Cully.MySQL
 
         public override bool Update(Project entity)
         {
-            int rowsAffected = 0;
-            using (IDbConnection connection = DbHelper.CreateConnection(DataSource))
-            {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
                 {
                     command.CommandText = @"update cyProject 
                                                 set name=@name,description=@description,modification=@modification 
                                                 where id=@id";
-                    command.Parameters.Add(DbHelper.CreateParameter("name", entity.Name));
-                    command.Parameters.Add(DbHelper.CreateParameter("description", entity.Description));
-                    command.Parameters.Add(DbHelper.CreateParameter("modification", entity.Modification));
-                    command.Parameters.Add(DbHelper.CreateParameter("id", entity.Id));
-                    rowsAffected = command.ExecuteNonQuery();
-                }
-            }
-            return rowsAffected > 0;
+                    command.Parameters.Add(DbFactory.CreateParameter("name", entity.Name));
+                    command.Parameters.Add(DbFactory.CreateParameter("description", entity.Description));
+                    command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
+                    command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
+                });
         }
 
         public override bool Delete(Project entity)
         {
-            int rowsAffected = 0;
-            using (IDbConnection connection = DbHelper.CreateConnection(DataSource))
-            {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
                 {
                     command.CommandText = @"delete from cyProject 
                                                 where id=@id";
-                    command.Parameters.Add(DbHelper.CreateParameter("id", entity.Id));
-                    rowsAffected = command.ExecuteNonQuery();
-                }
-            }
-            return rowsAffected > 0;
+                    command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
+                });
         }
 
         public override Project Get(object id)
         {
-            Project entity = null;
-            using (IDbConnection connection = DbHelper.CreateConnection(DataSource))
-            {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+            return DbTemplate.Get<Project>(dataSource,
+                (command) =>
                 {
                     command.CommandText = @"select id,name,description,creator,creation,modification from cyProject 
                                                 where id=@id";
-                    command.Parameters.Add(DbHelper.CreateParameter("id", id));
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            entity = Populate(reader);
-                        }
-                    }
-                }
-            }
-
-            return entity;
+                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+                },
+                (reader) =>
+                {
+                    return Populate(reader);
+                });
         }
 
         public int GetCount(string creator, DateTime startTime, DateTime endTime)
         {
-            int count = 0;
-            using (IDbConnection connection = DbHelper.CreateConnection(DataSource))
-            {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetCount(dataSource,
+                (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select count(id) from cyProject ");
-                    List<string> keys = new List<string>();
-                    List<object> parameters = new List<object>();
-                    if (!string.IsNullOrWhiteSpace(creator))
-                    {
-                        SQLHelper.AppendOp(sql, parameters);
-                        sql.Append(" creator=@creator ");
-                        keys.Add("creator");
-                        parameters.Add(creator);
-                    }
-                    if (startTime != DateTime.MinValue && endTime != DateTime.MinValue && endTime > startTime)
-                    {
-                        SQLHelper.AppendOp(sql, parameters);
-                        sql.Append(" modification between @startTime and @endTime ");
-                        keys.Add("startTime");
-                        keys.Add("endTime");
-                        parameters.Add(startTime);
-                        parameters.Add(endTime);
-                    }
+                    sql.Append("select count(t.id) from cyProject t ");
+                    BuildSql(sql, parameters, creator, startTime, endTime);
                     command.CommandText = sql.ToString();
-                    for (int i = 0; i < keys.Count; i++)
-                    {
-                        command.Parameters.Add(DbHelper.CreateParameter(keys[i], parameters[i]));
-                    }
-                    count = Convert.ToInt32(command.ExecuteScalar());
-                }
-            }
-            return count;
+                },
+                parameters);
         }
 
         public IList<Project> GetList(string creator, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
         {
-            throw new NotImplementedException();
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetList<Project>(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select t.id,t.name,t.description,t.creator,t.creation,t.modification from cyProject t ");
+                    BuildSql(sql, parameters, creator, startTime, endTime);
+                    sql.Append(" order by t.modification desc ");
+                    if (maxRowsCount < int.MaxValue)
+                    {
+                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(startRowIndex + maxRowsCount);
+                    }
+                    command.CommandText = sql.ToString();
+                },
+                parameters,
+                (reader) =>
+                {
+                    return Populate(reader);
+                });
+        }
+
+        public int GetCountByParticipant(string participant, DateTime startTime, DateTime endTime)
+        {
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetCount(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select count(t.id) from cyProject t ");
+                    if (!string.IsNullOrWhiteSpace(participant))
+                    {
+                        sql.Append(" inner join cyParticipant p ");
+                    }
+                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    Console.WriteLine(sql.ToString());
+                    command.CommandText = sql.ToString();
+                },
+                parameters);
+        }
+
+        public IList<Project> GetListByParticipant(string participant, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        {
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetList<Project>(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select t.id,t.name,t.description,t.creator,t.creation,t.modification from cyProject t ");
+                    if (!string.IsNullOrWhiteSpace(participant))
+                    {
+                        sql.Append(" inner join cyParticipant p ");
+                    }
+                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    if (!string.IsNullOrWhiteSpace(participant))
+                    {
+                        sql.Append(" order by p.creation desc ");
+                    }
+                    else
+                    {
+                        sql.Append(" order by t.modification desc ");
+                    }
+                    if (maxRowsCount < int.MaxValue)
+                    {
+                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(startRowIndex + maxRowsCount);
+                    }
+                    command.CommandText = sql.ToString();
+                },
+                parameters,
+                (reader) =>
+                {
+                    return Populate(reader);
+                });
+        }
+
+        private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters, 
+            string creator, DateTime startTime, DateTime endTime)
+        {
+            if (startTime != DateTime.MinValue && endTime != DateTime.MinValue && endTime > startTime)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.modification between @startTime and @endTime ");
+                parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
+                parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+            }
+            if (!string.IsNullOrWhiteSpace(creator))
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.creator=@creator ");
+                parameters.Add(new KeyValuePair<string, object>("creator", creator));
+            }
+        }
+
+        private void BuildSqlByParticipant(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
+            string participant, DateTime startTime, DateTime endTime)
+        {
+            if (!string.IsNullOrWhiteSpace(participant))
+            {
+                sql.Append(" on t.id=p.projectId ");
+                if (startTime != DateTime.MinValue && endTime != DateTime.MinValue && endTime > startTime)
+                {
+                    sql.Append(" and p.creation between @startTime and @endTime ");
+                    parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
+                    parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+                }
+                sql.Append(" and p.staff=@participant ");
+                parameters.Add(new KeyValuePair<string, object>("participant", participant));
+            }
+            else
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.modification between @startTime and @endTime ");
+                parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
+                parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+            }
         }
 
         private Project Populate(IDataReader reader)

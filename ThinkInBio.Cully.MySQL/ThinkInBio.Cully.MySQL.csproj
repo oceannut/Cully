@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityDao.cs" />
-    <Compile Include="DbHelper.cs" />
     <Compile Include="ParticipantDao.cs" />
     <Compile Include="ProjectDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

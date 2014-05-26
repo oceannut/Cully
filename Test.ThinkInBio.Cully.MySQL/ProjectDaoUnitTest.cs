@@ -42,6 +42,7 @@ namespace Test.ThinkInBio.Cully.MySQL
         }
 
         private ProjectDao projectDao;
+        private ParticipantDao participantDao;
 
         #region Additional test attributes
         //
@@ -60,6 +61,7 @@ namespace Test.ThinkInBio.Cully.MySQL
          public void MyTestInitialize() 
          {
              projectDao = new ProjectDao(Configs.DataSource);
+             participantDao = new ParticipantDao(Configs.DataSource);
          }
         
          //Use TestCleanup to run code after each test has run
@@ -100,5 +102,174 @@ namespace Test.ThinkInBio.Cully.MySQL
             projectGet = projectDao.Get(projectGet.Id);
             Assert.IsNull(projectGet);
         }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+
+            Project project1 = new Project();
+            project1.Name = "项目名称1";
+            project1.Creator = "me";
+            project1.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project2 = new Project();
+            project2.Name = "项目名称2";
+            project2.Creator = "me";
+            project2.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project3 = new Project();
+            project3.Name = "项目名称3";
+            project3.Creator = "me";
+            project3.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project4 = new Project();
+            project4.Name = "项目名称4";
+            project4.Creator = "me";
+            project4.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project5 = new Project();
+            project5.Name = "项目名称5";
+            project5.Creator = "me";
+            project5.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            DateTime endTime= DateTime.Now;
+            DateTime startTime= endTime.AddSeconds(-5);
+            int count = projectDao.GetCount(null, startTime, endTime);
+            Assert.AreEqual(5, count);
+            count = projectDao.GetCount("me", startTime, endTime);
+            Assert.AreEqual(5, count);
+            IList<Project> list = projectDao.GetList("me", startTime, endTime, 0, 3);
+            Assert.AreEqual(3, list.Count);
+            Console.WriteLine("================list==============");
+            foreach (Project item in list)
+            {
+                Console.WriteLine(item.Name);
+            }
+            list = projectDao.GetList("me", startTime, endTime, 3, 3);
+            Assert.AreEqual(2, list.Count);
+            Console.WriteLine("================list==============");
+            foreach (Project item in list)
+            {
+                Console.WriteLine(item.Name);
+            }
+
+            projectDao.Delete(project1);
+            projectDao.Delete(project2);
+            projectDao.Delete(project3);
+            projectDao.Delete(project4);
+            projectDao.Delete(project5);
+        }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+
+            Project project1 = new Project();
+            project1.Name = "项目名称1";
+            project1.Creator = "me";
+            project1.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project2 = new Project();
+            project2.Name = "项目名称2";
+            project2.Creator = "me";
+            project2.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project3 = new Project();
+            project3.Name = "项目名称3";
+            project3.Creator = "you";
+            project3.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project4 = new Project();
+            project4.Name = "项目名称4";
+            project4.Creator = "you";
+            project4.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project5 = new Project();
+            project5.Name = "项目名称5";
+            project5.Creator = "me";
+            project5.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Project project6 = new Project();
+            project6.Name = "项目名称6";
+            project6.Creator = "me";
+            project6.Save((e) =>
+            {
+                projectDao.Save(e);
+            });
+
+            Participant participantA = new Participant();
+            participantA.ProjectId = project1.Id;
+            participantA.Staff = "you";
+            participantA.Save((e) =>
+            {
+                participantDao.Save(e);
+            });
+
+            Participant participantB = new Participant();
+            participantB.ProjectId = project6.Id;
+            participantB.Staff = "you";
+            participantB.Save((e) =>
+            {
+                participantDao.Save(e);
+            });
+
+            DateTime endTime = DateTime.Now;
+            DateTime startTime = endTime.AddSeconds(-10);
+            int count = projectDao.GetCountByParticipant(null, startTime, endTime);
+            Assert.AreEqual(6, count);
+            count = projectDao.GetCountByParticipant("me", startTime, endTime);
+            Assert.AreEqual(0, count);
+            count = projectDao.GetCountByParticipant("you", startTime, endTime);
+            Assert.AreEqual(2, count);
+            IList<Project> list = projectDao.GetListByParticipant("me", startTime, endTime, 0, 3);
+            Assert.AreEqual(0, list.Count);
+            list = projectDao.GetListByParticipant("you", startTime, endTime, 0, 3);
+            Assert.AreEqual(2, list.Count);
+            Console.WriteLine("================you list==============");
+            foreach (Project item in list)
+            {
+                Console.WriteLine(item.Name);
+            }
+
+            participantDao.Delete(participantA);
+            participantDao.Delete(participantB);
+            projectDao.Delete(project1);
+            projectDao.Delete(project2);
+            projectDao.Delete(project3);
+            projectDao.Delete(project4);
+            projectDao.Delete(project5);
+            projectDao.Delete(project6);
+        }
+
     }
 }

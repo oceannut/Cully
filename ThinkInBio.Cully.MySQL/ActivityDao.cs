@@ -12,9 +12,9 @@ namespace ThinkInBio.Cully.MySQL
     public class ActivityDao : GenericDao<Activity>, IActivityDao
     {
 
-        public override void Save(Activity entity)
+        public override bool Save(Activity entity)
         {
-            base.Save(entity);
+            return base.Save(entity);
         }
 
     }
