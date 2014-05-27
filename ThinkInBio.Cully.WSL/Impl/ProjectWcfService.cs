@@ -14,7 +14,7 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         internal IProjectService ProjectService { get; set; }
 
-        public Project SaveProject(string name, string description, string[] staffs)
+        public Project SaveProject(string name, string description, string[] staffs, string creator)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -27,6 +27,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             Project project = new Project();
             project.Name = name;
             project.Description = description;
+            project.Creator = creator;
             project.Save(staffs,
                 (e1, e2) =>
                 {

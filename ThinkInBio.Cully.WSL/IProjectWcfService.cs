@@ -20,7 +20,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/project/{name}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Project SaveProject(string name, string description, string[] staffs);
+        Project SaveProject(string name, string description, string[] staffs, string creator);
 
         //[OperationContract]
         //[WebInvoke(Method = "POST",
