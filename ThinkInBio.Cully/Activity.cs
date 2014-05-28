@@ -7,7 +7,7 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
-    /// 活动，即可以包含在项目里，也可以单独创建活动。
+    /// 活动。
     /// </summary>
     public class Activity
     {
@@ -32,27 +32,22 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 项目编号。
         /// </summary>
-        public long ProjectId { get; internal set; }
+        public long ProjectId { get; set; }
 
         /// <summary>
         /// 提示活动是否已完成。
         /// </summary>
-        public bool IsCompleted { get; internal set; }
-
-        /// <summary>
-        /// 创建人。
-        /// </summary>
-        public string Creator { get; set; }
+        public bool IsCompleted { get; set; }
 
         /// <summary>
         /// 创建时间。
         /// </summary>
-        public DateTime Creation { get; internal set; }
+        public DateTime Creation { get; set; }
 
         /// <summary>
         /// 修改时间。
         /// </summary>
-        public DateTime Modification { get; internal set; }
+        public DateTime Modification { get; set; }
 
         #endregion
 
@@ -130,12 +125,42 @@ namespace ThinkInBio.Cully
         /// <param name="action">保存操作定义。</param>
         public void Save(Action<Activity> action)
         {
+            if (this.ProjectId == 0)
+            {
+                throw new InvalidOperationException();
+            }
             DateTime timeStamp = DateTime.Now;
-            this.Creation = timeStamp;
-            this.Modification = timeStamp;
+            _Save(timeStamp);
             if (action != null)
             {
                 action(this);
+            }
+        }
+
+        /// <summary>
+        /// 保存活动，用于直接创建活动，同时创建缺省的项目。
+        /// </summary>
+        /// <param name="participants">项目的参与人。</param>
+        /// <param name="action">保存操作定义。</param>
+        public void Save(ICollection<string> participants, 
+            Action<Activity, Project, ICollection<Participant>> action)
+        {
+            DateTime timeStamp = DateTime.Now;
+            _Save(timeStamp);
+
+            Project project = null;
+            IList<Participant> participantList = null;
+            if (this.ProjectId == 0)
+            {
+                project = new Project();
+                project.Name = this.Name;
+                project.Description = this.Description;
+                participantList = project.Save(participants, null);
+            }
+
+            if (action != null)
+            {
+                action(this, project, participantList);
             }
         }
 
@@ -204,6 +229,12 @@ namespace ThinkInBio.Cully
             {
                 action(this, tasks);
             }
+        }
+
+        private void _Save(DateTime timeStamp)
+        {
+            this.Creation = timeStamp;
+            this.Modification = timeStamp;
         }
 
         #endregion

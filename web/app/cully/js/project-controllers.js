@@ -7,10 +7,8 @@ define(function (require) {
     require('./project-services');
 
     angular.module('project.controllers', ['configs', 'project.services'])
-        .controller('ProjectListCtrl', ['$scope', '$location', 'currentUser',
+        .controller('ProjectSummaryCtrl', ['$scope', '$location', 'currentUser',
             function ($scope, $location, currentUser) {
-
-                console.log("hi:" + currentUser.username);
 
                 $scope.createProject = function () {
                     console.log("createProject");
@@ -23,15 +21,34 @@ define(function (require) {
                 }
 
             } ])
+        .controller('ProjectListCtrl', ['$scope', '$location', 'currentUser', 'TopProjectService',
+            function ($scope, $location, currentUser, TopProjectService) {
+
+                $scope.init = function () {
+                    TopProjectService.query({ 'user': currentUser.username, 'count': 10 })
+                        .$promise
+                            .then(function (result) {
+                                $scope.projectList = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
+
+                $scope.init();
+
+            } ])
         .controller('ProjectAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectService',
             function ($scope, $location, currentUser, ProjectService) {
 
                 $scope.save = function () {
                     console.log("save");
-                    $scope.staffs = [];
-                    //$scope.staffs.push('you');
-                    //$scope.staffs.push('me');
-                    ProjectService.save({ 'name': $scope.name, 'description': $scope.description, 'staffs': $scope.staffs, 'creator': currentUser.username })
+                    $scope.participants = [];
+                    ProjectService.save({
+                        'user': currentUser.username,
+                        'name': $scope.name,
+                        'description': $scope.description,
+                        'participants': $scope.participants
+                    })
                         .$promise
                             .then(function (result) {
                                 console.log(result);

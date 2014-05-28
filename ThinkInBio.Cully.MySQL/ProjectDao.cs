@@ -86,7 +86,7 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public int GetCount(string creator, DateTime startTime, DateTime endTime)
+        public int GetCount(string creator, DateTime? startTime, DateTime? endTime)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetCount(dataSource,
@@ -100,7 +100,7 @@ namespace ThinkInBio.Cully.MySQL
                 parameters);
         }
 
-        public IList<Project> GetList(string creator, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        public IList<Project> GetList(string creator, DateTime? startTime, DateTime? endTime, int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetList<Project>(dataSource,
@@ -123,7 +123,7 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public int GetCountByParticipant(string participant, DateTime startTime, DateTime endTime)
+        public int GetCountByParticipant(string participant, DateTime? startTime, DateTime? endTime)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetCount(dataSource,
@@ -142,7 +142,8 @@ namespace ThinkInBio.Cully.MySQL
                 parameters);
         }
 
-        public IList<Project> GetListByParticipant(string participant, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        public IList<Project> GetListByParticipant(string participant, DateTime? startTime, DateTime? endTime, bool asc, 
+            int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetList<Project>(dataSource,
@@ -157,11 +158,15 @@ namespace ThinkInBio.Cully.MySQL
                     BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
                     if (!string.IsNullOrWhiteSpace(participant))
                     {
-                        sql.Append(" order by p.creation desc ");
+                        sql.Append(" order by p.creation ");
                     }
                     else
                     {
-                        sql.Append(" order by t.modification desc ");
+                        sql.Append(" order by t.modification ");
+                    }
+                    if (!asc)
+                    {
+                        sql.Append(" desc ");
                     }
                     if (maxRowsCount < int.MaxValue)
                     {
@@ -177,14 +182,16 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters, 
-            string creator, DateTime startTime, DateTime endTime)
+            string creator, DateTime? startTime, DateTime? endTime)
         {
-            if (startTime != DateTime.MinValue && endTime != DateTime.MinValue && endTime > startTime)
+            if (startTime.HasValue && startTime.Value != DateTime.MinValue 
+                    && endTime.HasValue && endTime.Value != DateTime.MinValue 
+                    && endTime.Value > startTime.Value)
             {
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" t.modification between @startTime and @endTime ");
-                parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
-                parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+                parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
+                parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
             }
             if (!string.IsNullOrWhiteSpace(creator))
             {
@@ -195,26 +202,33 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSqlByParticipant(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string participant, DateTime startTime, DateTime endTime)
+            string participant, DateTime? startTime, DateTime? endTime)
         {
             if (!string.IsNullOrWhiteSpace(participant))
             {
                 sql.Append(" on t.id=p.projectId ");
-                if (startTime != DateTime.MinValue && endTime != DateTime.MinValue && endTime > startTime)
+                if (startTime.HasValue && startTime.Value != DateTime.MinValue
+                    && endTime.HasValue && endTime.Value != DateTime.MinValue
+                    && endTime.Value > startTime.Value)
                 {
                     sql.Append(" and p.creation between @startTime and @endTime ");
-                    parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
-                    parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+                    parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
+                    parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
                 }
                 sql.Append(" and p.staff=@participant ");
                 parameters.Add(new KeyValuePair<string, object>("participant", participant));
             }
             else
             {
-                SQLHelper.AppendOp(sql, parameters);
-                sql.Append(" t.modification between @startTime and @endTime ");
-                parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
-                parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+                if (startTime.HasValue && startTime.Value != DateTime.MinValue
+                    && endTime.HasValue && endTime.Value != DateTime.MinValue
+                    && endTime.Value > startTime.Value)
+                {
+                    SQLHelper.AppendOp(sql, parameters);
+                    sql.Append(" t.modification between @startTime and @endTime ");
+                    parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
+                    parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
+                }
             }
         }
 

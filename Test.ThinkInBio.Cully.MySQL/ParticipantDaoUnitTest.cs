@@ -42,7 +42,7 @@ namespace Test.ThinkInBio.Cully.MySQL
             IList<Participant> participants = participantDao.GetList(project.Id);
             if (participants != null)
             {
-                Assert.IsTrue(participants.Count == 1);
+                Assert.IsTrue(participants.Count == 2);
                 foreach (Participant item in participants)
                 {
                     participantDao.Delete(item);
@@ -54,15 +54,20 @@ namespace Test.ThinkInBio.Cully.MySQL
         [TestMethod]
         public void TestMethod2()
         {
+            Participant participantMe = null;
             Project project = new Project();
             project.Name = "项目名称";
             project.Description = "项目描述";
             project.Creator = "me";
-            project.Save((e) =>
+            project.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
+                Assert.IsTrue(e2.Count == 1);
+                participantMe = e2.ElementAt(0);
+                participantDao.Save(participantMe);
             });
             Assert.IsTrue(project.Id > 0);
+            Assert.IsTrue(participantMe.Id > 0);
 
             Participant participant = new Participant(project);
             participant.Staff = "him";
@@ -81,12 +86,13 @@ namespace Test.ThinkInBio.Cully.MySQL
             Assert.IsTrue(participant2.Id > 0);
 
             IList<Participant> list = participantDao.GetList(project.Id);
-            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual(3, list.Count);
             foreach (Participant entity in list)
             {
                 Console.WriteLine(entity.Staff);
             }
 
+            participantDao.Delete(participantMe);
             participantDao.Delete(participant);
             participantDao.Delete(participant2);
             projectDao.Delete(project);
@@ -99,9 +105,9 @@ namespace Test.ThinkInBio.Cully.MySQL
             project.Name = "项目名称";
             project.Description = "项目描述";
             project.Creator = "me";
-            project.Save((e) =>
+            project.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
             Assert.IsTrue(project.Id > 0);
 

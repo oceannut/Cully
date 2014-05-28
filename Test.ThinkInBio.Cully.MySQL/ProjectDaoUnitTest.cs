@@ -77,9 +77,10 @@ namespace Test.ThinkInBio.Cully.MySQL
             project.Name = "项目名称";
             project.Description = "项目描述";
             project.Creator = "me";
-            project.Save((e) =>
+            project.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
+                //participantDao.Save(e2);
             });
             Assert.IsTrue(project.Id > 0);
 
@@ -110,41 +111,41 @@ namespace Test.ThinkInBio.Cully.MySQL
             Project project1 = new Project();
             project1.Name = "项目名称1";
             project1.Creator = "me";
-            project1.Save((e) =>
+            project1.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project2 = new Project();
             project2.Name = "项目名称2";
             project2.Creator = "me";
-            project2.Save((e) =>
+            project2.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project3 = new Project();
             project3.Name = "项目名称3";
             project3.Creator = "me";
-            project3.Save((e) =>
+            project3.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project4 = new Project();
             project4.Name = "项目名称4";
             project4.Creator = "me";
-            project4.Save((e) =>
+            project4.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project5 = new Project();
             project5.Name = "项目名称5";
             project5.Creator = "me";
-            project5.Save((e) =>
+            project5.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             DateTime endTime= DateTime.Now;
@@ -182,49 +183,49 @@ namespace Test.ThinkInBio.Cully.MySQL
             Project project1 = new Project();
             project1.Name = "项目名称1";
             project1.Creator = "me";
-            project1.Save((e) =>
+            project1.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project2 = new Project();
             project2.Name = "项目名称2";
             project2.Creator = "me";
-            project2.Save((e) =>
+            project2.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project3 = new Project();
             project3.Name = "项目名称3";
             project3.Creator = "you";
-            project3.Save((e) =>
+            project3.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project4 = new Project();
             project4.Name = "项目名称4";
             project4.Creator = "you";
-            project4.Save((e) =>
+            project4.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project5 = new Project();
             project5.Name = "项目名称5";
             project5.Creator = "me";
-            project5.Save((e) =>
+            project5.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Project project6 = new Project();
             project6.Name = "项目名称6";
             project6.Creator = "me";
-            project6.Save((e) =>
+            project6.Save((e1, e2) =>
             {
-                projectDao.Save(e);
+                projectDao.Save(e1);
             });
 
             Participant participantA = new Participant();
@@ -251,9 +252,9 @@ namespace Test.ThinkInBio.Cully.MySQL
             Assert.AreEqual(0, count);
             count = projectDao.GetCountByParticipant("you", startTime, endTime);
             Assert.AreEqual(2, count);
-            IList<Project> list = projectDao.GetListByParticipant("me", startTime, endTime, 0, 3);
+            IList<Project> list = projectDao.GetListByParticipant("me", startTime, endTime, false, 0, 3);
             Assert.AreEqual(0, list.Count);
-            list = projectDao.GetListByParticipant("you", startTime, endTime, 0, 3);
+            list = projectDao.GetListByParticipant("you", startTime, endTime, false, 0, 3);
             Assert.AreEqual(2, list.Count);
             Console.WriteLine("================you list==============");
             foreach (Project item in list)

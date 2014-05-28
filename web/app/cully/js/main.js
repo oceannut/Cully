@@ -14,9 +14,9 @@ define(function (require) {
                 when('/overview/', {
                     templateUrl: 'partials/overview.htm'
                 }).
-                when('/project-list/', {
-                    templateUrl: 'partials/project-list.htm',
-                    controller: 'ProjectListCtrl'
+                when('/project-summary/', {
+                    templateUrl: 'partials/project-summary.htm',
+                    controller: 'ProjectSummaryCtrl'
                 }).
                 when('/project-add/', {
                     templateUrl: 'partials/project-add.htm',
@@ -31,7 +31,7 @@ define(function (require) {
                     controller: 'ActivityAddCtrl'
                 }).
                 otherwise({
-                    redirectTo: '/project-list/'
+                    redirectTo: '/project-summary/'
                 });
 
         } ])

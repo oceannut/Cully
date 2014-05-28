@@ -31,6 +31,15 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
+        public IList<Project> GetTopProjectList(string user, int maxCount)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
+            return ProjectDao.GetListByParticipant(user, null, null, false, 0, maxCount);
+        }
+
     }
 
 }

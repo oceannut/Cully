@@ -1,0 +1,47 @@
+﻿<div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-2">
+                <input type="text" class="form-control" placeholder="请输入关键字" />
+            </div>
+            <div class="col-sm-3 col-sm-offset-7">
+                <div>
+                    <button type="button" class="btn btn-primary" ng-click="createProject()">
+                        创建新项目</button>
+                    <button type="button" class="btn btn-primary" ng-click="createActivity()">
+                        创建新活动</button>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-sm-8 blog-main">
+                main
+                <ul class="pager">
+                    <li><a href="#">上一页</a></li>
+                    <li><a href="#">下一页</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+                <div class="sidebar-module sidebar-module-inset">
+                    <h4>
+                        公告</h4>
+                    <p>
+                        Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur
+                        purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+                </div>
+                <div class="sidebar-module" ng-controller="ProjectListCtrl">
+                    <h4>
+                        最新项目</h4>
+                    <ol class="list-unstyled">
+                        <li ng-repeat="item in projectList"><a href="#">{{item.Name}}</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <!--<ul class="nav nav-tabs" style="margin-top: 8px;">
+            <li class="active"><a href="javascript:void(0)">活动</a></li>
+            <li><a href="javascript:void(0)">项目</a></li>
+        </ul>
+        -->
+    </div>
+</div>

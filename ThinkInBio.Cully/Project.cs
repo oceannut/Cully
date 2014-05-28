@@ -87,16 +87,9 @@ namespace ThinkInBio.Cully
         /// 保存项目。
         /// </summary>
         /// <param name="action">保存操作定义。</param>
-        public void Save(Action<Project> action)
+        public void Save(Action<Project, ICollection<Participant>> action)
         {
-            DateTime timeStamp = DateTime.Now;
-            this.Creation = timeStamp;
-            this.Modification = timeStamp;
-
-            if (action != null)
-            {
-                action(this);
-            }
+            Save(null, action);
         }
 
         /// <summary>
@@ -104,31 +97,46 @@ namespace ThinkInBio.Cully
         /// </summary>
         /// <param name="participants">参与人。</param>
         /// <param name="action">保存操作定义。</param>
-        public void Save(ICollection<string> participants, 
+        /// <returns>返回保存完毕的参与人信息。</returns>
+        public IList<Participant> Save(ICollection<string> participants, 
             Action<Project, ICollection<Participant>> action)
         {
-            DateTime timeStamp = DateTime.Now;
-            this.Creation = timeStamp;
-            this.Modification = timeStamp;
+            if (!IsRequireFieldSatisfied())
+            {
+                throw new InvalidOperationException();
+            }
 
-            List<Participant> participantList = new List<Participant>();
+            List<string> templist = new List<string>();
             if (participants != null && participants.Count > 0)
             {
-                List<string> list = new List<string>();
-                list.AddRange(participants.Distinct<string>());
-                foreach (string item in list)
-                {
-                    Participant participant = new Participant(this);
-                    participant.Staff = item;
-                    participant.Save(timeStamp, null);
-                    participantList.Add(participant);
-                }
+                //过滤掉可能重复的参与人项。
+                templist.AddRange(participants.Distinct<string>());
             }
+            if (!templist.Contains(this.Creator))
+            {
+                //项目的创建人缺省即为项目的参与人。
+                templist.Add(this.Creator);
+            }
+
+            DateTime timeStamp = DateTime.Now;
+            List<Participant> participantList = new List<Participant>();
+            foreach (string item in templist)
+            {
+                Participant participant = new Participant(this);
+                participant.Staff = item;
+                participant.Save(timeStamp, null);
+                participantList.Add(participant);
+            }
+
+            this.Creation = timeStamp;
+            this.Modification = timeStamp;
 
             if (action != null)
             {
                 action(this, participantList);
             }
+
+            return participantList;
         }
 
         /// <summary>
@@ -141,8 +149,14 @@ namespace ThinkInBio.Cully
             {
                 throw new InvalidOperationException();
             }
+            if (!IsRequireFieldSatisfied())
+            {
+                throw new InvalidOperationException();
+            }
+
             DateTime timeStamp = DateTime.Now;
             this.Modification = timeStamp;
+
             if (action != null)
             {
                 action(this);
@@ -178,6 +192,12 @@ namespace ThinkInBio.Cully
                 return 0;
             }
             return Id.GetHashCode();
+        }
+
+        private bool IsRequireFieldSatisfied()
+        {
+            return !string.IsNullOrWhiteSpace(this.Name) 
+                && !string.IsNullOrWhiteSpace(this.Creator);
         }
 
         #endregion

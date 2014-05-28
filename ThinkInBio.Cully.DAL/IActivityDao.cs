@@ -10,5 +10,12 @@ namespace ThinkInBio.Cully.DAL
 {
     public interface IActivityDao : IDao<Activity>
     {
+
+        bool Update4IsCompleted(long id, bool isCompleted);
+
+        bool Update4ProjectId(long id, long projectId);
+
+        IList<Activity> GetActivityList(long projectId);
+
     }
 }

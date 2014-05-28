@@ -39,14 +39,14 @@ namespace ThinkInBio.Cully
         #region constructors
 
         /// <summary>
-        /// 
+        /// 构建参与者。
         /// </summary>
         public Participant() { }
 
         /// <summary>
-        /// 
+        /// 构建一个项目的参与者。
         /// </summary>
-        /// <param name="project"></param>
+        /// <param name="project">项目。</param>
         public Participant(Project project)
         {
             if (project == null)
@@ -66,23 +66,29 @@ namespace ThinkInBio.Cully
         #endregion
 
         /// <summary>
-        /// 
+        /// 保存参与者信息。
         /// </summary>
-        /// <param name="action"></param>
+        /// <param name="action">保存操作定义。</param>
         public void Save(Action<Participant> action)
         {
             Save(DateTime.Now, action);
         }
 
         /// <summary>
-        /// 
+        /// 保存参与者信息。
         /// </summary>
-        /// <param name="timeStamp"></param>
-        /// <param name="action"></param>
+        /// <param name="timeStamp">时间戳。</param>
+        /// <param name="action">保存操作定义。</param>
         public void Save(DateTime timeStamp, 
             Action<Participant> action)
         {
+            if (string.IsNullOrWhiteSpace(this.Staff))
+            {
+                throw new InvalidOperationException();
+            }
+
             this.Creation = timeStamp;
+
             if (action != null)
             {
                 action(this);
