@@ -23,12 +23,18 @@ namespace ThinkInBio.Cully.BLL
             ICollection<Participant> participants);
 
         /// <summary>
-        /// 
+        /// 获取与指定参与人相关的最新的项目。
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="maxRowsCount"></param>
-        /// <returns></returns>
+        /// <param name="user">参与人。</param>
+        /// <param name="maxRowsCount">返回项目的最大个数。</param>
+        /// <returns>返回项目集合。</returns>
         IList<Project> GetTopProjectList(string user, int maxRowsCount);
+
+        /// <summary>
+        /// 保存活动。
+        /// </summary>
+        /// <param name="activity">活动。</param>
+        void SaveActivity(Activity activity);
 
         /// <summary>
         /// 保存活动。

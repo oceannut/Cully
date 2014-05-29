@@ -40,6 +40,15 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ProjectDao.GetListByParticipant(user, null, null, false, 0, maxRowsCount);
         }
 
+        public void SaveActivity(Activity activity)
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException();
+            }
+            ActivityDao.Save(activity);
+        }
+
         public void SaveActivity(Activity activity, 
             Project project, 
             ICollection<Participant> participants)

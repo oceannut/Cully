@@ -36,6 +36,7 @@ define(function (require) {
         .factory('ActivityService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/activity/', {}, {
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'name': '@name', 'description': '@description' }, isArray: false },
                     query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }
                 });
             } ]);

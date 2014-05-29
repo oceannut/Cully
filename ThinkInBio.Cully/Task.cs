@@ -81,6 +81,43 @@ namespace ThinkInBio.Cully
             this.ActivityId = activityId;
         }
 
+        /// <summary>
+        /// 构建一个任务，一般用于从持久化数据源获取数据来创建任务。
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="content"></param>
+        /// <param name="activityId"></param>
+        /// <param name="isUnderway"></param>
+        /// <param name="isCompleted"></param>
+        /// <param name="staff"></param>
+        /// <param name="appointedDay"></param>
+        /// <param name="creation"></param>
+        /// <param name="modification"></param>
+        public Task(long id, string content, long activityId,
+            bool isUnderway, bool isCompleted, string staff, 
+            DateTime? appointedDay, DateTime creation, DateTime modification)
+        {
+            if (id == 0
+                || string.IsNullOrWhiteSpace(content)
+                || activityId == 0
+                || string.IsNullOrWhiteSpace(staff)
+                || creation == DateTime.MinValue
+                || modification == DateTime.MinValue)
+            {
+                throw new ArgumentException();
+            }
+
+            this.Id = id;
+            this.Content = content;
+            this.ActivityId = activityId;
+            this.IsUnderway = isUnderway;
+            this.IsCompleted = isCompleted;
+            this.Staff = staff;
+            this.AppointedDay = appointedDay;
+            this.Creation = creation;
+            this.Modification = modification;
+        }
+
         #endregion
 
         #region methods
@@ -105,7 +142,8 @@ namespace ThinkInBio.Cully
             }
             this.IsUnderway = false;
             this.IsCompleted = false;
-            Appoint(staff, appointedDay, null);
+            this.Staff = staff;
+            this.AppointedDay = appointedDay;
             DateTime timeStamp = DateTime.Now;
             this.Creation = timeStamp;
             this.Modification = timeStamp;

@@ -98,7 +98,33 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Activity SaveActivity(string user, string projectId, string name, string description)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            long projectIdLong = Convert.ToInt64(projectId);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException("name");
+            }
+            if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
+            {
+                throw new ArgumentOutOfRangeException("description", description.Length, "");
+            }
+            Activity activity = new Activity();
+            activity.Name = name;
+            activity.Description = description;
+            activity.ProjectId = projectIdLong;
+            activity.Save((e) =>
+            {
+                ProjectService.SaveActivity(e);
+            });
+
+            return activity;
         }
 
         public Activity[] GetActivityList(string user, string start, string count)

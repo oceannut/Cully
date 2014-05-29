@@ -71,11 +71,48 @@ define(function (require) {
         .controller('ProjectDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'ActivityService',
             function ($scope, $location, $routeParams, currentUser, ActivityService) {
 
+                function clear() {
+                    $scope.name = '';
+                    $scope.description = '';
+                }
+
+                $scope.addActivityBtnTitle = '添加活动';
+                $scope.addActivityPanelDisplay = 'none';
+
                 $scope.init = function () {
                     ActivityService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.activityList = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
+
+                $scope.toggleAddActivityPanelVisibible = function () {
+                    if ($scope.addActivityPanelDisplay == 'none') {
+                        $scope.addActivityBtnTitle = '取消';
+                        $scope.addActivityPanelDisplay = '';
+                    } else {
+                        $scope.addActivityBtnTitle = '添加活动';
+                        $scope.addActivityPanelDisplay = 'none';
+                        clear();
+                    }
+                }
+
+                $scope.save = function () {
+                    ActivityService.save({
+                        'user': currentUser.username,
+                        'projectId': $routeParams.id,
+                        'name': $scope.name,
+                        'description': $scope.description
+                    })
+                        .$promise
+                            .then(function (result) {
+                                console.log(result);
+                                clear();
+                                $scope.toggleAddActivityPanelVisibible();
+                                $scope.activityList.unshift(result);
                             }, function (error) {
                                 console.log("error: " + error);
                             });
@@ -104,7 +141,6 @@ define(function (require) {
             function ($scope, $location, currentUser, ProjectActivityService) {
 
                 $scope.save = function () {
-                    console.log("save hh");
                     $scope.participants = [];
                     ProjectActivityService.save({
                         'user': currentUser.username,

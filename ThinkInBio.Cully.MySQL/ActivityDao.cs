@@ -118,7 +118,8 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"select id,name,description,projectId,isCompleted,creation,modification from cyActivity
-                                                where projectId=@projectId";
+                                                where projectId=@projectId 
+                                                order by modification desc";
                     command.Parameters.Add(DbFactory.CreateParameter("projectId", projectId));
                 },
                 (reader) =>

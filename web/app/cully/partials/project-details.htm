@@ -20,12 +20,33 @@
                 <a class="navbar-brand" href="javascript:void(0);">活动</a>
             </div>
             <form class="navbar-form navbar-left">
-            <button type="submit" class="btn btn-default btn-sm">
-                添加活动</button>
-            <ol class="list-unstyled">
-                <li ng-repeat="item in activityList"><a href="#">{{item.Name}}</a></li>
-            </ol>
+            <button type="button" class="btn btn-default btn-sm" ng-click="toggleAddActivityPanelVisibible()">
+                {{addActivityBtnTitle}}</button>
             </form>
         </div>
+        <div style="display: {{addActivityPanelDisplay}};">
+            <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" placeholder="活动名" ng-model="name" required
+                        autofocus>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <textarea class="form-control" placeholder="活动的概要介绍" ng-model="description" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <button class="btn btn-primary" ng-click="save()">
+                        创建活动</button>
+                </div>
+            </div>
+            </form>
+        </div>
+        <ol class="list-unstyled">
+            <li ng-repeat="item in activityList"><a href="#">{{item.Name}}</a></li>
+        </ol>
     </div>
 </div>
