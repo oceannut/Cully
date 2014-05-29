@@ -82,7 +82,7 @@ namespace ThinkInBio.Cully
         public void Save(DateTime timeStamp, 
             Action<Participant> action)
         {
-            if (string.IsNullOrWhiteSpace(this.Staff))
+            if (this.ProjectId == 0 || string.IsNullOrWhiteSpace(this.Staff))
             {
                 throw new InvalidOperationException();
             }

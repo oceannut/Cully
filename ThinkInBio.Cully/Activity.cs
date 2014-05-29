@@ -61,14 +61,21 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 构建一个活动。
         /// </summary>
-        /// <param name="projectId">项目编号。</param>
-        internal Activity(long projectId)
+        /// <param name="project">项目。</param>
+        public Activity(Project project)
         {
-            if (projectId == 0)
+            if (project == null)
             {
-                throw new ArgumentException();
+                throw new ArgumentNullException();
             }
-            this.ProjectId = projectId;
+            if (project.Id > 0)
+            {
+                this.ProjectId = project.Id;
+            }
+            else
+            {
+                project.IdChanged += new Action<long>(ProjectIdChanged);
+            }
         }
 
         #endregion
@@ -129,8 +136,10 @@ namespace ThinkInBio.Cully
             {
                 throw new InvalidOperationException();
             }
+
             DateTime timeStamp = DateTime.Now;
             _Save(timeStamp);
+
             if (action != null)
             {
                 action(this);
@@ -142,21 +151,19 @@ namespace ThinkInBio.Cully
         /// </summary>
         /// <param name="participants">项目的参与人。</param>
         /// <param name="action">保存操作定义。</param>
-        public void Save(ICollection<string> participants, 
+        public void Save(string user,
+            ICollection<string> participants, 
             Action<Activity, Project, ICollection<Participant>> action)
         {
             DateTime timeStamp = DateTime.Now;
             _Save(timeStamp);
 
-            Project project = null;
-            IList<Participant> participantList = null;
-            if (this.ProjectId == 0)
-            {
-                project = new Project();
-                project.Name = this.Name;
-                project.Description = this.Description;
-                participantList = project.Save(participants, null);
-            }
+            Project project = new Project();
+            project.IdChanged += new Action<long>(ProjectIdChanged);
+            project.Name = this.Name;
+            project.Description = this.Description;
+            project.Creator = user;
+            IList<Participant> participantList = project.Save(participants, null);
 
             if (action != null)
             {
@@ -235,6 +242,11 @@ namespace ThinkInBio.Cully
         {
             this.Creation = timeStamp;
             this.Modification = timeStamp;
+        }
+
+        private void ProjectIdChanged(long id)
+        {
+            this.ProjectId = id;
         }
 
         #endregion

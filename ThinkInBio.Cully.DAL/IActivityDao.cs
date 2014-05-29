@@ -15,7 +15,14 @@ namespace ThinkInBio.Cully.DAL
 
         bool Update4ProjectId(long id, long projectId);
 
-        IList<Activity> GetActivityList(long projectId);
+        IList<Activity> GetList(long projectId);
+
+        int GetCountByParticipant(string participant,
+            DateTime? startTime, DateTime? endTime);
+
+        IList<Activity> GetListByParticipant(string participant,
+            DateTime? startTime, DateTime? endTime, bool asc,
+            int startRowIndex, int maxRowsCount);
 
     }
 }

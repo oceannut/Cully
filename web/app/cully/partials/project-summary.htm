@@ -15,11 +15,15 @@
         </div>
         <div class="row" style="margin-top: 20px;">
             <div class="col-sm-8 blog-main">
-                main
-                <ul class="pager">
-                    <li><a href="#">上一页</a></li>
-                    <li><a href="#">下一页</a></li>
-                </ul>
+                <div ng-controller="ActivityListCtrl">
+                    <ol class="list-unstyled">
+                        <li ng-repeat="item in activityList"><a href="#">{{item.Name}}</a></li>
+                    </ol>
+                    <ul class="pager">
+                        <li><a href="#">上一页</a></li>
+                        <li><a href="#">下一页</a></li>
+                    </ul>
+                </div>
             </div>
             <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
                 <div class="sidebar-module sidebar-module-inset">
@@ -33,7 +37,7 @@
                     <h4>
                         最新项目</h4>
                     <ol class="list-unstyled">
-                        <li ng-repeat="item in projectList"><a href="#">{{item.Name}}</a></li>
+                        <li ng-repeat="item in projectList"><a href="javascript:void(0)" ng-click="gotoDetails(item.Id)">{{item.Name}}</a></li>
                     </ol>
                 </div>
             </div>

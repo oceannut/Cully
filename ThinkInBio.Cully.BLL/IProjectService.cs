@@ -26,9 +26,35 @@ namespace ThinkInBio.Cully.BLL
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="maxCount"></param>
+        /// <param name="maxRowsCount"></param>
         /// <returns></returns>
-        IList<Project> GetTopProjectList(string user, int maxCount);
+        IList<Project> GetTopProjectList(string user, int maxRowsCount);
+
+        /// <summary>
+        /// 保存活动。
+        /// </summary>
+        /// <param name="activity">活动。</param>
+        /// <param name="project">项目。</param>
+        /// <param name="participants">参与人。</param>
+        void SaveActivity(Activity activity, 
+            Project project,
+            ICollection<Participant> participants);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="startRowIndex"></param>
+        /// <param name="maxRowsCount"></param>
+        /// <returns></returns>
+        IList<Activity> GetActivityList(string user, int startRowIndex, int maxRowsCount);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        IList<Activity> GetActivityList(long projectId);
 
     }
 

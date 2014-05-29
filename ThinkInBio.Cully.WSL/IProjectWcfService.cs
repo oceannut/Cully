@@ -44,6 +44,14 @@ namespace ThinkInBio.Cully.WSL
             ResponseFormat = WebMessageFormat.Json)]
         Project[] GetTopProjectList(string user, string count);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="participants"></param>
+        /// <returns></returns>
         [OperationContract(Name = "SaveActivityDirectly")]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
@@ -61,10 +69,10 @@ namespace ThinkInBio.Cully.WSL
         Activity SaveActivity(string user, string projectId, string name, string description);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/project/0/activity/",
+        [WebGet(UriTemplate = "/{user}/project/0/activity/range/{start}/{count}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Activity[] GetActivityList(string user);
+        Activity[] GetActivityList(string user, string start, string count);
 
         [OperationContract(Name = "GetActivityListByProject")]
         [WebGet(UriTemplate = "/{user}/project/{projectId}/activity/",

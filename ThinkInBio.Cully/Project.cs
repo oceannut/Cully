@@ -79,7 +79,7 @@ namespace ThinkInBio.Cully
             {
                 throw new InvalidOperationException();
             }
-            Activity activity = new Activity(this.Id);
+            Activity activity = new Activity(this);
             return activity;
         }
 
@@ -124,7 +124,7 @@ namespace ThinkInBio.Cully
             {
                 Participant participant = new Participant(this);
                 participant.Staff = item;
-                participant.Save(timeStamp, null);
+                participant.Creation = timeStamp;
                 participantList.Add(participant);
             }
 

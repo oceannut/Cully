@@ -22,13 +22,13 @@ define(function (require) {
                     templateUrl: 'partials/project-add.htm',
                     controller: 'ProjectAddCtrl'
                 }).
-                when('/project-details/', {
+                when('/project-details/:id/', {
                     templateUrl: 'partials/project-details.htm',
                     controller: 'ProjectDetailsCtrl'
                 }).
-                when('/activity-add/', {
-                    templateUrl: 'partials/activity-add.htm',
-                    controller: 'ActivityAddCtrl'
+                when('/project-activity-add/', {
+                    templateUrl: 'partials/project-activity-add.htm',
+                    controller: 'ProjectActivityAddCtrl'
                 }).
                 otherwise({
                     redirectTo: '/project-summary/'

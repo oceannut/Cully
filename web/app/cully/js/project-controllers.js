@@ -17,7 +17,7 @@ define(function (require) {
 
                 $scope.createActivity = function () {
                     console.log("createActivity");
-                    $location.path('/activity-add/');
+                    $location.path('/project-activity-add/');
                 }
 
             } ])
@@ -32,6 +32,10 @@ define(function (require) {
                             }, function (error) {
                                 console.log("error: " + error);
                             });
+                }
+
+                $scope.gotoDetails = function (id) {
+                    $location.path('/project-details/' + id + "/");
                 }
 
                 $scope.init();
@@ -52,7 +56,7 @@ define(function (require) {
                         .$promise
                             .then(function (result) {
                                 console.log(result);
-                                $location.path('/project-details/');
+                                $location.path('/project-details/' + result.Id + "/");
                             }, function (error) {
                                 console.log("error: " + error);
                             });
@@ -64,18 +68,57 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location',
-            function ($scope, $location) {
+        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'ActivityService',
+            function ($scope, $location, $routeParams, currentUser, ActivityService) {
 
+                $scope.init = function () {
+                    ActivityService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.activityList = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
 
+                $scope.init();
 
             } ])
-        .controller('ActivityAddCtrl', ['$scope', '$location',
-            function ($scope, $location) {
+        .controller('ActivityListCtrl', ['$scope', '$location', 'currentUser', 'ActivityListService',
+            function ($scope, $location, currentUser, ActivityListService) {
+
+                $scope.init = function () {
+                    ActivityListService.query({ 'user': currentUser.username, 'start': 0, 'count': 10 })
+                        .$promise
+                            .then(function (result) {
+                                $scope.activityList = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
+
+                $scope.init();
+
+            } ])
+        .controller('ProjectActivityAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectActivityService',
+            function ($scope, $location, currentUser, ProjectActivityService) {
 
                 $scope.save = function () {
-                    console.log("save");
-                    $location.path('/project-details/');
+                    console.log("save hh");
+                    $scope.participants = [];
+                    ProjectActivityService.save({
+                        'user': currentUser.username,
+                        'name': $scope.name,
+                        'description': $scope.description,
+                        'participants': $scope.participants
+                    })
+                        .$promise
+                            .then(function (result) {
+                                console.log(result);
+                                $location.path('/project-details/');
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
                 }
 
                 $scope.cancel = function () {

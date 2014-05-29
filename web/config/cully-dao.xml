@@ -8,6 +8,10 @@
   <object id="ParticipantDao" type="ThinkInBio.Cully.MySQL.ParticipantDao, ThinkInBio.Cully.MySQL">
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
+
+  <object id="ActivityDao" type="ThinkInBio.Cully.MySQL.ActivityDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
   
 </objects>
 

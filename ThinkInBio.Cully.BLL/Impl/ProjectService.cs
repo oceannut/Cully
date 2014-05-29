@@ -31,13 +31,44 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
-        public IList<Project> GetTopProjectList(string user, int maxCount)
+        public IList<Project> GetTopProjectList(string user, int maxRowsCount)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
                 throw new ArgumentNullException();
             }
-            return ProjectDao.GetListByParticipant(user, null, null, false, 0, maxCount);
+            return ProjectDao.GetListByParticipant(user, null, null, false, 0, maxRowsCount);
+        }
+
+        public void SaveActivity(Activity activity, 
+            Project project, 
+            ICollection<Participant> participants)
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            SaveProject(project, participants);
+            ActivityDao.Save(activity);
+        }
+
+        public IList<Activity> GetActivityList(string user, int startRowIndex, int maxRowsCount)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
+            return ActivityDao.GetListByParticipant(user, null, null, false, startRowIndex, maxRowsCount);
+        }
+
+        public IList<Activity> GetActivityList(long projectId)
+        {
+            if (projectId == 0)
+            {
+                throw new ArgumentNullException();
+            }
+            return ActivityDao.GetList(projectId);
         }
 
     }

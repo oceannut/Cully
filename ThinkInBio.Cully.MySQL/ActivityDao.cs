@@ -112,7 +112,7 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public IList<Activity> GetActivityList(long projectId)
+        public IList<Activity> GetList(long projectId)
         {
             return DbTemplate.GetList<Activity>(dataSource,
                 (command) =>
@@ -125,6 +125,77 @@ namespace ThinkInBio.Cully.MySQL
                 {
                     return Populate(reader);
                 });
+        }
+
+        public int GetCountByParticipant(string participant, DateTime? startTime, DateTime? endTime)
+        {
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetCount(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select count(t.id) from cyActivity t ");
+                    if (!string.IsNullOrWhiteSpace(participant))
+                    {
+                        sql.Append(" inner join cyProject p on t.projectId=p.id inner join cyParticipant pa on pa.projectId=p.id ");
+                    }
+                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    Console.WriteLine(sql.ToString());
+                    command.CommandText = sql.ToString();
+                },
+                parameters);
+        }
+
+        public IList<Activity> GetListByParticipant(string participant, DateTime? startTime, DateTime? endTime, 
+            bool asc, int startRowIndex, int maxRowsCount)
+        {
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetList<Activity>(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select t.id,t.name,t.description,t.projectId,t.isCompleted,t.creation,t.modification from cyActivity t ");
+                    if (!string.IsNullOrWhiteSpace(participant))
+                    {
+                        sql.Append(" inner join cyProject p on t.projectId=p.id inner join cyParticipant pa on pa.projectId=p.id ");
+                    }
+                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    sql.Append(" order by t.modification ");
+                    if (!asc)
+                    {
+                        sql.Append(" desc ");
+                    }
+                    if (maxRowsCount < int.MaxValue)
+                    {
+                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(startRowIndex + maxRowsCount);
+                    }
+                    command.CommandText = sql.ToString();
+                },
+                parameters,
+                (reader) =>
+                {
+                    return Populate(reader);
+                });
+        }
+
+        private void BuildSqlByParticipant(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
+            string participant, DateTime? startTime, DateTime? endTime)
+        {
+            if (startTime.HasValue && startTime.Value != DateTime.MinValue
+                    && endTime.HasValue && endTime.Value != DateTime.MinValue
+                    && endTime.Value > startTime.Value)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.modification between @startTime and @endTime ");
+                parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
+                parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
+            }
+            if (!string.IsNullOrWhiteSpace(participant))
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" pa.staff=@participant ");
+                parameters.Add(new KeyValuePair<string, object>("participant", participant));
+            }
         }
 
         private Activity Populate(IDataReader reader)
@@ -140,9 +211,6 @@ namespace ThinkInBio.Cully.MySQL
 
             return entity;
         }
-
-
-
 
     }
 }

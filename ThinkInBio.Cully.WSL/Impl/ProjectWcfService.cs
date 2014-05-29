@@ -69,7 +69,31 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Activity SaveActivity(string user, string name, string description, string[] participants)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException("name");
+            }
+            if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
+            {
+                throw new ArgumentOutOfRangeException("description", description.Length, "");
+            }
+            Activity activity = new Activity();
+            activity.Name = name;
+            activity.Description = description;
+            activity.Save(user, participants, (e1, e2, e3) =>
+            {
+                ProjectService.SaveActivity(e1, e2, e3);
+            });
+
+            return activity;
         }
 
         public Activity SaveActivity(string user, string projectId, string name, string description)
@@ -77,14 +101,49 @@ namespace ThinkInBio.Cully.WSL.Impl
             throw new NotImplementedException();
         }
 
-        public Activity[] GetActivityList(string user)
+        public Activity[] GetActivityList(string user, string start, string count)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            int startInt = Convert.ToInt32(start);
+            int countInt = Convert.ToInt32(count);
+            IList<Activity> list = ProjectService.GetActivityList(user, startInt, countInt);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public Activity[] GetActivityList(string user, string projectId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            long projectIdLong = Convert.ToInt64(projectId);
+            IList<Activity> list = ProjectService.GetActivityList(projectIdLong);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }
