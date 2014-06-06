@@ -6,8 +6,9 @@ define(function (require) {
     require('./project-controllers');
     require('../../../static/js/utils');
     require('../../../static/js/configs');
+    require('../../common/js/user-services');
 
-    angular.module('CullyApp', ['ngRoute', 'project.controllers', 'utils', 'configs'])
+    angular.module('CullyApp', ['ngRoute', 'project.controllers', 'utils', 'configs', 'user.services'])
         .config(['$routeProvider', function ($routeProvider) {
 
             $routeProvider.
@@ -35,10 +36,19 @@ define(function (require) {
                 });
 
         } ])
-        .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil',
-            function ($scope, currentUser, urlUtil) {
+        .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil', 'UserService',
+            function ($scope, currentUser, urlUtil, UserService) {
 
                 currentUser.username = urlUtil.getUrlParam('username');
+
+                UserService.get({ 'username': currentUser.username })
+                        .$promise
+                            .then(function (result) {
+                                currentUser.name = result.Name;
+                                $scope.user = { 'name': currentUser.name };
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
 
             } ]);
 

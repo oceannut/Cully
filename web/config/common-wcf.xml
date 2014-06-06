@@ -3,6 +3,16 @@
 
   <object id="DemoWcfService" type="ThinkInBio.CommonApp.WSL.Impl.DemoWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
   </object>
+
+  <object id="SignWcfService" type="ThinkInBio.CommonApp.WSL.Impl.SignWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="UserService" ref="UserService" />
+    <property name="AuthProvider" ref="PlainAuthProvider" />
+    <property name="PasswordProvider" ref="PlainPasswordProvider" />
+  </object>
+
+  <object id="UserWcfService" type="ThinkInBio.CommonApp.WSL.Impl.UserWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="UserService" ref="UserService" />
+  </object>
   
 </objects>
 

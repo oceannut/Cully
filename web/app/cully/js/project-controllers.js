@@ -5,8 +5,9 @@ define(function (require) {
     require('angular');
     require('../../../static/js/configs');
     require('./project-services');
+    require('../../common/js/user-services');
 
-    angular.module('project.controllers', ['configs', 'project.services'])
+    angular.module('project.controllers', ['configs', 'project.services', 'user.services'])
         .controller('ProjectSummaryCtrl', ['$scope', '$location', 'currentUser',
             function ($scope, $location, currentUser) {
 
@@ -41,17 +42,52 @@ define(function (require) {
                 $scope.init();
 
             } ])
-        .controller('ProjectAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectService',
-            function ($scope, $location, currentUser, ProjectService) {
+        .controller('ProjectAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectService', 'UserListService',
+            function ($scope, $location, currentUser, ProjectService, UserListService) {
+
+                $scope.project = {};
+                $scope.participants = [];
+
+                $scope.init = function () {
+                    UserListService.query()
+                        .$promise
+                            .then(function (result) {
+                                if (result != null) {
+                                    for (var i = 0; i < result.length; i++) {
+                                        if (result[i].Username == currentUser.username) {
+                                            result.splice(i, 1);
+                                        }
+                                    }
+                                    $scope.users = result;
+                                }
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
+
+                $scope.addParticipant = function (user) {
+                    if ($scope.participants.indexOf(user) == -1) {
+                        $scope.participants.push(user);
+                    }
+                }
+
+                $scope.removeParticipant = function (user) {
+                    var i = $scope.participants.indexOf(user);
+                    if (i > -1) {
+                        $scope.participants.splice(i, 1);
+                    }
+                }
 
                 $scope.save = function () {
-                    console.log("save");
-                    $scope.participants = [];
+                    var usernameArray = [];
+                    for (var i = 0; i < $scope.participants.length; i++) {
+                        usernameArray.push($scope.participants[i].Username);
+                    }
                     ProjectService.save({
                         'user': currentUser.username,
-                        'name': $scope.name,
-                        'description': $scope.description,
-                        'participants': $scope.participants
+                        'name': $scope.project.name,
+                        'description': $scope.project.description,
+                        'participants': usernameArray
                     })
                         .$promise
                             .then(function (result) {

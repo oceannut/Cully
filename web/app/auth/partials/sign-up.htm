@@ -1,13 +1,23 @@
 ﻿<div class="container">
     <form class="form-signin" role="form">
     <h2 class="form-signin-heading">
-        Please sign up</h2>
-    <input type="email" class="form-control" placeholder="用户名" required autofocus>
-    <input type="password" class="form-control" placeholder="密码" required>
-    <input type="password" class="form-control" placeholder="验证密码" required>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">
-        注册</button>
-    <hr />
+        用户注册</h2>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="用户名" ng-model="username" required autofocus>
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" placeholder="密码" ng-model="pwd" required>
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" placeholder="验证密码" ng-model="pwd2" required>
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="显示名称" ng-model="name" required>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="signup()">
+            注册</button>
+    </div>
     <a href="#/signin">立即登录</a>
     </form>
 </div>

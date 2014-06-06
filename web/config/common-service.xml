@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="UserServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.UserService, ThinkInBio.CommonApp.BLL">
+    <property name="UserDao" ref="UserDao" />
+  </object>
+  <object id="UserService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="UserServiceTarget"/>
+  </object>
+  
+</objects>
+
