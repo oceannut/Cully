@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl\ProjectWcfService.cs" />
+    <Compile Include="Impl\TaskWcfService.cs" />
     <Compile Include="IProjectWcfService.cs" />
+    <Compile Include="ITaskWcfService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

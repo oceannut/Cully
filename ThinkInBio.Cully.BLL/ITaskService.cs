@@ -5,7 +5,12 @@ using System.Text;
 
 namespace ThinkInBio.Cully.BLL
 {
+
     public interface ITaskService
     {
+
+        void SaveTask(Task task);
+
     }
+
 }

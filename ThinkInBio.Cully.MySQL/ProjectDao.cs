@@ -137,7 +137,6 @@ namespace ThinkInBio.Cully.MySQL
                         sql.Append(" inner join cyParticipant p ");
                     }
                     BuildSqlByParticipant(sql, parameters, participant, startTime, endTime, isSolo);
-                    Console.WriteLine(sql.ToString());
                     command.CommandText = sql.ToString();
                 },
                 parameters);
