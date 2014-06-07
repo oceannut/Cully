@@ -20,10 +20,12 @@ namespace ThinkInBio.Cully.DAL
             int startRowIndex, int maxRowsCount);
 
         int GetCountByParticipant(string participant,
-            DateTime? startTime, DateTime? endTime);
+            DateTime? startTime, DateTime? endTime,
+            bool? isSolo);
 
         IList<Project> GetListByParticipant(string participant,
-            DateTime? startTime, DateTime? endTime, bool asc, 
+            DateTime? startTime, DateTime? endTime, 
+            bool? isSolo, bool asc, 
             int startRowIndex, int maxRowsCount);
 
     }

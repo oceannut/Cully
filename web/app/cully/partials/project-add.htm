@@ -5,17 +5,18 @@
             创建新项目</h2>
         <div class="form-group">
             <div class="col-sm-4">
-                <input type="text" class="form-control" placeholder="项目名" ng-model="project.name" required
-                    autofocus>
+                <input type="text" class="form-control" placeholder="项目名" ng-model="project.name"
+                    required autofocus>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                <textarea class="form-control" placeholder="项目的概要介绍" ng-model="project.description" rows="3"></textarea>
+                <textarea class="form-control" placeholder="项目的概要介绍" ng-model="project.description"
+                    rows="3"></textarea>
             </div>
         </div>
-        <h3>
-            邀请项目成员</h3>
+        <h4>
+            邀请项目成员</h4>
         <div class="form-group">
             <div class="col-sm-2">
                 <div class="btn-group">
@@ -23,16 +24,26 @@
                         点击邀请成员 <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">{{item.Name}}</a></li>
+                        <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
+                            {{item.Name}}</a></li>
                     </ul>
                 </div>
+            </div>
+            <div class="col-sm-2 ">
+                <div class="checkbox">
+                    <label class="control-label">
+                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()">所有人
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
                 <ul class="list-group">
-                    <li class="list-group-item" ng-repeat="item in participants">{{item.Name}}<span class="glyphicon glyphicon-remove" ng-click="removeParticipant(item)"></span></li>
+                    <li class="list-group-item" ng-repeat="item in participants">{{item.Name}}<span class="pull-right glyphicon glyphicon-remove"
+                        ng-click="removeParticipant(item)"></span></li>
                 </ul>
             </div>
-            <div class="col-sm-1">
-                <button class="btn btn-default">
-                    所有人</button></div>
         </div>
         <div class="form-group">
             <div class="col-sm-4">

@@ -31,10 +31,11 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"insert into cyProject (id,name,description,creator,creation,modification) 
-                                                values (NULL,@name,@description,@creator,@creation,@modification)";
+                    command.CommandText = @"insert into cyProject (id,name,description,isSolo,creator,creation,modification) 
+                                                values (NULL,@name,@description,@isSolo,@creator,@creation,@modification)";
                     command.Parameters.Add(DbFactory.CreateParameter("name", entity.Name));
                     command.Parameters.Add(DbFactory.CreateParameter("description", entity.Description));
+                    command.Parameters.Add(DbFactory.CreateParameter("isSolo", entity.IsSolo));
                     command.Parameters.Add(DbFactory.CreateParameter("creator", entity.Creator));
                     command.Parameters.Add(DbFactory.CreateParameter("creation", entity.Creation));
                     command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
@@ -76,7 +77,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Project>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,name,description,creator,creation,modification from cyProject 
+                    command.CommandText = @"select id,name,description,isSolo,creator,creation,modification from cyProject 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -107,7 +108,7 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select t.id,t.name,t.description,t.creator,t.creation,t.modification from cyProject t ");
+                    sql.Append("select t.id,t.name,t.description,t.isSolo,t.creator,t.creation,t.modification from cyProject t ");
                     BuildSql(sql, parameters, creator, startTime, endTime);
                     sql.Append(" order by t.modification desc ");
                     if (maxRowsCount < int.MaxValue)
@@ -123,7 +124,7 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public int GetCountByParticipant(string participant, DateTime? startTime, DateTime? endTime)
+        public int GetCountByParticipant(string participant, DateTime? startTime, DateTime? endTime, bool? isSolo)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetCount(dataSource,
@@ -135,14 +136,15 @@ namespace ThinkInBio.Cully.MySQL
                     {
                         sql.Append(" inner join cyParticipant p ");
                     }
-                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime, isSolo);
                     Console.WriteLine(sql.ToString());
                     command.CommandText = sql.ToString();
                 },
                 parameters);
         }
 
-        public IList<Project> GetListByParticipant(string participant, DateTime? startTime, DateTime? endTime, bool asc, 
+        public IList<Project> GetListByParticipant(string participant, DateTime? startTime, DateTime? endTime, 
+            bool? isSolo, bool asc, 
             int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
@@ -150,12 +152,12 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select t.id,t.name,t.description,t.creator,t.creation,t.modification from cyProject t ");
+                    sql.Append("select t.id,t.name,t.description,t.isSolo,t.creator,t.creation,t.modification from cyProject t ");
                     if (!string.IsNullOrWhiteSpace(participant))
                     {
                         sql.Append(" inner join cyParticipant p ");
                     }
-                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime, isSolo);
                     if (!string.IsNullOrWhiteSpace(participant))
                     {
                         sql.Append(" order by p.creation ");
@@ -202,7 +204,7 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSqlByParticipant(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string participant, DateTime? startTime, DateTime? endTime)
+            string participant, DateTime? startTime, DateTime? endTime, bool? isSolo)
         {
             if (!string.IsNullOrWhiteSpace(participant))
             {
@@ -230,6 +232,12 @@ namespace ThinkInBio.Cully.MySQL
                     parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
                 }
             }
+            if (isSolo.HasValue)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.isSolo=@isSolo");
+                parameters.Add(new KeyValuePair<string, object>("isSolo", isSolo.Value ? 1 : 0));
+            }
         }
 
         private Project Populate(IDataReader reader)
@@ -238,9 +246,10 @@ namespace ThinkInBio.Cully.MySQL
             entity.Id = reader.GetInt64(0);
             entity.Name = reader.GetString(1);
             entity.Description = reader.IsDBNull(2) ? null : reader.GetString(2);
-            entity.Creator = reader.GetString(3);
-            entity.Creation = reader.IsDBNull(4) ? default(DateTime) : reader.GetDateTime(4);
-            entity.Modification = reader.IsDBNull(5) ? default(DateTime) : reader.GetDateTime(5);
+            entity.IsSolo = reader.GetBoolean(3);
+            entity.Creator = reader.GetString(4);
+            entity.Creation = reader.GetDateTime(5);
+            entity.Modification = reader.GetDateTime(6);
 
             return entity;
         }

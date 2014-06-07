@@ -1,9 +1,9 @@
-﻿<div>
+﻿<div ng-init="init()">
     <div class="container">
         <div class="navbar" role="navigation">
             <div class="navbar-header">
                 <h3>
-                    项目标题</h3>
+                    {{project.Name}}</h3>
             </div>
             <ul class="nav navbar-nav navbar-right">
                 <li><a title="管理成员" class="navbar-link"><span class="glyphicon glyphicon-user"></span>
@@ -28,25 +28,34 @@
             <form class="form-horizontal" role="form">
             <div class="form-group">
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" placeholder="活动名" ng-model="name" required
-                        autofocus>
+                    <input type="text" class="form-control" placeholder="活动名" ng-model="activity.name"
+                        required autofocus>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-6">
-                    <textarea class="form-control" placeholder="活动的概要介绍" ng-model="description" rows="3"></textarea>
+                    <textarea class="form-control" placeholder="活动的概要介绍" ng-model="activity.description"
+                        rows="3"></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-4">
-                    <button class="btn btn-primary" ng-click="save()">
+                    <button class="btn btn-primary" ng-click="saveActivity()">
                         创建活动</button>
                 </div>
             </div>
             </form>
         </div>
         <ol class="list-unstyled">
-            <li ng-repeat="item in activityList"><a href="#">{{item.Name}}</a></li>
+            <li ng-repeat="item in activityList">
+                <h4>
+                    <a href="#">{{item.Name}}</a></h4>
+                <span class="pull-right">{{item.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                <p>
+                    {{item.Description}}</p>
+                <div ng-include="'partials/activity-details.htm'"></div>
+                <hr />
+            </li>
         </ol>
     </div>
 </div>

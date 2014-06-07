@@ -34,6 +34,18 @@ namespace ThinkInBio.Cully.WSL
         Project SaveProject(string user, string name, string description, string[] participants);
 
         /// <summary>
+        /// 获取项目。
+        /// </summary>
+        /// <param name="user">项目参与人，一般要求为登录验证通过的用户。</param>
+        /// <param name="projectId">项目编号。</param>
+        /// <returns>返回项目。 </returns>
+        [OperationContract]
+        [WebGet(UriTemplate = "/{user}/project/{projectId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Project GetProject(string user, string projectId);
+
+        /// <summary>
         /// 获取项目集合，返回与指定参与人相关的项目集合，包括其创建的项目和其被邀请参加的项目。
         /// </summary>
         /// <param name="user">项目参与人，一般要求为登录验证通过的用户。</param>
@@ -79,6 +91,12 @@ namespace ThinkInBio.Cully.WSL
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Activity[] GetActivityList(string user, string projectId);
+
+        [OperationContract(Name = "GetParticipantListByProject")]
+        [WebGet(UriTemplate = "/{user}/project/{projectId}/participant/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Participant[] GetParticipantList(string user, string projectId);
 
     }
 

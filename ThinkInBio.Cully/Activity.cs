@@ -162,6 +162,7 @@ namespace ThinkInBio.Cully
             project.IdChanged += new Action<long>(ProjectIdChanged);
             project.Name = this.Name;
             project.Description = this.Description;
+            project.IsSolo = true;
             project.Creator = user;
             IList<Participant> participantList = project.Save(participants, null);
 

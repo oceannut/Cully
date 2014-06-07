@@ -45,6 +45,20 @@ namespace ThinkInBio.Cully.WSL.Impl
             return project;
         }
 
+        public Project GetProject(string user, string projectId)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            Project project = ProjectService.GetProject(Convert.ToInt64(projectId));
+            return project;
+        }
+
         public Project[] GetTopProjectList(string user, string count)
         {
             if (string.IsNullOrWhiteSpace(user))
@@ -172,6 +186,27 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
+        public Participant[] GetParticipantList(string user, string projectId)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            long projectIdLong = Convert.ToInt64(projectId);
+            IList<Participant> list = ProjectService.GetParticipantList(projectIdLong);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
 }

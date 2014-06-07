@@ -4,10 +4,11 @@ define(function (require) {
 
     require('angular');
     require('../../../static/js/configs');
+    require('../../../static/js/filters');
     require('./project-services');
     require('../../common/js/user-services');
 
-    angular.module('project.controllers', ['configs', 'project.services', 'user.services'])
+    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'user.services'])
         .controller('ProjectSummaryCtrl', ['$scope', '$location', 'currentUser',
             function ($scope, $location, currentUser) {
 
@@ -39,8 +40,6 @@ define(function (require) {
                     $location.path('/project-details/' + id + "/");
                 }
 
-                $scope.init();
-
             } ])
         .controller('ProjectAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectService', 'UserListService',
             function ($scope, $location, currentUser, ProjectService, UserListService) {
@@ -68,6 +67,15 @@ define(function (require) {
                 $scope.addParticipant = function (user) {
                     if ($scope.participants.indexOf(user) == -1) {
                         $scope.participants.push(user);
+                    }
+                }
+
+                $scope.addAllParticipant = function () {
+                    $scope.participants = [];
+                    if ($scope.allParticipantChecked) {
+                        for (var i = 0; i < $scope.users.length; i++) {
+                            $scope.participants.push($scope.users[i]);
+                        }
                     }
                 }
 
@@ -104,18 +112,27 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'ActivityService',
-            function ($scope, $location, $routeParams, currentUser, ActivityService) {
-
-                function clear() {
-                    $scope.name = '';
-                    $scope.description = '';
-                }
+        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'ActivityService', 'ProjectDetailsService',
+            function ($scope, $location, $routeParams, currentUser, ActivityService, ProjectDetailsService) {
 
                 $scope.addActivityBtnTitle = '添加活动';
                 $scope.addActivityPanelDisplay = 'none';
+                $scope.project = {};
+                $scope.activity = {};
+
+                function clear() {
+                    $scope.activity.name = '';
+                    $scope.activity.description = '';
+                }
 
                 $scope.init = function () {
+                    ProjectDetailsService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.project = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
                     ActivityService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
@@ -136,12 +153,12 @@ define(function (require) {
                     }
                 }
 
-                $scope.save = function () {
+                $scope.saveActivity = function () {
                     ActivityService.save({
                         'user': currentUser.username,
                         'projectId': $routeParams.id,
-                        'name': $scope.name,
-                        'description': $scope.description
+                        'name': $scope.activity.name,
+                        'description': $scope.activity.description
                     })
                         .$promise
                             .then(function (result) {
@@ -153,8 +170,6 @@ define(function (require) {
                                 console.log("error: " + error);
                             });
                 }
-
-                $scope.init();
 
             } ])
         .controller('ActivityListCtrl', ['$scope', '$location', 'currentUser', 'ActivityListService',
@@ -170,19 +185,66 @@ define(function (require) {
                             });
                 }
 
-                $scope.init();
+                $scope.gotoDetails = function (id) {
+                    $location.path('/project-details/' + id + "/");
+                }
 
             } ])
-        .controller('ProjectActivityAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectActivityService',
-            function ($scope, $location, currentUser, ProjectActivityService) {
+        .controller('ProjectActivityAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectActivityService', 'UserListService',
+            function ($scope, $location, currentUser, ProjectActivityService, UserListService) {
+
+                $scope.activity = {};
+                $scope.participants = [];
+
+                $scope.init = function () {
+                    UserListService.query()
+                        .$promise
+                            .then(function (result) {
+                                if (result != null) {
+                                    for (var i = 0; i < result.length; i++) {
+                                        if (result[i].Username == currentUser.username) {
+                                            result.splice(i, 1);
+                                        }
+                                    }
+                                    $scope.users = result;
+                                }
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
+
+                $scope.addParticipant = function (user) {
+                    if ($scope.participants.indexOf(user) == -1) {
+                        $scope.participants.push(user);
+                    }
+                }
+
+                $scope.addAllParticipant = function () {
+                    $scope.participants = [];
+                    if ($scope.allParticipantChecked) {
+                        for (var i = 0; i < $scope.users.length; i++) {
+                            $scope.participants.push($scope.users[i]);
+                        }
+                    }
+                }
+
+                $scope.removeParticipant = function (user) {
+                    var i = $scope.participants.indexOf(user);
+                    if (i > -1) {
+                        $scope.participants.splice(i, 1);
+                    }
+                }
 
                 $scope.save = function () {
-                    $scope.participants = [];
+                    var usernameArray = [];
+                    for (var i = 0; i < $scope.participants.length; i++) {
+                        usernameArray.push($scope.participants[i].Username);
+                    }
                     ProjectActivityService.save({
                         'user': currentUser.username,
-                        'name': $scope.name,
-                        'description': $scope.description,
-                        'participants': $scope.participants
+                        'name': $scope.activity.name,
+                        'description': $scope.activity.description,
+                        'participants': usernameArray
                     })
                         .$promise
                             .then(function (result) {

@@ -23,6 +23,13 @@ namespace ThinkInBio.Cully.BLL
             ICollection<Participant> participants);
 
         /// <summary>
+        /// 获取项目。
+        /// </summary>
+        /// <param name="projectId">项目编号。</param>
+        /// <returns>返回项目。</returns>
+        Project GetProject(long projectId);
+
+        /// <summary>
         /// 获取与指定参与人相关的最新的项目。
         /// </summary>
         /// <param name="user">参与人。</param>
@@ -61,6 +68,13 @@ namespace ThinkInBio.Cully.BLL
         /// <param name="projectId"></param>
         /// <returns></returns>
         IList<Activity> GetActivityList(long projectId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        IList<Participant> GetParticipantList(long projectId);
 
     }
 

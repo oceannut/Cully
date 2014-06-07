@@ -15,6 +15,12 @@ define(function (require) {
                     query: { method: 'GET', params: { 'user': '@user' }, isArray: true }
                 });
             } ])
+        .factory('ProjectDetailsService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/', {}, {
+                    get: { method: 'GET', params: { 'projectId': '@projectId' }, isArray: false }
+                });
+            } ])
         .factory('TopProjectService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/top/:count/', {}, {
@@ -37,6 +43,12 @@ define(function (require) {
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/activity/', {}, {
                     save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'name': '@name', 'description': '@description' }, isArray: false },
+                    query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }
+                });
+            } ])
+        .factory('ParticipantService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/participant/', {}, {
                     query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }
                 });
             } ]);

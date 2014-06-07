@@ -9,6 +9,7 @@ create table cyProject
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
 	name					VARCHAR(32)		NOT NULL,
 	description				VARCHAR(255),
+	isSolo					TINYINT(1)      NOT NULL,
 	creator					VARCHAR(32)		NOT NULL,
 	creation				DATETIME		NOT NULL,
 	modification			DATETIME		NOT NULL,

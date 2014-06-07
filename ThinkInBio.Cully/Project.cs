@@ -51,6 +51,11 @@ namespace ThinkInBio.Cully
         public string Description { get; set; }
 
         /// <summary>
+        /// 是否是单一活动的项目。
+        /// </summary>
+        public bool IsSolo { get; set; }
+
+        /// <summary>
         /// 创建人。
         /// </summary>
         public string Creator { get; set; }

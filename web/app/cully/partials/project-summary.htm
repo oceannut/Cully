@@ -15,9 +15,16 @@
         </div>
         <div class="row" style="margin-top: 20px;">
             <div class="col-sm-8 blog-main">
-                <div ng-controller="ActivityListCtrl">
+                <div ng-controller="ActivityListCtrl" ng-init="init()">
                     <ol class="list-unstyled">
-                        <li ng-repeat="item in activityList"><a href="#">{{item.Name}}</a></li>
+                        <li ng-repeat="item in activityList">
+                            <h4>
+                                <a href="javascript:void(0)" ng-click="gotoDetails(item.ProjectId)">{{item.Name}}</a></h4>
+                            <span class="pull-right">{{item.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                            <p>
+                                {{item.Description}}</p>
+                            <hr />
+                        </li>
                     </ol>
                     <ul class="pager">
                         <li><a href="#">上一页</a></li>
@@ -33,11 +40,12 @@
                         Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur
                         purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
                 </div>
-                <div class="sidebar-module" ng-controller="ProjectListCtrl">
+                <div class="sidebar-module" ng-controller="ProjectListCtrl" ng-init="init()">
                     <h4>
                         最新项目</h4>
                     <ol class="list-unstyled">
-                        <li ng-repeat="item in projectList"><a href="javascript:void(0)" ng-click="gotoDetails(item.Id)">{{item.Name}}</a></li>
+                        <li ng-repeat="item in projectList"><a href="javascript:void(0)" ng-click="gotoDetails(item.Id)">
+                            {{item.Name}}</a></li>
                     </ol>
                 </div>
             </div>
