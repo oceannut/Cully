@@ -13,6 +13,10 @@
   <object id="UserWcfService" type="ThinkInBio.CommonApp.WSL.Impl.UserWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
     <property name="UserService" ref="UserService" />
   </object>
+
+  <object id="BizNotificationWcfService" type="ThinkInBio.CommonApp.WSL.Impl.BizNotificationWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="BizNotificationService" ref="BizNotificationService" />
+  </object>
   
 </objects>
 

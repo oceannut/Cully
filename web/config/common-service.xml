@@ -7,6 +7,13 @@
   <object id="UserService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="UserServiceTarget"/>
   </object>
+
+  <object id="BizNotificationServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.BizNotificationService, ThinkInBio.CommonApp.BLL">
+    <property name="BizNotificationDao" ref="BizNotificationDao" />
+  </object>
+  <object id="BizNotificationService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="BizNotificationServiceTarget"/>
+  </object>
   
 </objects>
 

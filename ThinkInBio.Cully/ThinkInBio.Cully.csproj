@@ -50,6 +50,12 @@
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.CommonApp\ThinkInBio.CommonApp.csproj">
+      <Project>{5F6BF361-0265-433F-990E-351BBFA9EA1D}</Project>
+      <Name>ThinkInBio.CommonApp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

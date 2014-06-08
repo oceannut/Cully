@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
+
 namespace ThinkInBio.Cully
 {
 
@@ -12,12 +14,33 @@ namespace ThinkInBio.Cully
     public class Task
     {
 
+        #region events
+
+        internal event Action<long> IdChanged;
+
+        #endregion
+
         #region properties
 
+        private long id;
         /// <summary>
         /// 编号。
         /// </summary>
-        public long Id { get; set; }
+        public long Id
+        {
+            get { return id; }
+            set
+            {
+                if (id != value)
+                {
+                    id = value;
+                    if (IdChanged != null)
+                    {
+                        IdChanged(id);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 内容。
@@ -128,10 +151,15 @@ namespace ThinkInBio.Cully
         /// <param name="staff">指派的人员。</param>
         /// <param name="appointedDay">任务完成截止时间。</param>
         /// <param name="action">保存操作定义。</param>
-        public void Save(string staff,
+        public void Save(string user,
+            string staff,
             DateTime? appointedDay,
-            Action<Task> action)
+            Action<Task, BizNotification> action)
         {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
             if (string.IsNullOrWhiteSpace(this.Content))
             {
                 throw new InvalidOperationException("Content");
@@ -147,9 +175,12 @@ namespace ThinkInBio.Cully
             DateTime timeStamp = DateTime.Now;
             this.Creation = timeStamp;
             this.Modification = timeStamp;
+
+            BizNotification notification = BuildBizNotification(user, this.Staff);
+
             if (action != null)
             {
-                action(this);
+                action(this, notification);
             }
         }
 
@@ -159,17 +190,30 @@ namespace ThinkInBio.Cully
         /// <param name="staff">指派的人员。</param>
         /// <param name="appointedDay">任务完成截止时间。</param>
         /// <param name="action">更新操作定义。</param>
-        public void Appoint(string staff, 
-            DateTime? appointedDay, 
-            Action<Task> action)
+        public void Appoint(string user,
+            string staff, 
+            DateTime? appointedDay,
+            Action<Task, BizNotification> action)
         {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
             if (this.Id == 0 || this.ActivityId == 0)
             {
                 throw new InvalidOperationException();
             }
             this.Staff = staff;
             this.AppointedDay = appointedDay;
-            Update(action);
+            DateTime timeStamp = DateTime.Now;
+            this.Modification = timeStamp;
+
+            BizNotification notification = BuildBizNotification(user, this.Staff);
+
+            if (action != null)
+            {
+                action(this, notification);
+            }
         }
 
         /// <summary>
@@ -421,6 +465,18 @@ namespace ThinkInBio.Cully
             {
                 action(activity, this);
             }
+        }
+
+        private BizNotification BuildBizNotification(string sender, string receiver)
+        {
+            BizNotification notification = null;
+            if (!string.IsNullOrWhiteSpace(receiver)
+                && sender != receiver)
+            {
+                notification = new BizNotification(sender, receiver);
+                notification.Resource = "task";
+            }
+            return notification;
         }
 
         #endregion
