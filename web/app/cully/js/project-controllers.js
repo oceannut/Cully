@@ -190,45 +190,6 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityDetailsCtrl', ['$scope', '$routeParams', 'currentUser', 'ActivityService', 'ParticipantService',
-            function ($scope, $routeParams, currentUser, ActivityService, ParticipantService) {
-
-                $scope.addTaskPanelDisplay = 'none';
-                $scope.task = {};
-
-                function clear() {
-                    $scope.task.content = '';
-                }
-
-                $scope.init = function () {
-                    ParticipantService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
-                        .$promise
-                            .then(function (result) {
-                                $scope.participants = result;
-                            }, function (error) {
-                                console.log("error: " + error);
-                            });
-                }
-
-                $scope.toggleAddTaskPanelVisibible = function () {
-                    if ($scope.addTaskPanelDisplay == 'none') {
-                        $scope.addTaskPanelDisplay = '';
-                    } else {
-                        $scope.addTaskPanelDisplay = 'none';
-                        clear();
-                    }
-                }
-
-                $scope.save = function () {
-                    console.log($scope.task.content + " " + $scope.task.staff + " " + $scope.task.appointedDay);
-                }
-
-                $scope.cancel = function () {
-                    $scope.addTaskPanelDisplay = 'none';
-                    clear();
-                }
-
-            } ])
         .controller('ProjectActivityAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectActivityService', 'UserListService',
             function ($scope, $location, currentUser, ProjectActivityService, UserListService) {
 

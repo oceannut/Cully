@@ -49,11 +49,11 @@
         <ol class="list-unstyled">
             <li ng-repeat="item in activityList">
                 <h4>
-                    <a href="#">{{item.Name}}</a></h4>
+                    <a href="#">{{item.Name}} - {{item.Id}}</a></h4>
                 <span class="pull-right">{{item.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
                 <p>
                     {{item.Description}}</p>
-                <div ng-include="'partials/activity-details.htm'"></div>
+                <div ng-include="'partials/task-list-details.htm'"></div>
                 <hr />
             </li>
         </ol>

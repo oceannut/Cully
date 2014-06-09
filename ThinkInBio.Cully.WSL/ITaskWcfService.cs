@@ -22,6 +22,12 @@ namespace ThinkInBio.Cully.WSL
             ResponseFormat = WebMessageFormat.Json)]
         Task SaveTask(string user, string activityId, string staff, string content, string appointedDay);
 
+        [OperationContract]
+        [WebGet(UriTemplate = "/{user}/task/{activityId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Task[] GetTaskList(string user, string activityId);
+
     }
 
 }

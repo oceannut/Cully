@@ -11,6 +11,12 @@ namespace ThinkInBio.Cully.DAL
 
     public interface ITaskDao : IDao<Task>
     {
+
+        IList<Task> GetTaskList(DateTime? startTime, DateTime? endTime, 
+            long activityId, string staff, 
+            bool asc,
+            int startRowIndex, int maxRowsCount);
+
     }
 
 }

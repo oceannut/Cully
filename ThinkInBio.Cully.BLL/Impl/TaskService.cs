@@ -31,6 +31,16 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
+        public IList<Task> GetTaskList(long activityId)
+        {
+            if (activityId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return TaskDao.GetTaskList(null, null, activityId, null, false, 0, int.MaxValue);
+        }
+
     }
 
 }

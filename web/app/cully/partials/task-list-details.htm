@@ -1,4 +1,4 @@
-﻿<div ng-controller="ActivityDetailsCtrl" ng-init="init()">
+﻿<div ng-controller="TaskCtrl" ng-init="init()">
     <div class="container">
         <a href="javascript:void(0)" ng-click="toggleAddTaskPanelVisibible()">添加任务</a>
         <div class="well well-sm" style="display: {{addTaskPanelDisplay}};">
@@ -26,5 +26,11 @@
             </div>
             </form>
         </div>
+        <ol class="list-unstyled">
+            <li ng-repeat="item in taskList">
+                {{item.Content}}
+                <span class="pull-right">{{item.Staff}} - {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+            </li>
+        </ol>
     </div>
 </div>

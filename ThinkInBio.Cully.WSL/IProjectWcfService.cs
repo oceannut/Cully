@@ -51,7 +51,7 @@ namespace ThinkInBio.Cully.WSL
         /// <param name="user">项目参与人，一般要求为登录验证通过的用户。</param>
         /// <returns>返回项目集合。</returns>
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/project/top/{count}",
+        [WebGet(UriTemplate = "/{user}/project/top/{count}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Project[] GetTopProjectList(string user, string count);

@@ -9,6 +9,14 @@
   <object id="ProjectService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="ProjectServiceTarget"/>
   </object>
+
+  <object id="TaskServiceTarget" type="ThinkInBio.Cully.BLL.Impl.TaskService, ThinkInBio.Cully.BLL">
+    <property name="TaskDao" ref="TaskDao" />
+    <property name="BizNotificationService" ref="BizNotificationService" />
+  </object>
+  <object id="TaskService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="TaskServiceTarget"/>
+  </object>
   
 </objects>
 

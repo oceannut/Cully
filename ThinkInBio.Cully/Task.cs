@@ -50,7 +50,7 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 活动编号。
         /// </summary>
-        public long ActivityId { get; internal set; }
+        public long ActivityId { get; set; }
 
         /// <summary>
         /// 提示任务是否正在进行。
@@ -65,12 +65,12 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 指派的人员。
         /// </summary>
-        public string Staff { get; internal set; }
+        public string Staff { get; set; }
 
         /// <summary>
         /// 约定任务完成的截止日期。
         /// </summary>
-        public DateTime? AppointedDay { get; internal set; }
+        public DateTime? AppointedDay { get; set; }
 
         /// <summary>
         /// 创建时间。
@@ -156,7 +156,8 @@ namespace ThinkInBio.Cully
             DateTime? appointedDay,
             Action<Task, BizNotification> action)
         {
-            if (string.IsNullOrWhiteSpace(user))
+            if (string.IsNullOrWhiteSpace(user)
+                || string.IsNullOrWhiteSpace(staff))
             {
                 throw new ArgumentNullException();
             }
@@ -195,7 +196,8 @@ namespace ThinkInBio.Cully
             DateTime? appointedDay,
             Action<Task, BizNotification> action)
         {
-            if (string.IsNullOrWhiteSpace(user))
+            if (string.IsNullOrWhiteSpace(user)
+                || string.IsNullOrWhiteSpace(staff))
             {
                 throw new ArgumentNullException();
             }
@@ -470,11 +472,16 @@ namespace ThinkInBio.Cully
         private BizNotification BuildBizNotification(string sender, string receiver)
         {
             BizNotification notification = null;
-            if (!string.IsNullOrWhiteSpace(receiver)
-                && sender != receiver)
+            if (sender != receiver)
             {
+                //只有发送人和接收人不是同一人，才创建通知。
                 notification = new BizNotification(sender, receiver);
                 notification.Resource = "task";
+                this.IdChanged += (e) =>
+                {
+                    notification.ResourceId = e.ToString();
+                };
+                notification.Send(null);
             }
             return notification;
         }

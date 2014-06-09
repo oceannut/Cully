@@ -4,11 +4,12 @@ define(function (require) {
 
     require('route');
     require('./project-controllers');
+    require('./task-controllers');
     require('../../../static/js/utils');
     require('../../../static/js/configs');
     require('../../common/js/user-services');
 
-    angular.module('CullyApp', ['ngRoute', 'project.controllers', 'utils', 'configs', 'user.services'])
+    angular.module('CullyApp', ['ngRoute', 'project.controllers', 'task.controllers', 'utils', 'configs', 'user.services'])
         .config(['$routeProvider', function ($routeProvider) {
 
             $routeProvider.

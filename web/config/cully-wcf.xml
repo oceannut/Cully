@@ -4,6 +4,10 @@
   <object id="ProjectWcfService" type="ThinkInBio.Cully.WSL.Impl.ProjectWcfService, ThinkInBio.Cully.WSL" singleton="false">
     <property name="ProjectService" ref="ProjectService" />
   </object>
+
+  <object id="TaskWcfService" type="ThinkInBio.Cully.WSL.Impl.TaskWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="TaskService" ref="TaskService" />
+  </object>
   
 </objects>
 

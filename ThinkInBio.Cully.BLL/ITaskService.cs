@@ -13,6 +13,8 @@ namespace ThinkInBio.Cully.BLL
 
         void SaveTask(Task task, BizNotification notification);
 
+        IList<Task> GetTaskList(long activityId);
+
     }
 
 }

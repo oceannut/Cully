@@ -74,6 +74,63 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public IList<Task> GetTaskList(DateTime? startTime, DateTime? endTime, 
+            long activityId, string staff, 
+            bool asc, 
+            int startRowIndex, int maxRowsCount)
+        {
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetList<Task>(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select id,content,activityId,isUnderway,isCompleted,staff,appointedDay,creation,modification from cyTask ");
+                    BuildSql(sql, parameters, startTime, endTime, activityId, staff);
+                    sql.Append(" order by modification ");
+                    if (!asc)
+                    {
+                        sql.Append(" desc ");
+                    }
+                    if (maxRowsCount < int.MaxValue)
+                    {
+                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(startRowIndex + maxRowsCount);
+                    }
+                    command.CommandText = sql.ToString();
+                },
+                parameters,
+                (reader) =>
+                {
+                    return Populate(reader);
+                });
+        }
+
+        private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
+            DateTime? startTime, DateTime? endTime, 
+            long activityId, string staff)
+        {
+            if (startTime.HasValue && startTime.Value != DateTime.MinValue
+                    && endTime.HasValue && endTime.Value != DateTime.MinValue
+                    && endTime.Value > startTime.Value)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" modification between @startTime and @endTime ");
+                parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
+                parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
+            }
+            if (activityId > 0)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" activityId=@activityId ");
+                parameters.Add(new KeyValuePair<string, object>("activityId", activityId));
+            }
+            if (!string.IsNullOrWhiteSpace(staff))
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" staff=@staff ");
+                parameters.Add(new KeyValuePair<string, object>("staff", staff));
+            }
+        }
+
         private Task Populate(IDataReader reader)
         {
             Task entity = new Task(reader.GetInt64(0),
