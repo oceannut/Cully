@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ILogService.cs" />
+    <Compile Include="Impl\LogService.cs" />
     <Compile Include="Impl\ProjectService.cs" />
     <Compile Include="Impl\TaskService.cs" />
     <Compile Include="IProjectService.cs" />

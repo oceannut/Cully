@@ -43,14 +43,45 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 创建时间。
         /// </summary>
-        public DateTime Creation { get; internal set; }
+        public DateTime Creation { get; set; }
 
         /// <summary>
         /// 修改时间。
         /// </summary>
-        public DateTime Modification { get; internal set; }
+        public DateTime Modification { get; set; }
 
         #endregion
+
+        public Log()
+        {
+        }
+
+        public Log(DateTime timeStamp)
+        {
+            this.StartTime = timeStamp;
+        }
+
+        public void Save(Action<Log> action)
+        {
+            JustTimeSpan();
+            DateTime now = DateTime.Now;
+            this.Creation = now;
+            this.Modification = now;
+            if (action != null)
+            {
+                action(this);
+            }
+        }
+
+        private void JustTimeSpan()
+        {
+            if (this.StartTime != DateTime.MinValue
+                && this.EndTime.HasValue
+                && this.StartTime >= this.EndTime.Value)
+            {
+                throw new InvalidOperationException();
+            }
+        }
 
     }
 }

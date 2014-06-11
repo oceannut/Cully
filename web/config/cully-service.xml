@@ -17,6 +17,13 @@
   <object id="TaskService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="TaskServiceTarget"/>
   </object>
+
+  <object id="LogServiceTarget" type="ThinkInBio.Cully.BLL.Impl.LogService, ThinkInBio.Cully.BLL">
+    <property name="LogDao" ref="LogDao" />
+  </object>
+  <object id="LogService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="LogServiceTarget"/>
+  </object>
   
 </objects>
 

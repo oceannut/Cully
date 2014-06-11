@@ -246,15 +246,15 @@ namespace Test.ThinkInBio.Cully.MySQL
 
             DateTime endTime = DateTime.Now;
             DateTime startTime = endTime.AddSeconds(-10);
-            int count = projectDao.GetCountByParticipant(null, startTime, endTime);
+            int count = projectDao.GetCountByParticipant(null, startTime, endTime, false);
             Assert.AreEqual(6, count);
-            count = projectDao.GetCountByParticipant("me", startTime, endTime);
+            count = projectDao.GetCountByParticipant("me", startTime, endTime, false);
             Assert.AreEqual(0, count);
-            count = projectDao.GetCountByParticipant("you", startTime, endTime);
+            count = projectDao.GetCountByParticipant("you", startTime, endTime, false);
             Assert.AreEqual(2, count);
-            IList<Project> list = projectDao.GetListByParticipant("me", startTime, endTime, false, 0, 3);
+            IList<Project> list = projectDao.GetListByParticipant("me", startTime, endTime, false, false, 0, 3);
             Assert.AreEqual(0, list.Count);
-            list = projectDao.GetListByParticipant("you", startTime, endTime, false, 0, 3);
+            list = projectDao.GetListByParticipant("you", startTime, endTime, false, false, 0, 3);
             Assert.AreEqual(2, list.Count);
             Console.WriteLine("================you list==============");
             foreach (Project item in list)

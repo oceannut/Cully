@@ -17,7 +17,7 @@ define(function (require) {
         .factory('UserListService', ['$resource', 'wcfApp', 'userWcfService',
             function ($resource, wcfApp, userWcfService) {
                 return $resource(wcfApp + userWcfService + '/user/', {}, {
-                    query: { method: 'GET', params: {}, isArray: true }
+                    query: { method: 'GET', params: { }, isArray: true }
                 });
             } ]);
 

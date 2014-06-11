@@ -3,13 +3,23 @@
 define(function (require) {
 
     require('route');
+    require('./biz-notification-controllers');
     require('./project-controllers');
     require('./task-controllers');
+    require('./log-controllers');
     require('../../../static/js/utils');
     require('../../../static/js/configs');
     require('../../common/js/user-services');
 
-    angular.module('CullyApp', ['ngRoute', 'project.controllers', 'task.controllers', 'utils', 'configs', 'user.services'])
+    angular.module('CullyApp', 
+        ['ngRoute', 
+            'bizNotification.controllers', 
+            'project.controllers', 
+            'task.controllers', 
+            'log.controllers', 
+            'utils', 
+            'configs', 
+            'user.services'])
         .config(['$routeProvider', function ($routeProvider) {
 
             $routeProvider.
@@ -32,17 +42,27 @@ define(function (require) {
                     templateUrl: 'partials/project-activity-add.htm',
                     controller: 'ProjectActivityAddCtrl'
                 }).
+                when('/log-summary/', {
+                    templateUrl: 'partials/log-summary.htm',
+                    controller: 'LogSummaryCtrl'
+                }).
+                when('/log-add/', {
+                    templateUrl: 'partials/log-add.htm',
+                    controller: 'LogAddCtrl'
+                }).
                 otherwise({
-                    redirectTo: '/project-summary/'
+                    redirectTo: '/overview/'
                 });
 
         } ])
         .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil', 'UserService',
             function ($scope, currentUser, urlUtil, UserService) {
 
-                currentUser.username = urlUtil.getUrlParam('username');
+                $scope.init = function () {
 
-                UserService.get({ 'username': currentUser.username })
+                    currentUser.username = urlUtil.getUrlParam('username');
+
+                    UserService.get({ 'username': currentUser.username })
                         .$promise
                             .then(function (result) {
                                 currentUser.name = result.Name;
@@ -50,6 +70,9 @@ define(function (require) {
                             }, function (error) {
                                 console.log("error: " + error);
                             });
+
+                    
+                }
 
             } ]);
 

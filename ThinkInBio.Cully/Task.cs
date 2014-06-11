@@ -476,6 +476,7 @@ namespace ThinkInBio.Cully
             {
                 //只有发送人和接收人不是同一人，才创建通知。
                 notification = new BizNotification(sender, receiver);
+                notification.Content = this.Content;
                 notification.Resource = "task";
                 this.IdChanged += (e) =>
                 {

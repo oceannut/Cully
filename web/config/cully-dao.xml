@@ -16,6 +16,10 @@
   <object id="TaskDao" type="ThinkInBio.Cully.MySQL.TaskDao, ThinkInBio.Cully.MySQL">
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
+
+  <object id="LogDao" type="ThinkInBio.Cully.MySQL.LogDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
   
 </objects>
 

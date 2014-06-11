@@ -51,9 +51,10 @@ namespace Test.ThinkInBio.Cully.MySQL
 
             Task task = new Task(activity.Id);
             task.Content = "干活去";
-            task.Save("you", DateTime.Now, (e) =>
+            DateTime? d = DateTime.Now;
+            task.Save("me", "you", d, (e1, e2) =>
             {
-                taskDao.Save(e);
+                taskDao.Save(e1);
             });
             Assert.IsTrue(task.Id > 0);
             Assert.IsFalse(task.IsUnderway);

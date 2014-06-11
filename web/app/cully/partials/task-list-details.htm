@@ -29,7 +29,7 @@
         <ol class="list-unstyled">
             <li ng-repeat="item in taskList">
                 {{item.Content}}
-                <span class="pull-right">{{item.Staff}} - {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                <span class="badge">{{item.Staff}} - {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
             </li>
         </ol>
     </div>

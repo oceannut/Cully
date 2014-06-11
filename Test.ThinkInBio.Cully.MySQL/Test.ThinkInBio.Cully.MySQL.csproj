@@ -47,12 +47,17 @@
   <ItemGroup>
     <Compile Include="ActivityDaoUnitTest.cs" />
     <Compile Include="Configs.cs" />
+    <Compile Include="LogDaoUnitTest.cs" />
     <Compile Include="ParticipantDaoUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectDaoUnitTest.cs" />
     <Compile Include="TaskDaoUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.CommonApp\ThinkInBio.CommonApp.csproj">
+      <Project>{5F6BF361-0265-433F-990E-351BBFA9EA1D}</Project>
+      <Name>ThinkInBio.CommonApp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CommonApp\ThinkInBio.Common\ThinkInBio.Common.csproj">
       <Project>{375D399D-647F-4C17-A152-1A8F54EED356}</Project>
       <Name>ThinkInBio.Common</Name>

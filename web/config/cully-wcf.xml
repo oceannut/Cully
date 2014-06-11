@@ -8,6 +8,10 @@
   <object id="TaskWcfService" type="ThinkInBio.Cully.WSL.Impl.TaskWcfService, ThinkInBio.Cully.WSL" singleton="false">
     <property name="TaskService" ref="TaskService" />
   </object>
+
+  <object id="LogWcfService" type="ThinkInBio.Cully.WSL.Impl.LogWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="LogService" ref="LogService" />
+  </object>
   
 </objects>
 
