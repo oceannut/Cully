@@ -113,7 +113,7 @@ namespace ThinkInBio.Cully.MySQL
                     sql.Append(" order by t.modification desc ");
                     if (maxRowsCount < int.MaxValue)
                     {
-                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(startRowIndex + maxRowsCount);
+                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(maxRowsCount);
                     }
                     command.CommandText = sql.ToString();
                 },
@@ -171,7 +171,7 @@ namespace ThinkInBio.Cully.MySQL
                     }
                     if (maxRowsCount < int.MaxValue)
                     {
-                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(startRowIndex + maxRowsCount);
+                        sql.Append(" limit ").Append(startRowIndex).Append(",").Append(maxRowsCount);
                     }
                     command.CommandText = sql.ToString();
                 },

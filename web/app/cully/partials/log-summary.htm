@@ -42,14 +42,14 @@
                         <li ng-repeat="item in logList">
                             <p>
                                 {{item.Content}}</p>
-                            <span>{{item.Creator}}</span> <span class="pull-right">{{item.StartTime | jsonDateFormat
+                            <span>{{item.CreatorName}}</span> <span class="pull-right">{{item.StartTime | jsonDateFormat
                                 | date:'yyyy-MM-dd'}}</span>
                             <hr />
                         </li>
                     </ol>
                     <ul class="pager">
-                        <li><a href="#">上一页</a></li>
-                        <li><a href="#">下一页</a></li>
+                        <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
+                        <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
                     </ul>
                 </div>
             </div>

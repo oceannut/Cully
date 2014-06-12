@@ -66,7 +66,38 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Log[] GetLogList4User(string user, string date, string span, string start, string count)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            DateTime startTime, endTime;
+            DateTime d = DateTime.Parse(date);
+            int spanInt = Convert.ToInt32(span);
+            if (spanInt < 0)
+            {
+                startTime = d.AddDays(spanInt + 1);
+                endTime = new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
+            }
+            else
+            {
+                startTime = new DateTime(d.Year, d.Month, d.Day);
+                endTime = d.AddDays(spanInt).AddSeconds(-1);
+            }
+            int startInt = Convert.ToInt32(start);
+            int countInt = Convert.ToInt32(count);
+            IList<Log> list = LogService.GetLogList(user, startTime, endTime, startInt, countInt);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public Log[] GetLogList(string start, string count)
@@ -86,7 +117,30 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Log[] GetLogList(string date, string span, string start, string count)
         {
-            throw new NotImplementedException();
+            DateTime startTime, endTime;
+            DateTime d = DateTime.Parse(date);
+            int spanInt = Convert.ToInt32(span);
+            if (spanInt < 0)
+            {
+                startTime = d.AddDays(spanInt + 1);
+                endTime = new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
+            }
+            else
+            {
+                startTime = new DateTime(d.Year, d.Month, d.Day);
+                endTime = d.AddDays(spanInt).AddSeconds(-1);
+            }
+            int startInt = Convert.ToInt32(start);
+            int countInt = Convert.ToInt32(count);
+            IList<Log> list = LogService.GetLogList(startTime, endTime, startInt, countInt);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }
