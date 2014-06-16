@@ -17,10 +17,18 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/log/{date}/",
+            UriTemplate = "/{user}/log/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Log SaveLog(string user, string date, string content);
+        Log SaveLog(string user, string date, string content, string tag1, string tag2, string tag3);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/log/{id}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Log UpdateLog(string user, string id, string date, string content, string tag1, string tag2, string tag3);
 
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/log/range/{start}/{count}/",
@@ -45,6 +53,28 @@ namespace ThinkInBio.Cully.WSL
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Log[] GetLogList(string date, string span, string start, string count);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/log/{logId}/comment/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Comment SaveComment(string user, string logId, string content);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/comment/{id}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Comment UpdateComment(string user, string id, string content);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/{user}/log/{logId}/comment/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Comment[] GetCommentList(string user, string logId);
 
     }
 }

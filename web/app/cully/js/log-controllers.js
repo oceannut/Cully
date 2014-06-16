@@ -3,18 +3,22 @@
 define(function (require) {
 
     require('angular');
+    require('textAngular-sanitize');
+    require('textAngular');
     require('../../../static/js/configs');
     require('../../../static/js/filters');
     require('../../../static/js/utils');
     require('./log-services');
+    require('./cache');
 
-    angular.module('log.controllers', ['configs', 'filters', 'utils', 'log.services'])
+    angular.module('log.controllers', ['textAngular', 'configs', 'filters', 'utils', 'log.services', 'cache'])
+        .value('logCache', { 'logList': [] })
         .controller('LogSummaryCtrl', ['$scope', '$location', 'currentUser', 'dateUtil',
             'LogListService4User', 'LogListService4UserByDate', 'LogListService', 'LogListServiceByDate',
-            'UserListService',
+            'userCache', 'logCache',
             function ($scope, $location, currentUser, dateUtil,
                 LogListService4User, LogListService4UserByDate, LogListService, LogListServiceByDate,
-                UserListService) {
+                userCache, logCache) {
 
                 var pageSize = 20;
 
@@ -27,16 +31,8 @@ define(function (require) {
                     $scope.nextBtnClass = '';
                     $scope.currentPage = -1;
 
-                    UserListService.query()
-                        .$promise
-                            .then(function (result) {
-                                $scope.users = result;
-                            }, function (error) {
-                                console.log("error: " + error);
-                            })
-                            .then(function () {
-                                $scope.query();
-                            });
+                    $scope.users = userCache.userList;
+                    $scope.query();
                 }
 
                 $scope.createLog = function () {
@@ -64,6 +60,14 @@ define(function (require) {
                     }
                     $scope.currentPage++;
                     getLogList();
+                }
+
+                $scope.remark = function (id) {
+                    $location.path('/log-details/' + id + '/');
+                }
+
+                $scope.edit = function (id) {
+                    $location.path('/log-edit/' + id + '/');
                 }
 
                 function getLogList() {
@@ -125,9 +129,18 @@ define(function (require) {
                         for (var i = 0; i < result.length; i++) {
                             var item = result[i];
                             item.CreatorName = getCreatorName(item.Creator);
+                            if (item.Tags != null && item.Tags != '') {
+                                item.TagList = item.Tags.split(',');
+                            }
+                            if (item.Creator == currentUser.username) {
+                                item.EditBtnVisible = '';
+                            } else {
+                                item.EditBtnVisible = 'none';
+                            }
                             $scope.logList.push(item);
                         }
                         $scope.nextBtnClass = '';
+
                     } else {
                         if ($scope.currentPage > 0) {
                             $scope.currentPage--;
@@ -141,6 +154,7 @@ define(function (require) {
                     } else {
                         $scope.prevBtnClass = '';
                     }
+                    logCache.logList = $scope.logList;
                 }
 
                 function getCreatorName(creator) {
@@ -160,18 +174,90 @@ define(function (require) {
 
                 $scope.init = function () {
                     $scope.log = {};
+                    //$scope.disabled = false;
+                }
+
+                $scope.save = function () {
+                    if ($scope.log.startTime != undefined && $scope.log.startTime != ''
+                                            && $scope.log.content != undefined && $scope.log.content != '') {
+                        LogService.save({ 'user': currentUser.username,
+                            'date': $scope.log.startTime,
+                            'content': $scope.log.content,
+                            'tag1': $scope.log.tag1,
+                            'tag2': $scope.log.tag2,
+                            'tag3': $scope.log.tag3
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $location.path('/log-summary/');
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                    }
+                }
+
+                $scope.cancel = function () {
+                    history.back();
+                }
+
+            } ])
+        .controller('LogEditCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'dateUtil', 'LogUpdateService', 'logCache',
+            function ($scope, $location, $routeParams, currentUser, dateUtil, LogUpdateService, logCache) {
+
+                $scope.init = function () {
+                    var result = null;
+                    if (logCache.logList != null) {
+                        for (var i in logCache.logList) {
+                            if ($routeParams.id == logCache.logList[i].Id) {
+                                result = logCache.logList[i];
+                                break;
+                            }
+                        }
+                    }
+                    if (result != null) {
+                        $scope.log = { 'content': result.Content };
+                        var d = dateUtil.jsonToDate(result.StartTime);
+                        if (d != null) {
+                            $scope.log.startTime = dateUtil.formatDateByYMD(d);
+                        }
+                        var tags = result.Tags;
+                        if (tags != undefined && tags != null) {
+                            var tagArray = tags.split(',');
+                            if (tagArray.length > 0) {
+                                $scope.log.tag1 = tagArray[0];
+                            }
+                            if (tagArray.length > 1) {
+                                $scope.log.tag2 = tagArray[1];
+                            }
+                            if (tagArray.length > 2) {
+                                $scope.log.tag3 = tagArray[2];
+                            }
+                        }
+                    }
                 }
 
                 $scope.save = function () {
                     if ($scope.log.startTime != undefined && $scope.log.startTime != ''
                         && $scope.log.content != undefined && $scope.log.content != '') {
-                        LogService.save({ 'user': currentUser.username,
+                        LogUpdateService.update({ 'user': currentUser.username,
+                            'id': $routeParams.id,
                             'date': $scope.log.startTime,
-                            'content': $scope.log.content
+                            'content': $scope.log.content,
+                            'tag1': $scope.log.tag1,
+                            'tag2': $scope.log.tag2,
+                            'tag3': $scope.log.tag3
                         })
                             .$promise
                                 .then(function (result) {
-                                    $location.path('/log-summary/');
+                                    if (logCache.logList != null) {
+                                        for (var i in logCache.logList) {
+                                            if ($routeParams.id == logCache.logList[i].Id) {
+                                                logCache.logList[i] = result;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    $location.path('/log-details/' + $routeParams.id + '/');
                                 }, function (error) {
                                     console.log("error: " + error);
                                 });
@@ -179,6 +265,82 @@ define(function (require) {
                 }
 
                 $scope.cancel = function () {
+                    history.back();
+                }
+
+            } ])
+        .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'LogService', 'CommentService', 'CommentUpdateService', 'logCache',
+            function ($scope, $location, $routeParams, currentUser, LogService, CommentService, CommentUpdateService, logCache) {
+
+                $scope.init = function () {
+                    $scope.commentList = [];
+                    $scope.comment = {};
+                    if (logCache.logList != null) {
+                        for (var i in logCache.logList) {
+                            if ($routeParams.id == logCache.logList[i].Id) {
+                                $scope.log = logCache.logList[i];
+                                break;
+                            }
+                        }
+                    }
+                    CommentService.query({ 'user': currentUser.username,
+                        'logId': $scope.log.Id
+                    })
+                        .$promise
+                            .then(function (result) {
+                                $scope.commentList = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                    //window.location.hash = '#addCommentDiv';
+                }
+
+                $scope.saveComment = function () {
+                    if ($scope.comment.content != undefined && $scope.comment.content != '') {
+                        if ($scope.comment.id != undefined && $scope.comment.id != null) {
+                            CommentUpdateService.update({ 'user': currentUser.username,
+                                'id': $scope.comment.id,
+                                'content': $scope.comment.content
+                            })
+                            .$promise
+                                .then(function (result) {
+                                    for (var i in $scope.commentList) {
+                                        if ($scope.commentList[i].Id == result.Id) {
+                                            $scope.commentList[i] = result;
+                                        }
+                                    }
+                                    $scope.clearComment();
+                                }, function (error) {
+                                    console.log("error: " + error);
+                                });
+                        } else {
+                            CommentService.save({ 'user': currentUser.username,
+                                'logId': $scope.log.Id,
+                                'content': $scope.comment.content
+                            })
+                            .$promise
+                                .then(function (result) {
+                                    $scope.commentList.push(result);
+                                    $scope.clearComment();
+                                }, function (error) {
+                                    console.log("error: " + error);
+                                });
+                        }
+                    }
+                }
+
+                $scope.editComment = function (comment) {
+                    $scope.comment.id = comment.Id;
+                    $scope.comment.content = comment.Content;
+                    console.log($scope.comment);
+                    document.getElementsByName('editCommentPanel')[0].scrollIntoView(true);
+                }
+
+                $scope.clearComment = function () {
+                    $scope.comment.content = '';
+                }
+
+                $scope.goback = function () {
                     $location.path('/log-summary/');
                 }
 

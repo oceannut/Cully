@@ -20,6 +20,10 @@
   <object id="LogDao" type="ThinkInBio.Cully.MySQL.LogDao, ThinkInBio.Cully.MySQL">
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
+
+  <object id="CommentDao" type="ThinkInBio.Cully.MySQL.CommentDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
   
 </objects>
 

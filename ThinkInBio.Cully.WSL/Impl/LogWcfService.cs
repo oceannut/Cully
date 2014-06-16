@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.Common.Exceptions;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -13,8 +14,9 @@ namespace ThinkInBio.Cully.WSL.Impl
     {
 
         internal ILogService LogService { get; set; }
+        internal ICommentService CommentService { get; set; }
 
-        public Log SaveLog(string user, string date, string content)
+        public Log SaveLog(string user, string date, string content, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -29,14 +31,80 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new ArgumentNullException();
             }
             DateTime d = DateTime.Parse(date);
-
-            Log log = new Log(d);
-            log.Content = content;
-            log.Creator = user;
-            log.Save((e) =>
+            List<string> tags = new List<string>();
+            if (!string.IsNullOrWhiteSpace(tag1))
             {
-                LogService.SaveLog(e);
-            });
+                tags.Add(tag1);
+            }
+            if (!string.IsNullOrWhiteSpace(tag2))
+            {
+                tags.Add(tag2);
+            }
+            if (!string.IsNullOrWhiteSpace(tag3))
+            {
+                tags.Add(tag3);
+            }
+
+            Log log = new Log(d, content, user);
+            if (tags.Count > 0)
+            {
+                log.AddTag(tags);
+            }
+            log.Save(
+                (e) =>
+                {
+                    LogService.SaveLog(e);
+                });
+
+            return log;
+        }
+
+        public Log UpdateLog(string user, string id, string date, string content, string tag1, string tag2, string tag3)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException();
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Log log = LogService.GetLog(Convert.ToInt64(id));
+            if (log == null)
+            {
+                throw new ObjectNotFoundException(id);
+            }
+            DateTime d = DateTime.Parse(date);
+            List<string> tags = new List<string>();
+            if (!string.IsNullOrWhiteSpace(tag1))
+            {
+                tags.Add(tag1);
+            }
+            if (!string.IsNullOrWhiteSpace(tag2))
+            {
+                tags.Add(tag2);
+            }
+            if (!string.IsNullOrWhiteSpace(tag3))
+            {
+                tags.Add(tag3);
+            }
+            log.Content = content;
+            log.StartTime = d;
+            log.AddTag(tags);
+            log.Update(
+                (e) =>
+                {
+                    LogService.UpdateLog(e);
+                });
 
             return log;
         }
@@ -133,6 +201,87 @@ namespace ThinkInBio.Cully.WSL.Impl
             int startInt = Convert.ToInt32(start);
             int countInt = Convert.ToInt32(count);
             IList<Log> list = LogService.GetLogList(startTime, endTime, startInt, countInt);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Comment SaveComment(string user, string logId, string content)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(logId) || string.IsNullOrWhiteSpace(content))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Log log = LogService.GetLog(Convert.ToInt64(logId));
+            if (log == null)
+            {
+                throw new ObjectNotFoundException(logId);
+            }
+            return log.Remark(user, content,
+                (e1, e2, e3) =>
+                {
+                    LogService.UpdateLog4Comment(e1, e2, e3);
+                });
+        }
+
+        public Comment UpdateComment(string user, string id, string content)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Comment comment = CommentService.GetComment(Convert.ToInt64(id));
+            if (comment == null)
+            {
+                throw new ObjectNotFoundException(id);
+            }
+            comment.Content = content;
+            comment.Update(
+                (e) =>
+                {
+                    CommentService.UpdateComment(comment);
+                });
+            return comment;
+        }
+
+        public Comment[] GetCommentList(string user, string logId)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(logId))
+            {
+                throw new ArgumentNullException();
+            }
+            IList<Comment> list = LogService.GetCommentList(Convert.ToInt64(logId));
             if (list != null)
             {
                 return list.ToArray();

@@ -31,11 +31,12 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                  (command) =>
                  {
-                     command.CommandText = @"insert into cyLog (id,content,startTime,endTime,creator,creation,modification) 
-                                                values (NULL,@content,@startTime,@endTime,@creator,@creation,@modification)";
+                     command.CommandText = @"insert into cyLog (id,content,startTime,endTime,tags,creator,creation,modification) 
+                                                values (NULL,@content,@startTime,@endTime,@tags,@creator,@creation,@modification)";
                      command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
                      command.Parameters.Add(DbFactory.CreateParameter("startTime", entity.StartTime));
                      command.Parameters.Add(DbFactory.CreateParameter("endTime", entity.EndTime));
+                     command.Parameters.Add(DbFactory.CreateParameter("tags", entity.Tags));
                      command.Parameters.Add(DbFactory.CreateParameter("creator", entity.Creator));
                      command.Parameters.Add(DbFactory.CreateParameter("creation", entity.Creation));
                      command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
@@ -48,7 +49,31 @@ namespace ThinkInBio.Cully.MySQL
 
         public override bool Update(Log entity)
         {
-            return base.Update(entity);
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"update cyLog 
+                                                set content=@content,startTime=@startTime,endTime=@endTime,tags=@tags 
+                                                where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
+                    command.Parameters.Add(DbFactory.CreateParameter("startTime", entity.StartTime));
+                    command.Parameters.Add(DbFactory.CreateParameter("endTime", entity.EndTime));
+                    command.Parameters.Add(DbFactory.CreateParameter("tags", entity.Tags));
+                    command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
+                });
+        }
+
+        public bool Update4CommentCount(long id, int count)
+        {
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"update cyLog 
+                                                set commentCount=@commentCount 
+                                                where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("commentCount", count));
+                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+                });
         }
 
         public override bool Delete(Log entity)
@@ -67,7 +92,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Log>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,content,startTime,endTime,creator,creation,modification from cyLog 
+                    command.CommandText = @"select id,content,startTime,endTime,tags,commentCount,creator,creation,modification from cyLog 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -98,7 +123,7 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select t.id,t.content,t.startTime,t.endTime,t.creator,t.creation,t.modification from cyLog t ");
+                    sql.Append("select t.id,t.content,t.startTime,t.endTime,t.tags,t.commentCount,t.creator,t.creation,t.modification from cyLog t ");
                     BuildSql(sql, parameters, user, startTime, endTime);
                     sql.Append(" order by t.startTime desc ");
                     if (maxRowsCount < int.MaxValue)
@@ -141,9 +166,11 @@ namespace ThinkInBio.Cully.MySQL
             log.Content = reader.GetString(1);
             log.StartTime = reader.GetDateTime(2);
             log.EndTime = reader.IsDBNull(3) ? new DateTime?() : reader.GetDateTime(3);
-            log.Creator = reader.GetString(4);
-            log.Creation = reader.GetDateTime(5);
-            log.Modification = reader.GetDateTime(6);
+            log.Tags = reader.IsDBNull(4) ? null : reader.GetString(4);
+            log.CommentCount = reader.GetInt32(5);
+            log.Creator = reader.GetString(6);
+            log.Creation = reader.GetDateTime(7);
+            log.Modification = reader.GetDateTime(8);
 
             return log;
         }

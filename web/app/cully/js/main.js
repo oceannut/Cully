@@ -7,18 +7,20 @@ define(function (require) {
     require('./project-controllers');
     require('./task-controllers');
     require('./log-controllers');
+    require('./cache');
     require('../../../static/js/utils');
     require('../../../static/js/configs');
     require('../../common/js/user-services');
 
-    angular.module('CullyApp', 
-        ['ngRoute', 
-            'bizNotification.controllers', 
-            'project.controllers', 
-            'task.controllers', 
-            'log.controllers', 
-            'utils', 
-            'configs', 
+    angular.module('CullyApp',
+        ['ngRoute',
+            'bizNotification.controllers',
+            'project.controllers',
+            'task.controllers',
+            'log.controllers',
+            'cache',
+            'utils',
+            'configs',
             'user.services'])
         .config(['$routeProvider', function ($routeProvider) {
 
@@ -50,13 +52,21 @@ define(function (require) {
                     templateUrl: 'partials/log-add.htm',
                     controller: 'LogAddCtrl'
                 }).
+                when('/log-edit/:id/', {
+                    templateUrl: 'partials/log-edit.htm',
+                    controller: 'LogEditCtrl'
+                }).
+                when('/log-details/:id/', {
+                     templateUrl: 'partials/log-details.htm',
+                     controller: 'LogDetailsCtrl'
+                }).
                 otherwise({
                     redirectTo: '/overview/'
                 });
 
         } ])
-        .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil', 'UserService',
-            function ($scope, currentUser, urlUtil, UserService) {
+        .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil', 'UserService', 'UserListService', 'userCache',
+            function ($scope, currentUser, urlUtil, UserService, UserListService, userCache) {
 
                 $scope.init = function () {
 
@@ -70,8 +80,14 @@ define(function (require) {
                             }, function (error) {
                                 console.log("error: " + error);
                             });
+                    UserListService.query()
+                        .$promise
+                            .then(function (result) {
+                                userCache.userList = result;
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
 
-                    
                 }
 
             } ]);

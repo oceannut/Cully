@@ -24,6 +24,7 @@ define(function (require) {
             return {
                 getDate: function (date) {
                     var now = new Date();
+                    var day = now.getDay();
                     if (date == '0') {
                         //today
                     } else if (date == '-1') {
@@ -31,10 +32,18 @@ define(function (require) {
                         now.setDate(now.getDate() - 1);
                     } else if (date == '7') {
                         //this week
-                        now.setDate(now.getDate() - now.getDay() + 1);
+                        if (day == 0) {
+                            now.setDate(now.getDate() - 6);
+                        } else {
+                            now.setDate(now.getDate() - day + 1);
+                        }
                     } else if (date == '-7') {
                         //last week
-                        now.setDate(now.getDate() - now.getDay() - 6);
+                        if (day == 0) {
+                            now.setDate(now.getDate() - 7 - 6);
+                        } else {
+                            now.setDate(now.getDate() - now.getDay() - 6);
+                        }
                     }
                     return now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
                 },
@@ -47,12 +56,30 @@ define(function (require) {
                         return '1';
                     } else if (date == '7') {
                         //this week
-                        return new Date().getDay().toString();
+                        var day = new Date().getDay();
+                        if (day == 0) {
+                            return '7';
+                        } else {
+                            return day.toString();
+                        }
                     } else if (date == '-7') {
                         //last week
                         return '7';
                     }
                     return '0';
+                },
+                jsonToDate: function (json) {
+                    if (json) {
+                        return eval("new " + json.replace(/\\|\//g, ''));
+                    } else {
+                        return null;
+                    }
+                },
+                formatDateByYMD: function (date) {
+                    var d = date.getDate();
+                    var m = date.getMonth() + 1;
+                    var y = date.getFullYear();
+                    return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
                 }
             }
 

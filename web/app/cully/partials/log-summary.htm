@@ -2,15 +2,16 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-2">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="搜日志" />
+                <!--<div class="input-group">
+                    <input type="text" class="form-control" placeholder="搜记录" />
                     <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span>
                     </span>
-                </div>
+                </div>-->
             </div>
             <div class="col-sm-4 col-sm-offset-2">
                 <form class="form-inline" role="form">
-                <label class="control-label">日志筛选</label>
+                <label class="control-label">
+                    记录筛选</label>
                 <div class="form-group">
                     <select class="form-control" ng-model="queryModel.staff" ng-change="query()">
                         <option value="">所有成员</option>
@@ -31,7 +32,7 @@
             <div class="col-sm-2 col-sm-offset-1">
                 <div>
                     <button type="button" class="btn btn-primary" ng-click="createLog()">
-                        创建新日志</button>
+                        创建新记录</button>
                 </div>
             </div>
         </div>
@@ -39,13 +40,26 @@
             <div class="col-sm-8 blog-main">
                 <div>
                     <ol class="list-unstyled">
-                        <li ng-repeat="item in logList">
+                        <li ng-repeat="item in logList" style="padding-bottom: 0.5em; border-bottom: 1px solid #eee;
+                            padding-bottom: 2em; margin-bottom: 0.5em;">
                             <p>
-                                {{item.Content}}</p>
-                            <span>{{item.CreatorName}}</span> <span class="pull-right">{{item.StartTime | jsonDateFormat
-                                | date:'yyyy-MM-dd'}}</span>
-                            <hr />
-                        </li>
+                                {{item.Content}}&nbsp;<a href="javascript:void(0);" ng-click="remark(item.Id)" class="btn btn-sm"><span
+                                    class="glyphicon glyphicon-arrow-right">阅读</span></a></p>
+                            <ul style="list-style-type: none; float: left; margin-left: -2em;">
+                                <li style="float: left; margin-right: 1.2em;"><span>{{item.CreatorName}}</span></li>
+                                <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in item.TagList"><a
+                                    href="#"><span class="badge">{{tag}}</span></a></li>
+                                <li style="float: left; margin-left: 1.2em;"><span>评论:{{item.CommentCount}}</span></li>
+                                <li style="float: left; margin-left: 1.2em;"><span>{{item.StartTime | jsonDateFormat
+                                    | date:'yyyy-MM-dd'}}</span></li>
+                            </ul>
+                            <ul style="list-style-type: none; float: left; margin-left: -2em;" class="pull-right">
+                                <li style="float: left; margin-left: 0.6em;"><span class="glyphicon glyphicon-comment"
+                                    title="发表评论" ng-click="remark(item.Id)"></span></li>
+                                <li style="float: left; margin-left: 0.6em; display: {{item.EditBtnVisible}};"><span
+                                    class="glyphicon glyphicon-edit" title="编辑信息" ng-click="edit(item.Id)"></span>
+                                </li>
+                            </ul>
                     </ol>
                     <ul class="pager">
                         <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>

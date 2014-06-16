@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
+
 namespace ThinkInBio.Cully
 {
+
+    /// <summary>
+    /// 工作记录。
+    /// </summary>
     public class Log
     {
 
@@ -21,11 +27,6 @@ namespace ThinkInBio.Cully
         public string Content { get; set; }
 
         /// <summary>
-        /// 附件。
-        /// </summary>
-        public IList<string> Attachments { get; set; }
-
-        /// <summary>
         /// 起始时间。
         /// </summary>
         public DateTime StartTime { get; set; }
@@ -34,6 +35,21 @@ namespace ThinkInBio.Cully
         /// 截止时间。
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// 标签。
+        /// </summary>
+        public string Tags { get; set; }
+
+        /// <summary>
+        /// 评论次数。
+        /// </summary>
+        public int CommentCount { get; set; }
+
+        /// <summary>
+        /// 附件。
+        /// </summary>
+        public IList<string> Attachments { get; set; }
 
         /// <summary>
         /// 创建人。
@@ -52,15 +68,36 @@ namespace ThinkInBio.Cully
 
         #endregion
 
+        #region constructors
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Log()
         {
         }
 
-        public Log(DateTime timeStamp)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeStamp"></param>
+        /// <param name="content"></param>
+        /// <param name="user"></param>
+        public Log(DateTime timeStamp, string content, string user)
         {
             this.StartTime = timeStamp;
+            this.Content = content;
+            this.Creator = user;
         }
 
+        #endregion
+
+        #region methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
         public void Save(Action<Log> action)
         {
             JustTimeSpan();
@@ -73,6 +110,145 @@ namespace ThinkInBio.Cully
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
+        public void Update(Action<Log> action)
+        {
+            JustTimeSpan();
+            DateTime now = DateTime.Now;
+            this.Modification = now;
+            if (action != null)
+            {
+                action(this);
+            }
+        }
+
+        /// <summary>
+        /// 评论。
+        /// </summary>
+        /// <param name="user">评论人。</param>
+        /// <param name="content">评论内容。</param>
+        /// <param name="action">评论保存操作定义。</param>
+        public Comment Remark(string user, string content,
+            Action<Log, Comment, BizNotification> action)
+        {
+            if (string.IsNullOrWhiteSpace(content)
+                && string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
+            if (this.Id == 0)
+            {
+                throw new ArgumentNullException();
+            }
+
+            DateTime now = DateTime.Now;
+
+            Comment comment = new Comment(content, user);
+            comment.Target = CommentTarget.Log;
+            comment.TargetId = this.Id;
+            comment.Creation = now;
+            comment.Modification = now;
+
+            this.CommentCount++;
+            this.Modification = now;
+
+            BizNotification notification = null;
+            if (user != this.Creator)
+            {
+                //只有发送人和接收人不是同一人，才创建通知。
+                notification = new BizNotification(user, this.Creator);
+                notification.Content = content;
+                notification.Resource = "log";
+                notification.ResourceId = this.Id.ToString();
+                notification.Creation = now;
+            }
+
+            if (action != null)
+            {
+                action(this, comment, notification);
+            }
+
+            return comment;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
+        public void AddTag(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (this.Tags == null)
+            {
+                this.Tags = string.Empty;
+            }
+            if (this.Tags == string.Empty)
+            {
+                this.Tags = tag;
+            }
+            else
+            {
+                string[] tagArray = this.Tags.Split(',');
+                if (!tagArray.Contains(tag))
+                {
+                    this.Tags = string.Join(",", tagArray.Concat(new string[] { tag }));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tags"></param>
+        public void AddTag(ICollection<string> tags)
+        {
+            if (tags == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            var tagList = tags.Distinct();
+            if (tagList.Count() > 0)
+            {
+                if (this.Tags == null)
+                {
+                    this.Tags = string.Empty;
+                }
+                if (this.Tags == string.Empty)
+                {
+                    List<string> col = new List<string>();
+                    foreach (string tag in tagList)
+                    {
+                        if (!string.IsNullOrWhiteSpace(tag))
+                        {
+                            col.Add(tag);
+                        }
+                    }
+                    this.Tags = string.Join(",", col);
+                }
+                else
+                {
+                    string[] tagArray = this.Tags.Split(',');
+                    List<string> col = new List<string>();
+                    foreach (string tag in tagList)
+                    {
+                        if (!string.IsNullOrWhiteSpace(tag) && !tagArray.Contains(tag))
+                        {
+                            col.Add(tag);
+                        }
+                    }
+                    this.Tags = string.Join(",", tagArray.Concat(col));
+                }
+            }
+        }
+
         private void JustTimeSpan()
         {
             if (this.StartTime != DateTime.MinValue
@@ -82,6 +258,8 @@ namespace ThinkInBio.Cully
                 throw new InvalidOperationException();
             }
         }
+
+        #endregion
 
     }
 }

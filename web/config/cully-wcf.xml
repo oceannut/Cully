@@ -11,6 +11,7 @@
 
   <object id="LogWcfService" type="ThinkInBio.Cully.WSL.Impl.LogWcfService, ThinkInBio.Cully.WSL" singleton="false">
     <property name="LogService" ref="LogService" />
+    <property name="CommentService" ref="CommentService" />
   </object>
   
 </objects>

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityDaoUnitTest.cs" />
+    <Compile Include="CommentDaoUnitTest.cs" />
     <Compile Include="Configs.cs" />
     <Compile Include="LogDaoUnitTest.cs" />
     <Compile Include="ParticipantDaoUnitTest.cs" />

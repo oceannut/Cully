@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
+using ThinkInBio.CommonApp.BLL;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.DAL;
 
@@ -13,6 +15,8 @@ namespace ThinkInBio.Cully.BLL.Impl
     {
 
         internal ILogDao LogDao { get; set; }
+        internal ICommentDao CommentDao { get; set; }
+        internal IBizNotificationService BizNotificationService { get; set; }
 
         public void SaveLog(Log log)
         {
@@ -22,6 +26,40 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             LogDao.Save(log);
+        }
+
+        public void UpdateLog(Log log)
+        {
+            if (log == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            LogDao.Update(log);
+        }
+
+        public void UpdateLog4Comment(Log log, Comment comment, BizNotification notification)
+        {
+            if (log == null || comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            LogDao.Update4CommentCount(log.Id, log.CommentCount);
+            CommentDao.Save(comment);
+            if (notification != null)
+            {
+                BizNotificationService.SaveNotification(notification);
+            }
+        }
+
+        public Log GetLog(long id)
+        {
+            if (id == 0)
+            {
+                throw new ArgumentException();
+            }
+            return LogDao.Get(id);
         }
 
         public IList<Log> GetLogList(int startRowIndex, int maxRowsCount)
@@ -77,6 +115,16 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             return LogDao.GetList(user, startTime, endTime, startRowIndex, maxRowsCount);
+        }
+
+        public IList<Comment> GetCommentList(long logId)
+        {
+            if (logId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return CommentDao.GetList(CommentTarget.Log, logId);
         }
 
     }
