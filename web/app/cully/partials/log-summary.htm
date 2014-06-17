@@ -43,8 +43,8 @@
                         <li ng-repeat="item in logList" style="padding-bottom: 0.5em; border-bottom: 1px solid #eee;
                             padding-bottom: 2em; margin-bottom: 0.5em;">
                             <p>
-                                {{item.Content}}&nbsp;<a href="javascript:void(0);" ng-click="remark(item.Id)" class="btn btn-sm"><span
-                                    class="glyphicon glyphicon-arrow-right">阅读</span></a></p>
+                                {{item.filterContent}}&nbsp;<a href="javascript:void(0);" ng-click="remark(item.Id)"
+                                    class="btn btn-sm"><span class="glyphicon glyphicon-arrow-right">阅读</span></a></p>
                             <ul style="list-style-type: none; float: left; margin-left: -2em;">
                                 <li style="float: left; margin-right: 1.2em;"><span>{{item.CreatorName}}</span></li>
                                 <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in item.TagList"><a
@@ -72,12 +72,13 @@
                     <h4>
                         排行榜</h4>
                     <p>
-                        Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur
-                        purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+                    </p>
                 </div>
                 <div class="sidebar-module">
                     <h4>
                         我的日志</h4>
+                    <p>
+                    </p>
                 </div>
             </div>
         </div>

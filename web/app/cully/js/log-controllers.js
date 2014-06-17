@@ -13,10 +13,10 @@ define(function (require) {
 
     angular.module('log.controllers', ['textAngular', 'configs', 'filters', 'utils', 'log.services', 'cache'])
         .value('logCache', { 'logList': [] })
-        .controller('LogSummaryCtrl', ['$scope', '$location', 'currentUser', 'dateUtil',
+        .controller('LogSummaryCtrl', ['$scope', '$location', 'currentUser', 'dateUtil', 'stringUtil',
             'LogListService4User', 'LogListService4UserByDate', 'LogListService', 'LogListServiceByDate',
             'userCache', 'logCache',
-            function ($scope, $location, currentUser, dateUtil,
+            function ($scope, $location, currentUser, dateUtil, stringUtil,
                 LogListService4User, LogListService4UserByDate, LogListService, LogListServiceByDate,
                 userCache, logCache) {
 
@@ -129,6 +129,8 @@ define(function (require) {
                         for (var i = 0; i < result.length; i++) {
                             var item = result[i];
                             item.CreatorName = getCreatorName(item.Creator);
+                            var content = stringUtil.removeHTML(item.Content);
+                            item.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
                             if (item.Tags != null && item.Tags != '') {
                                 item.TagList = item.Tags.split(',');
                             }

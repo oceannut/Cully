@@ -3,6 +3,20 @@
 define(function (require) {
 
     angular.module('utils', [])
+        .factory('stringUtil', [function () {
+
+            return {
+                //reference: http://www.cnblogs.com/liszt/archive/2011/08/16/2140007.html
+                removeHTML: function(str) {
+                    str = str.replace(/<\/?[^>]*>/g, ''); //去除HTML tag
+                    str = str.replace(/[ | ]*\n/g, '\n'); //去除行尾空白
+                    //str = str.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
+                    str = str.replace(/&nbsp;|&#10;/ig, ''); //去掉&nbsp;
+                    return str;
+                }
+            }
+
+        } ])
         .factory('urlUtil', [function () {
 
             return {

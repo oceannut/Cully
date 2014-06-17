@@ -56,7 +56,7 @@ create table cyTask
 create table cyLog
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
-	content					VARCHAR(255)    NOT NULL,
+	content					VARCHAR(10240)    NOT NULL,
 	startTime				DATETIME		NOT NULL,
 	endTime					DATETIME,
 	tags					VARCHAR(128),
@@ -72,7 +72,7 @@ create table cyComment
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
 	target					TINYINT			NOT NULL,
 	targetId				BIGINT			NOT NULL,
-	content					VARCHAR(255)    NOT NULL,
+	content					VARCHAR(1024)    NOT NULL,
 	creator					VARCHAR(32)		NOT NULL,
 	creation				DATETIME		NOT NULL,
 	modification			DATETIME		NOT NULL,
