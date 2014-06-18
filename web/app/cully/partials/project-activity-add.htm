@@ -1,27 +1,33 @@
 ﻿<div ng-init="init()">
     <div class="container">
-        <form class="form-horizontal" role="form">
+        <form class="form-horizontal css-form" role="form" name="form">
         <h2>
             创建新活动</h2>
         <div class="form-group">
-            <div class="col-sm-4">
-                <input type="text" class="form-control" placeholder="活动名" ng-model="activity.name"
-                    required autofocus>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="activity.name"
+                    ng-maxlength="32" required autofocus>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.name.$error.maxlength">警告：活动名太长</span>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                <textarea class="form-control" placeholder="活动的概要介绍" ng-model="activity.description"
-                    rows="3"></textarea>
+                <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="activity.description"
+                    ng-maxlength="255" rows="3"></textarea>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.desc.$error.maxlength">警告：概要介绍太长</span>
             </div>
         </div>
-        <h4>
-            邀请项目成员</h4>
-        <div class="form-group">
+        <!--<div class="form-group">
+            <label class="col-sm-2 control-label">
+                参加活动的成员</label>
             <div class="col-sm-2">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        点击邀请成员 <span class="caret"></span>
+                        点击邀请 <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
@@ -29,16 +35,36 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-sm-2 ">
+            <div class="col-sm-2">
                 <div class="checkbox">
                     <label class="control-label">
-                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()">所有人
+                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()">邀请全部人员
                     </label>
+                </div>
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-sm-2 control-label">
+                参加活动的成员</label>
+            <div class="col-sm-4">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()">全部人员
+                    </span>
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            点击邀请成员 <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
+                                {{item.Name}}</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="item in participants">{{item.Name}}<span class="pull-right glyphicon glyphicon-remove"
                         ng-click="removeParticipant(item)"></span></li>
@@ -46,13 +72,19 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-4">
-                <button class="btn btn-primary" ng-click="save()">
+            <div class="col-sm-6">
+                <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid">
                     创建活动</button>
                 <button class="btn btn-default" ng-click="cancel()">
                     取消</button>
             </div>
         </div>
+        <!--<div class="alert alert-danger alert-dismissable {{alertMessageVisible}}">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                &times;</button>
+            {{alertMessage}}</div>-->
+        <div class="alert alert-danger {{alertMessageVisible}}">
+            {{alertMessage}}</div>
         </form>
     </div>
 </div>

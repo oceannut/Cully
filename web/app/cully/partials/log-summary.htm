@@ -13,13 +13,13 @@
                 <label class="control-label">
                     记录筛选</label>
                 <div class="form-group">
-                    <select class="form-control" ng-model="queryModel.staff" ng-change="query()">
+                    <select class="form-control input-sm" ng-model="queryModel.staff" ng-change="query()">
                         <option value="">所有成员</option>
                         <option ng-repeat="item in users" value="{{item.Username}}">{{item.Name}}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <select class="form-control" ng-model="queryModel.date" ng-change="query()">
+                    <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query()">
                         <option value="">所有时间</option>
                         <option value="0">今天</option>
                         <option value="-1">昨天</option>

@@ -190,11 +190,12 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectActivityAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectActivityService', 'UserListService',
-            function ($scope, $location, currentUser, ProjectActivityService, UserListService) {
+        .controller('ProjectActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectActivityService', 'UserListService',
+            function ($scope, $location, $log, currentUser, ProjectActivityService, UserListService) {
 
                 $scope.activity = {};
                 $scope.participants = [];
+                $scope.alertMessageVisible = 'hidden';
 
                 $scope.init = function () {
                     UserListService.query()
@@ -209,7 +210,7 @@ define(function (require) {
                                     $scope.users = result;
                                 }
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
                             });
                 }
 
@@ -236,28 +237,30 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
-                    var usernameArray = [];
-                    for (var i = 0; i < $scope.participants.length; i++) {
-                        usernameArray.push($scope.participants[i].Username);
-                    }
-                    ProjectActivityService.save({
-                        'user': currentUser.username,
-                        'name': $scope.activity.name,
-                        'description': $scope.activity.description,
-                        'participants': usernameArray
-                    })
+                    if ($scope.activity.name != undefined && $scope.activity.name != null) {
+                        var usernameArray = [];
+                        for (var i = 0; i < $scope.participants.length; i++) {
+                            usernameArray.push($scope.participants[i].Username);
+                        }
+                        ProjectActivityService.save({
+                            'user': currentUser.username,
+                            'name': $scope.activity.name,
+                            'description': $scope.activity.description,
+                            'participants': usernameArray
+                        })
                         .$promise
                             .then(function (result) {
-                                console.log(result);
-                                $location.path('/project-details/');
+                                $location.path('/project-details/' + result.ProjectId + '/');
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：添加活动失败";
+                                $log.error(error);
                             });
+                    }
                 }
 
                 $scope.cancel = function () {
-                    console.log("cancel");
-                    $location.path('/project-list/');
+                    history.back();
                 }
 
             } ]);
