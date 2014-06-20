@@ -1,44 +1,49 @@
 ﻿<div ng-init="init()">
     <div class="container">
-        <form class="form-horizontal" role="form">
+        <form class="form-horizontal css-form" role="form" name="form">
         <h2>
             创建新项目</h2>
         <div class="form-group">
-            <div class="col-sm-4">
-                <input type="text" class="form-control" placeholder="项目名" ng-model="project.name"
-                    required autofocus>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" placeholder="项目名" name="name" ng-model="project.name"
+                    ng-maxlength="32" required autofocus>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.name.$error.maxlength">警告：项目名太长</span>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                <textarea class="form-control" placeholder="项目的概要介绍" ng-model="project.description"
-                    rows="3"></textarea>
-            </div>
-        </div>
-        <h4>
-            邀请项目成员</h4>
-        <div class="form-group">
-            <div class="col-sm-2">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        点击邀请成员 <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
-                            {{item.Name}}</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-2 ">
-                <div class="checkbox">
-                    <label class="control-label">
-                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()">所有人
-                    </label>
-                </div>
+                <textarea class="form-control" placeholder="项目的概要介绍" name="desc" ng-model="project.description"
+                    ng-maxlength="255" rows="3"></textarea>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.desc.$error.maxlength">警告：概要介绍太长</span>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <label class="col-sm-2 control-label">
+                参加项目的成员</label>
+            <div class="col-sm-4">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()"
+                            ng-disabled="isParticipantLoading">全部人员 </span>
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            ng-disabled="isParticipantLoading">
+                            点击邀请成员 <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
+                                {{item.Name}}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="item in participants">{{item.Name}}<span class="pull-right glyphicon glyphicon-remove"
                         ng-click="removeParticipant(item)"></span></li>
@@ -46,13 +51,16 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-4">
-                <button class="btn btn-primary" ng-click="save()">
-                    创建项目</button>
+            <div class="col-sm-6">
+                <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
+                    ng-switch="isLoading">
+                    <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建项目</span></button>
                 <button class="btn btn-default" ng-click="cancel()">
                     取消</button>
             </div>
         </div>
+        <div class="alert alert-danger {{alertMessageVisible}}">
+            {{alertMessage}}</div>
         </form>
     </div>
 </div>

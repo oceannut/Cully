@@ -25,25 +25,34 @@
             </form>
         </div>
         <div style="display: {{addActivityPanelDisplay}};">
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal css-form" role="form" name="form">
             <div class="form-group">
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" placeholder="活动名" ng-model="activity.name"
-                        required autofocus>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="activity.name"
+                        ng-maxlength="32" required autofocus>
+                    <p class="help-block">
+                        （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+                    <span class="text-danger" ng-show="form.name.$error.maxlength">警告：活动名太长</span>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-6">
-                    <textarea class="form-control" placeholder="活动的概要介绍" ng-model="activity.description"
-                        rows="3"></textarea>
+                    <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="activity.description"
+                        ng-maxlength="255" rows="3"></textarea>
+                    <p class="help-block">
+                        （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+                    <span class="text-danger" ng-show="form.desc.$error.maxlength">警告：概要介绍太长</span>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-4">
-                    <button class="btn btn-primary" ng-click="saveActivity()">
-                        创建活动</button>
+                <div class="col-sm-6">
+                    <button class="btn btn-primary" ng-click="saveActivity()" ng-disabled="form.$invalid || isLoading"
+                        ng-switch="isLoading">
+                        <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建活动</span></button>
                 </div>
             </div>
+            <div class="alert alert-danger {{alertMessageVisible}}">
+                {{alertMessage}}</div>
             </form>
         </div>
         <ol class="list-unstyled">
@@ -53,7 +62,8 @@
                 <span class="pull-right">{{item.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
                 <p>
                     {{item.Description}}</p>
-                <div ng-include="'partials/task-list-details.htm'"></div>
+                <div ng-include="'partials/task-list-details.htm'">
+                </div>
                 <hr />
             </li>
         </ol>

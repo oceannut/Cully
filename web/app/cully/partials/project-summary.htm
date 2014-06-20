@@ -16,20 +16,125 @@
         <div class="row" style="margin-top: 20px;">
             <div class="col-sm-8 blog-main">
                 <div ng-controller="ActivityListCtrl" ng-init="init()">
+                    <ul class="timeline">
+                        <li><span class="bg-orange time-label">活动时间轴</span>
+                            <br />
+                            <br />
+                        </li>
+                        <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
+                            class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="fa fa-envelope bg-blue">
+                            </i>
+                            <div ng-switch-when="false" class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>{{item.creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                                <h3 class="timeline-header">
+                                    <a href="javascript:void(0)" ng-click="gotoDetails(item.projectId)">{{item.name}}</a></h3>
+                                <div class="timeline-body">
+                                    {{item.desc}}
+                                </div>
+                                <div class='timeline-footer'>
+                                    <span class="glyphicon glyphicon-th-list" title="查看详细" ng-click="gotoDetails(item.projectId)">
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <!--<ul class="timeline">
+                        <li class="time-label"><span class="bg-orange">活动时间轴2</span>
+                            <br />
+                            <br />
+                        </li>
+                        <li class="time-label"><span class="bg-light-blue">Year 2014 </span></li>
+                        <li><i class="fa fa-envelope bg-blue"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>20 Feburary</span>
+                                <h3 class="timeline-header">
+                                    <a href="#">Sed accumsan</a> hendrerit metus</h3>
+                                <div class="timeline-body">
+                                    Sed accumsan venenatis blandit. Duis auctor hendrerit metus
+                                </div>
+                                <div class='timeline-footer'>
+                                    <a class="btn btn-primary btn-xs">Share</a> <a class="btn btn-danger btn-xs">Read More</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li><i class="fa fa-user bg-aqua"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>02 January</span>
+                                <h3 class="timeline-header no-border">
+                                    <a href="#">Venenatis blandit.</a> Duis auctor hendrerit metus</h3>
+                            </div>
+                        </li>
+                        <li class="time-label"><span class="bg-green">Year 2013 </span></li>
+                        <li><i class="fa fa-camera bg-purple"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>20 December</span>
+                                <h3 class="timeline-header">
+                                    <a href="#">Blandit</a> New Photo Show</h3>
+                                <div class="timeline-body">
+                                    <img src="img/imgS1.jpg" alt="" class='margin' />
+                                    <img src="img/imgS2.jpg" alt="" class='margin' />
+                                </div>
+                            </div>
+                        </li>
+                        <li><i class="fa fa-video-camera bg-maroon"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>15 June</span>
+                                <h3 class="timeline-header">
+                                    <a href="#">Venenatis blandit</a> New Event</h3>
+                                <div class="timeline-body">
+                                    <iframe width="300" height="169" src="//www.youtube.com/embed/Ycv5fNd4AeM"></iframe>
+                                </div>
+                            </div>
+                        </li>
+                        <li><i class="fa fa-envelope bg-blue"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>20 Feburary</span>
+                                <h3 class="timeline-header">
+                                    <a href="#">Sed accumsan</a> hendrerit metus</h3>
+                                <div class="timeline-body">
+                                    Sed accumsan venenatis blandit. Duis auctor hendrerit metus
+                                </div>
+                                <div class='timeline-footer'>
+                                    <a class="btn btn-primary btn-xs">Share</a> <a class="btn btn-danger btn-xs">Read More</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li><i class="fa fa-flask bg-blue"></i>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i>20 Feburary</span>
+                                <h3 class="timeline-header">
+                                    <a href="#">Sed accumsan</a> hendrerit metus</h3>
+                                <div class="timeline-body">
+                                    Sed accumsan venenatis blandit. Duis auctor hendrerit metus
+                                </div>
+                                <div class='timeline-footer'>
+                                    <a class="btn btn-primary btn-xs">Share</a> <a class="btn btn-danger btn-xs">Read More</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li><i class="fa fa-clock-o"></i></li>
+                    </ul>
                     <ol class="list-unstyled">
-                        <li ng-repeat="item in activityList">
-                            <h4>
-                                <a href="javascript:void(0)" ng-click="gotoDetails(item.ProjectId)">{{item.Name}}</a></h4>
-                            <span class="pull-right">{{item.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                        <li ng-repeat="item in activityList" style="padding-bottom: 0.5em; border-bottom: 1px solid #eee;
+                            padding-bottom: 2em; margin-bottom: 0.5em;">
+                            <p class="lead">
+                                <a href="javascript:void(0)" ng-click="gotoDetails(item.projectId)">{{item.name}}</a>
+                            </p>
                             <p>
-                                {{item.Description}}</p>
-                            <hr />
+                                <small>{{item.desc}}</small></p>
+                            <ul style="list-style-type: none; float: left; margin-left: -2em;">
+                                <li style="float: left;"><span>{{item.creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span></li>
+                            </ul>
+                            <ul style="list-style-type: none; float: left; margin-left: -2em;" class="pull-right">
+                                <li style="float: left;"><span class="glyphicon glyphicon-th-list" title="查看详细" ng-click="gotoDetails(item.projectId)">
+                                </span></li>
+                            </ul>
                         </li>
                     </ol>
                     <ul class="pager">
                         <li><a href="#">上一页</a></li>
                         <li><a href="#">下一页</a></li>
-                    </ul>
+                    </ul>-->
                 </div>
             </div>
             <div class="col-sm-3 col-sm-offset-1 blog-sidebar">

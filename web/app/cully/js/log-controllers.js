@@ -294,7 +294,6 @@ define(function (require) {
                             }, function (error) {
                                 console.log("error: " + error);
                             });
-                    //window.location.hash = '#addCommentDiv';
                 }
 
                 $scope.saveComment = function () {

@@ -13,12 +13,10 @@ define(function (require) {
             function ($scope, $location, currentUser) {
 
                 $scope.createProject = function () {
-                    console.log("createProject");
                     $location.path('/project-add/');
                 }
 
                 $scope.createActivity = function () {
-                    console.log("createActivity");
                     $location.path('/project-activity-add/');
                 }
 
@@ -41,13 +39,17 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectAddCtrl', ['$scope', '$location', 'currentUser', 'ProjectService', 'UserListService',
-            function ($scope, $location, currentUser, ProjectService, UserListService) {
+        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'UserListService',
+            function ($scope, $location, $log, currentUser, ProjectService, UserListService) {
 
                 $scope.project = {};
                 $scope.participants = [];
+                $scope.isParticipantLoading = false;
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
 
                 $scope.init = function () {
+                    $scope.isParticipantLoading = true;
                     UserListService.query()
                         .$promise
                             .then(function (result) {
@@ -60,7 +62,12 @@ define(function (require) {
                                     $scope.users = result;
                                 }
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：成员列表加载失败";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isParticipantLoading = false;
                             });
                 }
 
@@ -87,38 +94,44 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
-                    var usernameArray = [];
-                    for (var i = 0; i < $scope.participants.length; i++) {
-                        usernameArray.push($scope.participants[i].Username);
-                    }
-                    ProjectService.save({
-                        'user': currentUser.username,
-                        'name': $scope.project.name,
-                        'description': $scope.project.description,
-                        'participants': usernameArray
-                    })
+                    if ($scope.project.name != undefined && $scope.project.name != null) {
+                        var usernameArray = [];
+                        for (var i = 0; i < $scope.participants.length; i++) {
+                            usernameArray.push($scope.participants[i].Username);
+                        }
+                        $scope.isLoading = true;
+                        ProjectService.save({
+                            'user': currentUser.username,
+                            'name': $scope.project.name,
+                            'description': $scope.project.description,
+                            'participants': usernameArray
+                        })
                         .$promise
                             .then(function (result) {
-                                console.log(result);
                                 $location.path('/project-details/' + result.Id + "/");
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.isLoading = false;
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：添加项目失败";
+                                $log.error(error);
                             });
+                    }
                 }
 
                 $scope.cancel = function () {
-                    console.log("cancel");
-                    $location.path('/project-list/');
+                    history.back();
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'ActivityService', 'ProjectDetailsService',
-            function ($scope, $location, $routeParams, currentUser, ActivityService, ProjectDetailsService) {
+        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'ProjectDetailsService',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, ProjectDetailsService) {
 
                 $scope.addActivityBtnTitle = '添加活动';
                 $scope.addActivityPanelDisplay = 'none';
                 $scope.project = {};
                 $scope.activity = {};
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
 
                 function clear() {
                     $scope.activity.name = '';
@@ -154,34 +167,53 @@ define(function (require) {
                 }
 
                 $scope.saveActivity = function () {
-                    ActivityService.save({
-                        'user': currentUser.username,
-                        'projectId': $routeParams.id,
-                        'name': $scope.activity.name,
-                        'description': $scope.activity.description
-                    })
+                    if ($scope.activity.name != undefined && $scope.activity.name != null) {
+                        $scope.isLoading = true;
+                        ActivityService.save({
+                            'user': currentUser.username,
+                            'projectId': $routeParams.id,
+                            'name': $scope.activity.name,
+                            'description': $scope.activity.description
+                        })
                         .$promise
                             .then(function (result) {
-                                console.log(result);
                                 clear();
                                 $scope.toggleAddActivityPanelVisibible();
                                 $scope.activityList.unshift(result);
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.isLoading = false;
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：添加活动失败";
+                                $log.error(error);
                             });
+                    }
                 }
 
             } ])
-        .controller('ActivityListCtrl', ['$scope', '$location', 'currentUser', 'ActivityListService',
-            function ($scope, $location, currentUser, ActivityListService) {
+        .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService',
+            function ($scope, $location, $log, currentUser, dateUtil, ActivityListService) {
 
                 $scope.init = function () {
                     ActivityListService.query({ 'user': currentUser.username, 'start': 0, 'count': 10 })
                         .$promise
                             .then(function (result) {
-                                $scope.activityList = result;
+                                $scope.activityList = [];
+                                if (result != null && result.length > 0) {
+                                    var temp = new Date();
+                                    temp.setFullYear(1970, 0, 1);
+                                    var d = dateUtil.formatDateByYMD(temp);
+                                    for (var i = 0; i < result.length; i++) {
+                                        var item = result[i];
+                                        var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(item.Creation));
+                                        if (d != creation) {
+                                            d = creation;
+                                            $scope.activityList.push({ 'isDate': true, 'date': d });
+                                        }
+                                        $scope.activityList.push({ 'isDate': false, 'name': item.Name, 'desc': item.Description, 'projectId': item.ProjectId, 'creation': item.Creation });
+                                    }
+                                }
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
                             });
                 }
 
@@ -195,9 +227,12 @@ define(function (require) {
 
                 $scope.activity = {};
                 $scope.participants = [];
+                $scope.isParticipantLoading = false;
+                $scope.isLoading = false;
                 $scope.alertMessageVisible = 'hidden';
 
                 $scope.init = function () {
+                    $scope.isParticipantLoading = true;
                     UserListService.query()
                         .$promise
                             .then(function (result) {
@@ -210,7 +245,12 @@ define(function (require) {
                                     $scope.users = result;
                                 }
                             }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：成员列表加载失败";
                                 $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isParticipantLoading = false;
                             });
                 }
 
@@ -242,6 +282,7 @@ define(function (require) {
                         for (var i = 0; i < $scope.participants.length; i++) {
                             usernameArray.push($scope.participants[i].Username);
                         }
+                        $scope.isLoading = true;
                         ProjectActivityService.save({
                             'user': currentUser.username,
                             'name': $scope.activity.name,
@@ -252,6 +293,7 @@ define(function (require) {
                             .then(function (result) {
                                 $location.path('/project-details/' + result.ProjectId + '/');
                             }, function (error) {
+                                $scope.isLoading = false;
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：添加活动失败";
                                 $log.error(error);
