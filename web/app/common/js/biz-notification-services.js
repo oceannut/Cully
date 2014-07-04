@@ -9,8 +9,8 @@ define(function (require) {
     angular.module('bizNotification.services', ['ngResource', 'configs'])
         .constant("bizNotificationWcfService", "/wcf/BizNotificationWcfService.svc")
         .factory('BizNotificationService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
-            function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/notification/biz/inbox/:user/untreated/', {}, {
+            function ($resource, wcfApp, bizNotificationWcfService) {
+                return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/inbox/:user/untreated/', {}, {
                     query: { method: 'GET', params: { 'user': '@user' }, isArray: true }
                 });
             } ]);

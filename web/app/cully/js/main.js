@@ -57,19 +57,18 @@ define(function (require) {
                     controller: 'LogEditCtrl'
                 }).
                 when('/log-details/:id/', {
-                     templateUrl: 'partials/log-details.htm',
-                     controller: 'LogDetailsCtrl'
+                    templateUrl: 'partials/log-details.htm',
+                    controller: 'LogDetailsCtrl'
                 }).
                 otherwise({
                     redirectTo: '/overview/'
                 });
 
         } ])
-        .controller('MainCtrl', ['$scope', 'currentUser', 'urlUtil', 'UserService', 'UserListService', 'userCache',
-            function ($scope, currentUser, urlUtil, UserService, UserListService, userCache) {
+        .controller('MainCtrl', ['$scope', '$log', 'currentUser', 'urlUtil', 'UserService', 'userCacheUtil', 'categoryCacheUtil',
+            function ($scope, $log, currentUser, urlUtil, UserService, userCacheUtil, categoryCacheUtil) {
 
                 $scope.init = function () {
-
                     currentUser.username = urlUtil.getUrlParam('username');
 
                     UserService.get({ 'username': currentUser.username })
@@ -78,16 +77,11 @@ define(function (require) {
                                 currentUser.name = result.Name;
                                 $scope.user = { 'name': currentUser.name };
                             }, function (error) {
-                                console.log("error: " + error);
-                            });
-                    UserListService.query()
-                        .$promise
-                            .then(function (result) {
-                                userCache.userList = result;
-                            }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
                             });
 
+                    userCacheUtil.init();
+                    categoryCacheUtil.init('activity');
                 }
 
             } ]);

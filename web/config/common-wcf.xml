@@ -14,6 +14,10 @@
     <property name="UserService" ref="UserService" />
   </object>
 
+  <object id="CategoryWcfService" type="ThinkInBio.CommonApp.WSL.Impl.CategoryWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="CategoryService" ref="CategoryService" />
+  </object>
+
   <object id="BizNotificationWcfService" type="ThinkInBio.CommonApp.WSL.Impl.BizNotificationWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
     <property name="BizNotificationService" ref="BizNotificationService" />
   </object>

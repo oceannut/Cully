@@ -30,7 +30,7 @@ define(function (require) {
         .factory('ProjectActivityService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/0/activity/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false }
+                    save: { method: 'POST', params: { 'user': '@user', 'category': '@category', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false }
                 });
             } ])
         .factory('ActivityListService', ['$resource', 'wcfApp', 'projectWcfService',
@@ -42,7 +42,7 @@ define(function (require) {
         .factory('ActivityService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/activity/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'name': '@name', 'description': '@description' }, isArray: false },
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'category': '@category', 'name': '@name', 'description': '@description' }, isArray: false },
                     query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }
                 });
             } ])

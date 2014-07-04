@@ -8,6 +8,13 @@
     <property name="Target" ref="UserServiceTarget"/>
   </object>
 
+  <object id="CategoryServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.CategoryService, ThinkInBio.CommonApp.BLL">
+    <property name="CategoryDao" ref="CategoryDao" />
+  </object>
+  <object id="CategoryService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="CategoryServiceTarget"/>
+  </object>
+
   <object id="BizNotificationServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.BizNotificationService, ThinkInBio.CommonApp.BLL">
     <property name="BizNotificationDao" ref="BizNotificationDao" />
   </object>

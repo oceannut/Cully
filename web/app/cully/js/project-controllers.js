@@ -7,8 +7,9 @@ define(function (require) {
     require('../../../static/js/filters');
     require('./project-services');
     require('../../common/js/user-services');
+    require('../../common/js/category-services');
 
-    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'user.services'])
+    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'user.services', 'category.services'])
         .controller('ProjectSummaryCtrl', ['$scope', '$location', 'currentUser',
             function ($scope, $location, currentUser) {
 
@@ -39,8 +40,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'UserListService',
-            function ($scope, $location, $log, currentUser, ProjectService, UserListService) {
+        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'userCacheUtil',
+            function ($scope, $location, $log, currentUser, ProjectService, userCacheUtil) {
 
                 $scope.project = {};
                 $scope.participants = [];
@@ -50,25 +51,22 @@ define(function (require) {
 
                 $scope.init = function () {
                     $scope.isParticipantLoading = true;
-                    UserListService.query()
-                        .$promise
-                            .then(function (result) {
-                                if (result != null) {
-                                    for (var i = 0; i < result.length; i++) {
-                                        if (result[i].Username == currentUser.username) {
-                                            result.splice(i, 1);
-                                        }
-                                    }
-                                    $scope.users = result;
+
+                    $scope.users = [];
+                    userCacheUtil.list(function (result) {
+                        if (result != null) {
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].Username != currentUser.username) {
+                                    $scope.users.push(result[i]);
                                 }
-                            }, function (error) {
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：成员列表加载失败";
-                                $log.error(error);
-                            })
-                            .then(function () {
-                                $scope.isParticipantLoading = false;
-                            });
+                            }
+                        }
+                    }, function (error) {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：成员列表加载失败";
+                    }, function () {
+                        $scope.isParticipantLoading = false;
+                    });
                 }
 
                 $scope.addParticipant = function (user) {
@@ -172,6 +170,7 @@ define(function (require) {
                         ActivityService.save({
                             'user': currentUser.username,
                             'projectId': $routeParams.id,
+                            'category': $scope.activity.category,
                             'name': $scope.activity.name,
                             'description': $scope.activity.description
                         })
@@ -190,8 +189,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService',
-            function ($scope, $location, $log, currentUser, dateUtil, ActivityListService) {
+        .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'categoryCacheUtil',
+            function ($scope, $location, $log, currentUser, dateUtil, ActivityListService, categoryCacheUtil) {
 
                 $scope.init = function () {
                     ActivityListService.query({ 'user': currentUser.username, 'start': 0, 'count': 10 })
@@ -209,7 +208,8 @@ define(function (require) {
                                             d = creation;
                                             $scope.activityList.push({ 'isDate': true, 'date': d });
                                         }
-                                        $scope.activityList.push({ 'isDate': false, 'name': item.Name, 'desc': item.Description, 'projectId': item.ProjectId, 'creation': item.Creation });
+                                        var category = categoryCacheUtil.get('activity', item.Category);
+                                        $scope.activityList.push({ 'icon': category.Icon, 'isDate': false, 'name': item.Name, 'desc': item.Description, 'projectId': item.ProjectId, 'creation': item.Creation });
                                     }
                                 }
                             }, function (error) {
@@ -222,8 +222,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectActivityService', 'UserListService',
-            function ($scope, $location, $log, currentUser, ProjectActivityService, UserListService) {
+        .controller('ProjectActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectActivityService', 'userCacheUtil', 'categoryCacheUtil',
+            function ($scope, $location, $log, currentUser, ProjectActivityService, userCacheUtil, categoryCacheUtil) {
 
                 $scope.activity = {};
                 $scope.participants = [];
@@ -233,25 +233,31 @@ define(function (require) {
 
                 $scope.init = function () {
                     $scope.isParticipantLoading = true;
-                    UserListService.query()
-                        .$promise
-                            .then(function (result) {
-                                if (result != null) {
-                                    for (var i = 0; i < result.length; i++) {
-                                        if (result[i].Username == currentUser.username) {
-                                            result.splice(i, 1);
-                                        }
-                                    }
-                                    $scope.users = result;
+
+                    $scope.users = [];
+                    userCacheUtil.list(function (result) {
+                        if (result != null) {
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].Username != currentUser.username) {
+                                    $scope.users.push(result[i]);
                                 }
-                            }, function (error) {
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：成员列表加载失败";
-                                $log.error(error);
-                            })
-                            .then(function () {
-                                $scope.isParticipantLoading = false;
-                            });
+                            }
+                        }
+                    }, function (error) {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：成员列表加载失败";
+                    }, function () {
+                        $scope.isParticipantLoading = false;
+                    });
+
+                    categoryCacheUtil.list('activity', function (result) {
+                        $scope.categoryList = result;
+                    });
+
+                }
+
+                $scope.selectCategory = function (selectedCategory) {
+                    $scope.category = selectedCategory;
                 }
 
                 $scope.addParticipant = function (user) {
@@ -285,6 +291,7 @@ define(function (require) {
                         $scope.isLoading = true;
                         ProjectActivityService.save({
                             'user': currentUser.username,
+                            'category': $scope.category.Code,
                             'name': $scope.activity.name,
                             'description': $scope.activity.description,
                             'participants': usernameArray

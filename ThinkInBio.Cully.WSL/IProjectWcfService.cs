@@ -70,7 +70,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/project/0/activity/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Activity SaveActivity(string user, string name, string description, string[] participants);
+        Activity SaveActivity(string user, string category, string name, string description, string[] participants);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -78,7 +78,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/project/{projectId}/activity/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Activity SaveActivity(string user, string projectId, string name, string description);
+        Activity SaveActivity(string user, string projectId, string category, string name, string description);
 
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/project/0/activity/range/{start}/{count}/",

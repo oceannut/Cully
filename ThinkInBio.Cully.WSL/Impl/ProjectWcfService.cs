@@ -81,7 +81,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Activity SaveActivity(string user, string name, string description, string[] participants)
+        public Activity SaveActivity(string user, string category, string name, string description, string[] participants)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -91,6 +91,10 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                throw new ArgumentNullException("category");
+            }
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException("name");
@@ -100,6 +104,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new ArgumentOutOfRangeException("description", description.Length, "");
             }
             Activity activity = new Activity();
+            activity.Category = category;
             activity.Name = name;
             activity.Description = description;
             activity.Save(user, participants, (e1, e2, e3) =>
@@ -110,7 +115,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return activity;
         }
 
-        public Activity SaveActivity(string user, string projectId, string name, string description)
+        public Activity SaveActivity(string user, string projectId, string category, string name, string description)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -121,6 +126,10 @@ namespace ThinkInBio.Cully.WSL.Impl
              * */
 
             long projectIdLong = Convert.ToInt64(projectId);
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                throw new ArgumentNullException("category");
+            }
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException("name");
@@ -130,6 +139,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new ArgumentOutOfRangeException("description", description.Length, "");
             }
             Activity activity = new Activity();
+            activity.Category = category;
             activity.Name = name;
             activity.Description = description;
             activity.ProjectId = projectIdLong;

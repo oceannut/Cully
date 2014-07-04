@@ -1,7 +1,7 @@
 ﻿body
 {
     font-family: Georgia, "Times New Roman" , Times, serif;
-    background-color:#96c886;
+    background-color: #96c886;
 }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
@@ -116,4 +116,52 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
 {
     background-color: #ffffff;
     color: #000;
+}
+
+.bs-glyphicons-list
+{
+    padding-left: 0;
+    list-style: none;
+}
+.bs-glyphicons li
+{
+    float: left;
+    width: 25%;
+    height: 64px;
+    padding: 6px;
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+    border: 1px solid #fff;
+    background-color: #f9f9f9;
+}
+.bs-glyphicons .glyphicon, .fa
+{
+    margin-top: 3px;
+    margin-bottom: 6px;
+    font-size: 24px;
+}
+.bs-glyphicons .glyphicon-class
+{
+    display: block;
+    text-align: center;
+    word-wrap: break-word;
+}
+.bs-glyphicons li:hover
+{
+    color: #fff;
+    background-color: #563d7c;
+}
+@media (min-width:768px)
+{
+    .bs-glyphicons
+    {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .bs-glyphicons li
+    {
+        width: 25%;
+        font-size: 12px;
+    }
 }

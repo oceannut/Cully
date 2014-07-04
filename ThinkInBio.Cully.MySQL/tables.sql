@@ -30,6 +30,7 @@ create table cyParticipant
 create table cyActivity
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	category				VARCHAR(32)		NOT NULL,
 	name					VARCHAR(32)		NOT NULL,
 	description				VARCHAR(255),
 	projectId				BIGINT			NOT NULL,

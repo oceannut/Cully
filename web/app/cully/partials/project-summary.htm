@@ -22,7 +22,7 @@
                             <br />
                         </li>
                         <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
-                            class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="fa fa-envelope bg-blue">
+                            class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="{{item.icon}} bg-blue">
                             </i>
                             <div ng-switch-when="false" class="timeline-item">
                                 <span class="time"><i class="fa fa-clock-o"></i>{{item.creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span>

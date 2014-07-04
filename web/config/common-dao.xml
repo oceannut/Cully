@@ -5,6 +5,10 @@
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
 
+  <object id="CategoryDao" type="ThinkInBio.CommonApp.MySQL.CategoryDao, ThinkInBio.CommonApp.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
   <object id="BizNotificationDao" type="ThinkInBio.CommonApp.MySQL.BizNotificationDao, ThinkInBio.CommonApp.MySQL">
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
