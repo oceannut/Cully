@@ -4,21 +4,21 @@
         <h2>
             创建新活动</h2>
         <div class="form-group">
-            <div class="col-sm-6">
+            <label class="col-sm-1 control-label">
+                类型:</label>
+            <div class="col-sm-5">
                 <div class="bs-glyphicons">
-                    <div class="input-group-btn">
+                    <div style="float: left;">
+                        <span class="{{category.Icon}} fa-2x"></span>&nbsp;<span>{{category.Name}}</span>&nbsp;</div>
+                    <div class="input-group-btn" style="float: left;">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            选择类型 <span class="caret"></span>
+                            选择其它类型 <span class="caret"></span>
                         </button>
                         <ul class="bs-glyphicons-list dropdown-menu" role="menu">
-                            <li ng-click="selectCategory()"><span class="fa fa-ban fa-2x"></span><span class="glyphicon-class">
-                                不选择</span></li>
-                            <li ng-repeat="item in categoryList" ng-click="selectCategory(item)"><span class="{{item.Icon}} fa-2x">
-                            </span><span class="glyphicon-class">{{item.Name}}</span></li>
+                            <li ng-repeat="item in categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)">
+                                <span class="{{item.Icon}} fa-2x"></span><span class="glyphicon-class">{{item.Name}}</span></li>
                         </ul>
                     </div>
-                    <div>
-                        <span class="{{category.Icon}} fa-2x"></span>&nbsp;<span>{{category.Name}}</span></div>
                 </div>
             </div>
         </div>
@@ -40,31 +40,9 @@
                 <span class="text-danger" ng-show="form.desc.$error.maxlength">警告：概要介绍太长</span>
             </div>
         </div>
-        <!--<div class="form-group">
-            <label class="col-sm-2 control-label">
-                参加活动的成员</label>
-            <div class="col-sm-2">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        点击邀请 <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
-                            {{item.Name}}</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="checkbox">
-                    <label class="control-label">
-                        <input type="checkbox" ng-model="allParticipantChecked" ng-change="addAllParticipant()">邀请全部人员
-                    </label>
-                </div>
-            </div>
-        </div>-->
         <div class="form-group">
             <label class="col-sm-2 control-label">
-                参加活动的成员</label>
+                参加活动的成员:</label>
             <div class="col-sm-4">
                 <div class="input-group">
                     <span class="input-group-addon">

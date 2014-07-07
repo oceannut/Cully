@@ -45,7 +45,7 @@
 .timeline > li > .timeline-item {
   margin-top: 10px;
   border: 0px solid #dfdfdf;
-  background: #fff;
+  background: #efefef;
   color: #555;
   margin-left: 60px;
   margin-right: 15px;
@@ -63,7 +63,7 @@
   color: #555;
   border-bottom: 1px solid #f4f4f4;
   padding: 5px;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.1;
 }
 .timeline > li > .timeline-item > .timeline-header > a {
@@ -72,6 +72,10 @@
 .timeline > li > .timeline-item > .timeline-body,
 .timeline > li > .timeline-item > .timeline-footer {
   padding: 10px;
+}
+.timeline > li > .timeline-item > .timeline-body {
+  font-size: 15px;
+  line-height: 1.1;
 }
 .timeline > li > span.time-label {
   font-weight: 600;
@@ -98,6 +102,10 @@
   text-align: center;
   left: 18px;
   top: 0;
+}
+.timeline-footer > .fa
+{
+    font-size: 18px;
 }
 
 

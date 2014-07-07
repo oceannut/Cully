@@ -1,36 +1,68 @@
 ﻿<div ng-controller="TaskCtrl" ng-init="init()">
     <div class="container">
-        <a href="javascript:void(0)" ng-click="toggleAddTaskPanelVisibible()">添加任务</a>
+        <div>
+            <i class="fa fa-plus"></i><a href="javascript:void(0)" ng-click="toggleAddTaskPanelVisibible()">
+                添加任务</a></div>
         <div class="well well-sm" style="display: {{addTaskPanelDisplay}};">
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal css-form" role="form" name="form">
             <div class="form-group">
-                <div class="col-sm-7">
-                    <input type="text" class="form-control" placeholder="任务内容" ng-model="task.content"
-                        required autofocus>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" placeholder="任务内容" name="content" ng-model="task.content"
+                        ng-maxlength="255" required autofocus>
+                    <span class="text-danger" ng-show="form.content.$error.maxlength">警告：任务内容太长</span>
                 </div>
-                <div class="col-sm-2">
-                    <select class="form-control" ng-model="task.staff">
-                        <option ng-repeat="item in participants">{{item.Staff}}</option>
-                    </select>
-                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-sm-3">
-                    <input type="date" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-male fa-fw"></i></span>
+                        <select class="form-control" ng-model="task.staff">
+                            <option ng-repeat="item in participants" value="{{item.Staff}}">{{item.StaffName}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-clock-o fa-fw"></i></span>
+                        <input type="text" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
+                    </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-4">
                     <button class="btn btn-default btn-sm" ng-click="save()">
-                        创建任务</button>&nbsp;&nbsp;
-                    <a href="javascript:void(0)" ng-click="cancel()">取消</a>
+                        创建任务</button>&nbsp;&nbsp; <a href="javascript:void(0)" ng-click="cancel()">取消</a>
                 </div>
             </div>
+            <div class="alert alert-danger {{alertMessageVisible}}">
+                {{alertMessage}}</div>
             </form>
         </div>
-        <ol class="list-unstyled">
-            <li ng-repeat="item in taskList">
-                {{item.Content}}
-                <span class="badge">{{item.Staff}} - {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+        <ol class="list-unstyled" style="margin-top: 12px;">
+            <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
+                ng-switch="item.isAppointed">
+                <p>
+                    {{item.Content}}
+                    <footer><i class="fa fa-male"></i> {{item.StaffName}} &nbsp;<i ng-switch-when="true" class="fa fa-clock-o"></i> <span ng-switch-when="true">{{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</span><a href="javascript:void(0)" rel="popover" ng-switch-when="false">无截止时间</a> </footer>
+                </p>
             </li>
         </ol>
+        <!--<div id="content_popover" style="display: none">
+            <div>
+                The contents of your DIV is here.</div>
+        </div>
+        <script>
+            $(function () {
+                $('[rel=popover]').popover({
+                    html: true,
+                    content: function () {
+                        return $('#content_popover').html();
+                    }
+                });
+            });
+
+        </script>-->
     </div>
 </div>

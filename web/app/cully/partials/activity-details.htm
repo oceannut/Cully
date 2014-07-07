@@ -1,0 +1,28 @@
+﻿<div ng-init="init()">
+    <div class="container">
+        <div class="navbar" role="navigation">
+            <div class="navbar-header">
+                <h3>
+                    {{activity.Name}}</h3>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a title="所属项目" ng-click="gotoProject(activity.ProjectId)"><i class="fa fa-level-up">
+                </i>所属项目</a></li>
+                <li><a title="管理成员"><i class="fa fa-print"></i>打印预览</a></li>
+                <!--<li><a title="管理成员"><span class="fa fa-gear"></span>设置</a></li>
+                <li><a title="管理成员"><span class="glyphicon glyphicon-tasks"></span>轨迹</a></li>
+                <li><a title="管理成员"><span class="glyphicon glyphicon-stats"></span>统计</a></li>-->
+            </ul>
+        </div>
+        <hr style="border-top: solid 3px #5277a9; border-bottom: solid 1px #5277a9; padding-top: 2px;" />
+        <div class="alert alert-danger {{alertMessageVisible}}">
+            {{alertMessage}}</div>
+        <blockquote>
+            <p>
+                {{activity.Description}}</p>
+            <footer> &nbsp; <i class="{{activity.Icon}} fa-lg"></i> &nbsp; {{activity.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</footer>
+        </blockquote>
+        <div ng-include="taskListPage">
+        </div>
+    </div>
+</div>

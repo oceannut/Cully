@@ -5,6 +5,7 @@ define(function (require) {
     require('route');
     require('./biz-notification-controllers');
     require('./project-controllers');
+    require('./activity-controllers');
     require('./task-controllers');
     require('./log-controllers');
     require('./cache');
@@ -16,6 +17,7 @@ define(function (require) {
         ['ngRoute',
             'bizNotification.controllers',
             'project.controllers',
+            'activity.controllers',
             'task.controllers',
             'log.controllers',
             'cache',
@@ -40,9 +42,13 @@ define(function (require) {
                     templateUrl: 'partials/project-details.htm',
                     controller: 'ProjectDetailsCtrl'
                 }).
-                when('/project-activity-add/', {
-                    templateUrl: 'partials/project-activity-add.htm',
-                    controller: 'ProjectActivityAddCtrl'
+                when('/activity-add/', {
+                    templateUrl: 'partials/activity-add.htm',
+                    controller: 'ActivityAddCtrl'
+                }).
+                when('/activity-details/:id/', {
+                    templateUrl: 'partials/activity-details.htm',
+                    controller: 'ActivityDetailsCtrl'
                 }).
                 when('/log-summary/', {
                     templateUrl: 'partials/log-summary.htm',

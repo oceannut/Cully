@@ -81,6 +81,12 @@ namespace ThinkInBio.Cully.WSL
         Activity SaveActivity(string user, string projectId, string category, string name, string description);
 
         [OperationContract]
+        [WebGet(UriTemplate = "/{user}/project/0/activity/{activityId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Activity GetActivity(string user, string activityId);
+
+        [OperationContract]
         [WebGet(UriTemplate = "/{user}/project/0/activity/range/{start}/{count}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]

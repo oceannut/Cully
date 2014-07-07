@@ -151,6 +151,20 @@ namespace ThinkInBio.Cully.WSL.Impl
             return activity;
         }
 
+        public Activity GetActivity(string user, string activityId)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            long activityIdLong = Convert.ToInt64(activityId);
+            return ProjectService.GetActivity(activityIdLong);
+        }
+
         public Activity[] GetActivityList(string user, string start, string count)
         {
             if (string.IsNullOrWhiteSpace(user))

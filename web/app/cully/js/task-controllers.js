@@ -9,8 +9,8 @@ define(function (require) {
     require('./task-services');
 
     angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services'])
-        .controller('TaskCtrl', ['$scope', '$routeParams', 'currentUser', 'TaskService', 'ParticipantService',
-            function ($scope, $routeParams, currentUser, TaskService, ParticipantService) {
+        .controller('TaskCtrl', ['$scope', '$log', 'currentUser', 'TaskService', 'ParticipantService', 'userCacheUtil',
+            function ($scope, $log, currentUser, TaskService, ParticipantService, userCacheUtil) {
 
                 $scope.addTaskPanelDisplay = 'none';
                 $scope.task = {};
@@ -22,19 +22,39 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    ParticipantService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                    var parentScope = $scope.$parent.$parent;
+                    ParticipantService.query({ 'user': currentUser.username, 'projectId': parentScope.activity.ProjectId })
                         .$promise
                             .then(function (result) {
                                 $scope.participants = result;
+                                for (var i = 0; i < $scope.participants.length; i++) {
+                                    var participant = $scope.participants[i];
+                                    var user = userCacheUtil.get(participant.Staff);
+                                    participant.StaffName = (user == null) ? participant.Staff : user.Name;
+                                }
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：成员列表加载失败";
                             });
-                    TaskService.query({ 'user': currentUser.username, 'activityId': $scope.item.Id })
+                    TaskService.query({ 'user': currentUser.username, 'activityId': parentScope.activity.Id })
                         .$promise
                             .then(function (result) {
                                 $scope.taskList = result;
+                                for (var i = 0; i < $scope.taskList.length; i++) {
+                                    var task = $scope.taskList[i];
+                                    var user = userCacheUtil.get(task.Staff);
+                                    task.StaffName = (user == null) ? task.Staff : user.Name;
+                                    if (task.AppointedDay == null) {
+                                        task.isAppointed = false;
+                                    } else {
+                                        task.isAppointed = true;
+                                    }
+                                }
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：任务列表加载失败";
                             });
                 }
 
@@ -48,17 +68,25 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
-
-                    console.log($scope.task.content + " " + $scope.task.staff + " " + $scope.task.appointedDay);
-                    TaskService.save({ 'user': currentUser.username, 'activityId': $scope.item.Id, 'staff': $scope.task.staff, 'content': $scope.task.content, 'appointedDay': $scope.task.appointedDay })
+                    if ($scope.task.staff == null || $scope.task.staff == '') {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：请选着要执行任务的人员";
+                        return;
+                    }
+                    $scope.alertMessageVisible = 'hide';
+                    var parentScope = $scope.$parent.$parent;
+                    TaskService.save({ 'user': currentUser.username, 'activityId': parentScope.activity.Id, 'staff': $scope.task.staff, 'content': $scope.task.content, 'appointedDay': $scope.task.appointedDay })
                         .$promise
                             .then(function (result) {
-                                console.log(result);
                                 clear();
                                 $scope.toggleAddTaskPanelVisibible();
+                                var user = userCacheUtil.get(result.Staff);
+                                result.StaffName = (user == null) ? result.Staff : user.Name;
                                 $scope.taskList.unshift(result);
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：任务保存失败";
                             });
                 }
 

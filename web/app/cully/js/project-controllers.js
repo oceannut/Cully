@@ -18,7 +18,7 @@ define(function (require) {
                 }
 
                 $scope.createActivity = function () {
-                    $location.path('/project-activity-add/');
+                    $location.path('/activity-add/');
                 }
 
             } ])
@@ -121,8 +121,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'ProjectDetailsService',
-            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, ProjectDetailsService) {
+        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'ProjectDetailsService', 'categoryCacheUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, ProjectDetailsService, categoryCacheUtil) {
 
                 $scope.addActivityBtnTitle = '添加活动';
                 $scope.addActivityPanelDisplay = 'none';
@@ -142,15 +142,32 @@ define(function (require) {
                             .then(function (result) {
                                 $scope.project = result;
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载项目详细信息失败";
+                                $log.error(error);
                             });
                     ActivityService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.activityList = result;
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载活动列表失败";
+                                $log.error(error);
                             });
+
+                    categoryCacheUtil.list('activity', function (result) {
+                        $scope.categoryList = result;
+                    });
+                    $scope.category = categoryCacheUtil.get('activity', 'normal');
+                }
+
+                $scope.gotoActivity = function (activityId) {
+                    $location.path('/activity-details/' + activityId + "/");
+                }
+
+                $scope.selectCategory = function (selectedCategory) {
+                    $scope.category = selectedCategory;
                 }
 
                 $scope.toggleAddActivityPanelVisibible = function () {
@@ -170,7 +187,7 @@ define(function (require) {
                         ActivityService.save({
                             'user': currentUser.username,
                             'projectId': $routeParams.id,
-                            'category': $scope.activity.category,
+                            'category': $scope.category.Code,
                             'name': $scope.activity.name,
                             'description': $scope.activity.description
                         })
@@ -186,130 +203,6 @@ define(function (require) {
                                 $log.error(error);
                             });
                     }
-                }
-
-            } ])
-        .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'categoryCacheUtil',
-            function ($scope, $location, $log, currentUser, dateUtil, ActivityListService, categoryCacheUtil) {
-
-                $scope.init = function () {
-                    ActivityListService.query({ 'user': currentUser.username, 'start': 0, 'count': 10 })
-                        .$promise
-                            .then(function (result) {
-                                $scope.activityList = [];
-                                if (result != null && result.length > 0) {
-                                    var temp = new Date();
-                                    temp.setFullYear(1970, 0, 1);
-                                    var d = dateUtil.formatDateByYMD(temp);
-                                    for (var i = 0; i < result.length; i++) {
-                                        var item = result[i];
-                                        var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(item.Creation));
-                                        if (d != creation) {
-                                            d = creation;
-                                            $scope.activityList.push({ 'isDate': true, 'date': d });
-                                        }
-                                        var category = categoryCacheUtil.get('activity', item.Category);
-                                        $scope.activityList.push({ 'icon': category.Icon, 'isDate': false, 'name': item.Name, 'desc': item.Description, 'projectId': item.ProjectId, 'creation': item.Creation });
-                                    }
-                                }
-                            }, function (error) {
-                                $log.error(error);
-                            });
-                }
-
-                $scope.gotoDetails = function (id) {
-                    $location.path('/project-details/' + id + "/");
-                }
-
-            } ])
-        .controller('ProjectActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectActivityService', 'userCacheUtil', 'categoryCacheUtil',
-            function ($scope, $location, $log, currentUser, ProjectActivityService, userCacheUtil, categoryCacheUtil) {
-
-                $scope.activity = {};
-                $scope.participants = [];
-                $scope.isParticipantLoading = false;
-                $scope.isLoading = false;
-                $scope.alertMessageVisible = 'hidden';
-
-                $scope.init = function () {
-                    $scope.isParticipantLoading = true;
-
-                    $scope.users = [];
-                    userCacheUtil.list(function (result) {
-                        if (result != null) {
-                            for (var i = 0; i < result.length; i++) {
-                                if (result[i].Username != currentUser.username) {
-                                    $scope.users.push(result[i]);
-                                }
-                            }
-                        }
-                    }, function (error) {
-                        $scope.alertMessageVisible = 'show';
-                        $scope.alertMessage = "提示：成员列表加载失败";
-                    }, function () {
-                        $scope.isParticipantLoading = false;
-                    });
-
-                    categoryCacheUtil.list('activity', function (result) {
-                        $scope.categoryList = result;
-                    });
-
-                }
-
-                $scope.selectCategory = function (selectedCategory) {
-                    $scope.category = selectedCategory;
-                }
-
-                $scope.addParticipant = function (user) {
-                    if ($scope.participants.indexOf(user) == -1) {
-                        $scope.participants.push(user);
-                    }
-                }
-
-                $scope.addAllParticipant = function () {
-                    $scope.participants = [];
-                    if ($scope.allParticipantChecked) {
-                        for (var i = 0; i < $scope.users.length; i++) {
-                            $scope.participants.push($scope.users[i]);
-                        }
-                    }
-                }
-
-                $scope.removeParticipant = function (user) {
-                    var i = $scope.participants.indexOf(user);
-                    if (i > -1) {
-                        $scope.participants.splice(i, 1);
-                    }
-                }
-
-                $scope.save = function () {
-                    if ($scope.activity.name != undefined && $scope.activity.name != null) {
-                        var usernameArray = [];
-                        for (var i = 0; i < $scope.participants.length; i++) {
-                            usernameArray.push($scope.participants[i].Username);
-                        }
-                        $scope.isLoading = true;
-                        ProjectActivityService.save({
-                            'user': currentUser.username,
-                            'category': $scope.category.Code,
-                            'name': $scope.activity.name,
-                            'description': $scope.activity.description,
-                            'participants': usernameArray
-                        })
-                        .$promise
-                            .then(function (result) {
-                                $location.path('/project-details/' + result.ProjectId + '/');
-                            }, function (error) {
-                                $scope.isLoading = false;
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：添加活动失败";
-                                $log.error(error);
-                            });
-                    }
-                }
-
-                $scope.cancel = function () {
-                    history.back();
                 }
 
             } ]);

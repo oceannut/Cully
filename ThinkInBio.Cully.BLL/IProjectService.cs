@@ -56,6 +56,13 @@ namespace ThinkInBio.Cully.BLL
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="activityId"></param>
+        /// <returns></returns>
+        Activity GetActivity(long activityId);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="user"></param>
         /// <param name="startRowIndex"></param>
         /// <param name="maxRowsCount"></param>

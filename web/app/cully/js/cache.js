@@ -49,7 +49,31 @@ define(function (require) {
                         }
                     }
                 },
-                get: function (key) {
+                get: function (key, successCallback) {
+                    var userList = userCache.userList;
+                    if (userList == null) {
+                        this.list(function (result) {
+                            if (result != null && result.length > 0) {
+                                for (var i in result) {
+                                    if (key == result[i].Username) {
+                                        if (successCallback != undefined && typeof (successCallback) == 'function') {
+                                            successCallback(result[i]);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        if (userList.length > 0) {
+                            for (var i in userList) {
+                                if (key == userList[i].Username) {
+                                    return userList[i];
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

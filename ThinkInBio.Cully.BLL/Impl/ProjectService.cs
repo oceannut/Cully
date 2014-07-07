@@ -72,6 +72,16 @@ namespace ThinkInBio.Cully.BLL.Impl
             ActivityDao.Save(activity);
         }
 
+        public Activity GetActivity(long activityId)
+        {
+            if (activityId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return ActivityDao.Get(activityId);
+        }
+
         public IList<Activity> GetActivityList(string user, int startRowIndex, int maxRowsCount)
         {
             if (string.IsNullOrWhiteSpace(user))
