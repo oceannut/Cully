@@ -25,28 +25,16 @@ define(function (require) {
                             .$promise
                                 .then(function (result) {
                                     userCache.userList = result;
-                                    if (successCallback != undefined && typeof (successCallback) == 'function') {
-                                        successCallback(result);
-                                    }
-                                    if (alwaysCallback != undefined && typeof (alwaysCallback) == 'function') {
-                                        alwaysCallback();
-                                    }
+                                    (successCallback || angular.noop)(result);
+                                    (alwaysCallback || angular.noop)();
                                 }, function (error) {
                                     $log.error(error);
-                                    if (errorCallback != undefined && typeof (errorCallback) == 'function') {
-                                        errorCallback(error);
-                                    }
-                                    if (alwaysCallback != undefined && typeof (alwaysCallback) == 'function') {
-                                        alwaysCallback();
-                                    }
+                                    (errorCallback || angular.noop)(error);
+                                    (alwaysCallback || angular.noop)();
                                 });
                     } else {
-                        if (successCallback != undefined && typeof (successCallback) == 'function') {
-                            successCallback(userCache.userList);
-                        }
-                        if (alwaysCallback != undefined && typeof (alwaysCallback) == 'function') {
-                            alwaysCallback();
-                        }
+                        (successCallback || angular.noop)(userCache.userList);
+                        (alwaysCallback || angular.noop)();
                     }
                 },
                 get: function (key, successCallback) {

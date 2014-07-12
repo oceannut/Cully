@@ -2,13 +2,15 @@
 
 define(function (require) {
 
+    require('bootstrap');
     require('angular');
     require('../../../static/js/configs');
     require('../../../static/js/filters');
+    require('../../../static/js/angular-directive');
     require('./project-services');
     require('./task-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services'])
+    angular.module('task.controllers', ['configs', 'filters', 'ng-directives', 'project.services', 'task.services'])
         .controller('TaskCtrl', ['$scope', '$log', 'currentUser', 'TaskService', 'ParticipantService', 'userCacheUtil',
             function ($scope, $log, currentUser, TaskService, ParticipantService, userCacheUtil) {
 
@@ -56,6 +58,8 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：任务列表加载失败";
                             });
+
+
                 }
 
                 $scope.toggleAddTaskPanelVisibible = function () {

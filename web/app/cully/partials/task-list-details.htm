@@ -41,28 +41,38 @@
             </form>
         </div>
         <ol class="list-unstyled" style="margin-top: 12px;">
-            <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
-                ng-switch="item.isAppointed">
+            <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
                 <p>
                     {{item.Content}}
-                    <footer><i class="fa fa-male"></i> {{item.StaffName}} &nbsp;<i ng-switch-when="true" class="fa fa-clock-o"></i> <span ng-switch-when="true">{{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</span><a href="javascript:void(0)" rel="popover" ng-switch-when="false">无截止时间</a> </footer>
+                    <button type="button" class="btn btn-default btn-xs btn-info" data-container="body"
+                        data-toggle="popover" data-placement="bottom" data-html="true" showpopover="content_popover">
+                        <i class="fa fa-male"></i>{{item.StaffName}} &nbsp;<i class="fa fa-clock-o"></i>
+                        {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}
+                    </button>
                 </p>
             </li>
         </ol>
-        <!--<div id="content_popover" style="display: none">
-            <div>
-                The contents of your DIV is here.</div>
+        <div id="content_popover" style="display: none">
+            <form class="form-horizontal css-form" role="form" name="form2">
+            <div class="form-group">
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-male fa-fw"></i></span>
+                        <select class="form-control" ng-model="task.staff">
+                            <option ng-repeat="item in participants" value="{{item.Staff}}">{{item.StaffName}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-clock-o fa-fw"></i></span>
+                        <input type="text" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
+                    </div>
+                </div>
+            </div>
+            </form>
         </div>
-        <script>
-            $(function () {
-                $('[rel=popover]').popover({
-                    html: true,
-                    content: function () {
-                        return $('#content_popover').html();
-                    }
-                });
-            });
-
-        </script>-->
     </div>
 </div>
