@@ -13,6 +13,7 @@
   <object id="TaskServiceTarget" type="ThinkInBio.Cully.BLL.Impl.TaskService, ThinkInBio.Cully.BLL">
     <property name="TaskDao" ref="TaskDao" />
     <property name="BizNotificationService" ref="BizNotificationService" />
+    <property name="ActivityDao" ref="ActivityDao" />
   </object>
   <object id="TaskService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="TaskServiceTarget"/>

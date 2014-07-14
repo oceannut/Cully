@@ -12,6 +12,7 @@ namespace ThinkInBio.Cully.WSL.Impl
     {
 
         internal ITaskService TaskService { get; set; }
+        internal IProjectService ProjectService { get; set; }
 
         public Task SaveTask(string user, string activityId, string staff, string content, string appointedDay)
         {
@@ -38,6 +39,109 @@ namespace ThinkInBio.Cully.WSL.Impl
                 {
                     TaskService.SaveTask(e1, e2);
                 });
+
+            return task;
+        }
+
+        public Task UpdateTask(string user, string activityId, string id, string staff, string content, string appointedDay)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(activityId)
+                || string.IsNullOrWhiteSpace(staff)
+                || string.IsNullOrWhiteSpace(content))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Task task = TaskService.GetTask(Convert.ToInt64(id));
+            task.Content = content;
+            DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
+            task.Appoint(user, staff, d,
+                (e1, e2) =>
+                {
+                    TaskService.UpdateTask(e1, e2);
+                });
+
+            return task;
+        }
+
+        public Task UpdateTask4IsUnderway(string user, string activityId, string id, string isUnderway)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(activityId))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Task task = TaskService.GetTask(Convert.ToInt64(id));
+            bool isUnderwayBool = Convert.ToBoolean(isUnderway);
+            if (isUnderwayBool)
+            {
+                task.Activate((e) =>
+                {
+                    TaskService.UpdateTask(e);
+                });
+            }
+            else
+            {
+                task.Inactivate((e) =>
+                {
+                    TaskService.UpdateTask(e);
+                });
+            }
+
+            return task;
+        }
+
+        public Task UpdateTask4IsCompleted(string user, string activityId, string id, string isCompleted)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(activityId))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Task task = TaskService.GetTask(Convert.ToInt64(id));
+            Activity activity = ProjectService.GetActivity(task.ActivityId);
+            IList<Task> taskList = TaskService.GetTaskList(task.ActivityId);
+            bool isCompletedBool = Convert.ToBoolean(isCompleted);
+            if (isCompletedBool)
+            {
+                task.Complete(activity, taskList, 
+                    (e1, e2) =>
+                    {
+                        TaskService.UpdateTask(e1, e2);
+                    });
+            }
+            else
+            {
+                task.Resume(activity,
+                    (e1, e2) =>
+                    {
+                        TaskService.UpdateTask(e1, e2);
+                    });
+            }
 
             return task;
         }

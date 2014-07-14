@@ -52,12 +52,13 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"update cyActivity 
-                                                set category=@category,name=@name,description=@description,modification=@modification
+                                                set category=@category,name=@name,description=@description,modification=@modification,isCompleted=@isCompleted
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("category", entity.Category));
                     command.Parameters.Add(DbFactory.CreateParameter("name", entity.Name));
                     command.Parameters.Add(DbFactory.CreateParameter("description", entity.Description));
                     command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
+                    command.Parameters.Add(DbFactory.CreateParameter("isCompleted", entity.IsCompleted));
                     command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
                 });
         }

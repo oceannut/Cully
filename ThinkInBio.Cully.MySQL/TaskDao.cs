@@ -48,6 +48,25 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public override bool Update(Task entity)
+        {
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"update cyTask 
+                                                set content=@content,staff=@staff,appointedDay=appointedDay,modification=@modification,
+                                                    isUnderway=@isUnderway,isCompleted=@isCompleted
+                                                where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
+                    command.Parameters.Add(DbFactory.CreateParameter("staff", entity.Staff));
+                    command.Parameters.Add(DbFactory.CreateParameter("appointedDay", entity.AppointedDay));
+                    command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
+                    command.Parameters.Add(DbFactory.CreateParameter("isUnderway", entity.IsUnderway));
+                    command.Parameters.Add(DbFactory.CreateParameter("isCompleted", entity.IsCompleted));
+                    command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
+                });
+        }
+
         public override bool Delete(Task entity)
         {
             return DbTemplate.UpdateOrDelete(dataSource,

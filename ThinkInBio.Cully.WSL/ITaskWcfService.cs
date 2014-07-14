@@ -23,6 +23,30 @@ namespace ThinkInBio.Cully.WSL
         Task SaveTask(string user, string activityId, string staff, string content, string appointedDay);
 
         [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/task/{activityId}/{id}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Task UpdateTask(string user, string activityId, string id, string staff, string content, string appointedDay);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/task/{activityId}/{id}/isUnderway/{isUnderway}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Task UpdateTask4IsUnderway(string user, string activityId, string id, string isUnderway);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/task/{activityId}/{id}/isCompleted/{isCompleted}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Task UpdateTask4IsCompleted(string user, string activityId, string id, string isCompleted);
+
+        [OperationContract]
         [WebGet(UriTemplate = "/{user}/task/{activityId}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]

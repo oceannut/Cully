@@ -16,6 +16,9 @@ namespace ThinkInBio.Cully
 
         #region events
 
+        /// <summary>
+        /// 
+        /// </summary>
         internal event Action<long> IdChanged;
 
         #endregion
@@ -55,12 +58,12 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 提示任务是否正在进行。
         /// </summary>
-        public bool IsUnderway { get; internal set; }
+        public bool IsUnderway { get; set; }
 
         /// <summary>
         /// 提示任务是否已完成。
         /// </summary>
-        public bool IsCompleted { get; internal set; }
+        public bool IsCompleted { get; set; }
 
         /// <summary>
         /// 指派的人员。
@@ -327,7 +330,14 @@ namespace ThinkInBio.Cully
             }
             if (action != null)
             {
-                action(activity, this);
+                if (allOtherTaskCompleted)
+                {
+                    action(activity, this);
+                }
+                else
+                {
+                    action(null, this);
+                }
             }
         }
 
@@ -373,10 +383,22 @@ namespace ThinkInBio.Cully
                 this.IsUnderway = false;
             }
             Update(null);
-            activity.IsCompleted = false;
+            bool updateActivity = false;
+            if (activity.IsCompleted)
+            {
+                activity.IsCompleted = false;
+                updateActivity = true;
+            }
             if (action != null)
             {
-                action(activity, this);
+                if (updateActivity)
+                {
+                    action(activity, this);
+                }
+                else
+                {
+                    action(null, this);
+                }
             }
         }
 

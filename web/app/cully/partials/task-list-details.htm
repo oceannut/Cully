@@ -1,9 +1,11 @@
 ﻿<div ng-controller="TaskCtrl" ng-init="init()">
     <div class="container">
-        <div>
-            <i class="fa fa-plus"></i><a href="javascript:void(0)" ng-click="toggleAddTaskPanelVisibible()">
-                添加任务</a></div>
-        <div class="well well-sm" style="display: {{addTaskPanelDisplay}};">
+        <div class="navbar navbar-default" role="navigation">
+            <div class="navbar-text">
+                <i class="fa fa-plus"></i><a href="javascript:void(0)" class="navbar-link" ng-click="createTask()">
+                    添加任务</a></div>
+        </div>
+        <div class="well well-sm" style="display: {{taskPanelDisplay}};">
             <form class="form-horizontal css-form" role="form" name="form">
             <div class="form-group">
                 <div class="col-sm-6">
@@ -17,7 +19,7 @@
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-male fa-fw"></i></span>
                         <select class="form-control" ng-model="task.staff">
-                            <option ng-repeat="item in participants" value="{{item.Staff}}">{{item.StaffName}}</option>
+                            <option ng-repeat="item in participants" value="{{item.Staff}}">{{item.staffName}}</option>
                         </select>
                     </div>
                 </div>
@@ -26,14 +28,15 @@
                 <div class="col-sm-3">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-clock-o fa-fw"></i></span>
-                        <input type="text" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
+                        <input type="date" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-4">
                     <button class="btn btn-default btn-sm" ng-click="save()">
-                        创建任务</button>&nbsp;&nbsp; <a href="javascript:void(0)" ng-click="cancel()">取消</a>
+                        {{saveButtonContent}}</button>&nbsp;&nbsp; <a href="javascript:void(0)" ng-click="cancel()">
+                            取消</a>
                 </div>
             </div>
             <div class="alert alert-danger {{alertMessageVisible}}">
@@ -42,37 +45,43 @@
         </div>
         <ol class="list-unstyled" style="margin-top: 12px;">
             <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
-                <p>
+                <p style="font-weight: {{item.isUnderwayStatus}};">
+                    <input type="checkbox" title="标记为是否正在进行" ng-model="item.IsUnderway" ng-change="markIsUnderway(item)"
+                        style="display: {{item.changeIsUnderwayButtonVisible}};" />
                     {{item.Content}}
-                    <button type="button" class="btn btn-default btn-xs btn-info" data-container="body"
-                        data-toggle="popover" data-placement="bottom" data-html="true" showpopover="content_popover">
-                        <i class="fa fa-male"></i>{{item.StaffName}} &nbsp;<i class="fa fa-clock-o"></i>
+                    <button type="button" class="btn btn-xs {{item.isTimeAssigned}}" ng-click="editTask(item)">
+                        <i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>
                         {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}
+                    </button>
+                    <button type="button" class="btn btn-xs {{item.isOverdueColor}}" ng-click="completeTask(item)">
+                        <i class="fa fa-check-square-o"></i>&nbsp;完成任务
                     </button>
                 </p>
             </li>
         </ol>
-        <div id="content_popover" style="display: none">
-            <form class="form-horizontal css-form" role="form" name="form2">
-            <div class="form-group">
-                <div class="col-sm-3">
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-male fa-fw"></i></span>
-                        <select class="form-control" ng-model="task.staff">
-                            <option ng-repeat="item in participants" value="{{item.Staff}}">{{item.StaffName}}</option>
-                        </select>
-                    </div>
-                </div>
+        <br />
+        <div class="row">
+            <div class="col-sm-8">
+                <ul class="timeline">
+                    <li><span class="bg-orange time-label">已完成的任务</span>
+                        <br />
+                        <br />
+                    </li>
+                    <li ng-repeat="item in completedTaskList"><i class="fa fa-user bg-blue"></i>
+                        <div class="timeline-item">
+                            <span class="time"><i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.AppointedDay
+                                | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                            <div class="timeline-body">
+                                {{item.Content}}
+                            </div>
+                            <div class='timeline-footer'>
+                                <a class="btn btn-xs btn-default" ng-click="resumeTask(item)"><i class="fa fa-play">
+                                </i>&nbsp;重启任务</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div class="form-group">
-                <div class="col-sm-3">
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-clock-o fa-fw"></i></span>
-                        <input type="text" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
-                    </div>
-                </div>
-            </div>
-            </form>
         </div>
     </div>
 </div>

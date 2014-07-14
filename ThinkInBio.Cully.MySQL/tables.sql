@@ -1,10 +1,19 @@
 ﻿
+delete from cyProject;
+delete from cyParticipant;
+delete from cyActivity;
+delete from cyTask;
+delete from cyLog;
+delete from cyComment;
+
+
 drop table cyProject;
 drop table cyParticipant;
 drop table cyActivity;
 drop table cyTask;
 drop table cyLog;
 drop table cyComment;
+
 
 create table cyProject
 (

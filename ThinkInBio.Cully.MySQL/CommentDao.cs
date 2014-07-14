@@ -52,9 +52,10 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"update cyComment 
-                                                set content=@content 
+                                                set content=@content,modification=@modification
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
+                    command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
                     command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
                 });
         }
