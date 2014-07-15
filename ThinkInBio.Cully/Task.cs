@@ -9,7 +9,7 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
-    /// 任务。
+    /// 任务，包括任务的指派人员、截止时间等定义。
     /// </summary>
     public class Task
     {
@@ -17,7 +17,7 @@ namespace ThinkInBio.Cully
         #region events
 
         /// <summary>
-        /// 
+        /// 编号变化引起的事件。
         /// </summary>
         internal event Action<long> IdChanged;
 
@@ -78,12 +78,12 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 创建时间。
         /// </summary>
-        public DateTime Creation { get; internal set; }
+        public DateTime Creation { get; set; }
 
         /// <summary>
         /// 修改时间。
         /// </summary>
-        public DateTime Modification { get; internal set; }
+        public DateTime Modification { get; set; }
 
         #endregion
 

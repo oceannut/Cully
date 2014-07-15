@@ -107,6 +107,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             activity.Category = category;
             activity.Name = name;
             activity.Description = description;
+            activity.Creator = user;
             activity.Save(user, participants, (e1, e2, e3) =>
             {
                 ProjectService.SaveActivity(e1, e2, e3);
@@ -143,6 +144,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             activity.Name = name;
             activity.Description = description;
             activity.ProjectId = projectIdLong;
+            activity.Creator = user;
             activity.Save((e) =>
             {
                 ProjectService.SaveActivity(e);

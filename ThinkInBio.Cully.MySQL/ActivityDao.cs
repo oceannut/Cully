@@ -30,13 +30,14 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"insert into cyActivity (id,category,name,description,projectId,isCompleted,creation,modification) 
-                                                values (NULL,@category,@name,@description,@projectId,@isCompleted,@creation,@modification)";
+                    command.CommandText = @"insert into cyActivity (id,category,name,description,projectId,isCompleted,creator,creation,modification) 
+                                                values (NULL,@category,@name,@description,@projectId,@isCompleted,@creator,@creation,@modification)";
                     command.Parameters.Add(DbFactory.CreateParameter("category", entity.Category));
                     command.Parameters.Add(DbFactory.CreateParameter("name", entity.Name));
                     command.Parameters.Add(DbFactory.CreateParameter("description", entity.Description));
                     command.Parameters.Add(DbFactory.CreateParameter("projectId", entity.ProjectId));
                     command.Parameters.Add(DbFactory.CreateParameter("isCompleted", entity.IsCompleted));
+                    command.Parameters.Add(DbFactory.CreateParameter("creator", entity.Creator));
                     command.Parameters.Add(DbFactory.CreateParameter("creation", entity.Creation));
                     command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
                 },
@@ -79,7 +80,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Activity>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,category,name,description,projectId,isCompleted,creation,modification from cyActivity 
+                    command.CommandText = @"select id,category,name,description,projectId,isCompleted,creator,creation,modification from cyActivity 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -120,7 +121,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.GetList<Activity>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,category,name,description,projectId,isCompleted,creation,modification from cyActivity
+                    command.CommandText = @"select id,category,name,description,projectId,isCompleted,creator,creation,modification from cyActivity
                                                 where projectId=@projectId 
                                                 order by modification desc";
                     command.Parameters.Add(DbFactory.CreateParameter("projectId", projectId));
@@ -158,7 +159,7 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select t.id,t.category,t.name,t.description,t.projectId,t.isCompleted,t.creation,t.modification from cyActivity t ");
+                    sql.Append("select t.id,t.category,t.name,t.description,t.projectId,t.isCompleted,t.creator,t.creation,t.modification from cyActivity t ");
                     if (!string.IsNullOrWhiteSpace(participant))
                     {
                         sql.Append(" inner join cyProject p on t.projectId=p.id inner join cyParticipant pa on pa.projectId=p.id ");
@@ -211,8 +212,9 @@ namespace ThinkInBio.Cully.MySQL
             entity.Description = reader.IsDBNull(3) ? null : reader.GetString(3);
             entity.ProjectId = reader.GetInt64(4);
             entity.IsCompleted = reader.GetBoolean(5);
-            entity.Creation = reader.IsDBNull(6) ? default(DateTime) : reader.GetDateTime(6);
-            entity.Modification = reader.IsDBNull(7) ? default(DateTime) : reader.GetDateTime(7);
+            entity.Creator = reader.GetString(6);
+            entity.Creation = reader.IsDBNull(7) ? default(DateTime) : reader.GetDateTime(7);
+            entity.Modification = reader.IsDBNull(8) ? default(DateTime) : reader.GetDateTime(8);
 
             return entity;
         }

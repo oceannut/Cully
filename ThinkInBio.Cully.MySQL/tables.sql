@@ -44,6 +44,7 @@ create table cyActivity
 	description				VARCHAR(255),
 	projectId				BIGINT			NOT NULL,
 	isCompleted				TINYINT(1)      NOT NULL,
+	creator					VARCHAR(32)		NOT NULL,
 	creation				DATETIME		NOT NULL,
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)

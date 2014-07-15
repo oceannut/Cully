@@ -7,13 +7,16 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
-    /// 项目。
+    /// 项目，包括项目成员，由若干个活动组成。
     /// </summary>
     public class Project
     {
 
         #region events
 
+        /// <summary>
+        /// 编号变化引发的事件。
+        /// </summary>
         internal event Action<long> IdChanged;
 
         #endregion

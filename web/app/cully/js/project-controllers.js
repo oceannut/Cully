@@ -69,6 +69,10 @@ define(function (require) {
                     });
                 }
 
+                $scope.gotoback = function () {
+                    history.back();
+                }
+
                 $scope.addParticipant = function (user) {
                     if ($scope.participants.indexOf(user) == -1) {
                         $scope.participants.push(user);

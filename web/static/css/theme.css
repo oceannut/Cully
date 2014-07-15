@@ -1,6 +1,9 @@
 ﻿body
 {
     font-family: Georgia, "Times New Roman" , Times, serif;
+    margin: 0;
+    padding: 0;
+    background: #CFE1ED url(../../static/img/bg.png) repeat;
 }
 
 h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
@@ -19,13 +22,27 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
 {
     .container
     {
-        width: 960px;
+        width: 932px;
     }
 }
 
 .story
 {
-    margin-top: 80px;
+    margin-top: 50px;
+    background: #fff;
+    padding: 24px 24px 24px 8px;
+}
+@media (min-width: 1200px)
+{
+    .story
+    {
+        width: 960px;
+        margin-right: auto;
+        margin-left: auto;
+        border-right: 1px solid #aaa;
+        border-left: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
+    }
 }
 
 /* Padding for spacing */
@@ -163,4 +180,16 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
         width: 25%;
         font-size: 12px;
     }
+}
+.header-hr
+{
+    border-top: solid 2px #5277a9;
+    border-bottom: solid 1px #5277a9;
+    padding-top: 2px;
+}
+.list-title
+{
+    font-size: 1em;
+    font-weight: bold;
+    color: #5277a9;
 }

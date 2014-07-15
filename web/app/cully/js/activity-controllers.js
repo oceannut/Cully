@@ -10,8 +10,8 @@ define(function (require) {
     require('../../common/js/category-services');
 
     angular.module('activity.controllers', ['configs', 'filters', 'project.services', 'user.services', 'category.services'])
-        .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'categoryCacheUtil',
-            function ($scope, $location, $log, currentUser, dateUtil, ActivityListService, categoryCacheUtil) {
+        .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'categoryCacheUtil', 'userCacheUtil',
+            function ($scope, $location, $log, currentUser, dateUtil, ActivityListService, categoryCacheUtil, userCacheUtil) {
 
                 $scope.init = function () {
                     ActivityListService.query({ 'user': currentUser.username, 'start': 0, 'count': 10 })
@@ -34,7 +34,18 @@ define(function (require) {
                                         if (category != null) {
                                             icon = category.Icon;
                                         }
-                                        $scope.activityList.push({ 'id': item.Id, 'icon': icon, 'isDate': false, 'name': item.Name, 'desc': item.Description, 'projectId': item.ProjectId, 'creation': item.Creation });
+                                        var user = userCacheUtil.get(item.Creator);
+                                        item.creatorName = (user == null) ? item.Creator : user.Name;
+                                        $scope.activityList.push({
+                                            'id': item.Id,
+                                            'icon': icon,
+                                            'isDate': false,
+                                            'name': item.Name,
+                                            'desc': item.Description,
+                                            'projectId': item.ProjectId,
+                                            'creator': item.creatorName,
+                                            'creation': item.Creation
+                                        });
                                     }
                                 }
                             }, function (error) {
@@ -86,6 +97,10 @@ define(function (require) {
 
                 }
 
+                $scope.gotoback = function () {
+                    history.back();
+                }
+
                 $scope.selectCategory = function (selectedCategory) {
                     $scope.category = selectedCategory;
                 }
@@ -128,7 +143,7 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                $location.path('/activity-details/' + result.ProjectId + '/');
+                                $location.path('/activity-details/' + result.Id + '/');
                             }, function (error) {
                                 $scope.isLoading = false;
                                 $scope.alertMessageVisible = 'show';
@@ -143,8 +158,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'categoryCacheUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, categoryCacheUtil) {
+        .controller('ActivityDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'categoryCacheUtil', 'userCacheUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, categoryCacheUtil, userCacheUtil) {
 
                 $scope.alertMessageVisible = 'hidden';
 
@@ -158,6 +173,8 @@ define(function (require) {
                                 if (category != null) {
                                     $scope.activity.Icon = category.Icon;
                                 }
+                                var user = userCacheUtil.get($scope.activity.Creator);
+                                $scope.activity.creatorName = (user == null) ? $scope.activity.Creator : user.Name;
                                 $scope.taskListPage = 'partials/task-list-details.htm';
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';

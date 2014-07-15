@@ -7,7 +7,7 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
-    /// 活动。
+    /// 活动，团队协作中任务分派的基本组织单元。
     /// </summary>
     public class Activity
     {
@@ -43,6 +43,11 @@ namespace ThinkInBio.Cully
         /// 提示活动是否已完成。
         /// </summary>
         public bool IsCompleted { get; set; }
+
+        /// <summary>
+        /// 创建人。
+        /// </summary>
+        public string Creator { get; set; }
 
         /// <summary>
         /// 创建时间。

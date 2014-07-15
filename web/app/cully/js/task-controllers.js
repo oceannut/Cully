@@ -43,6 +43,7 @@ define(function (require) {
                 }
 
                 function renderTask(task) {
+                    var d = new Date();
                     var user = userCacheUtil.get(task.Staff);
                     task.staffName = (user == null) ? task.Staff : user.Name;
                     if (task.AppointedDay == null) {
@@ -50,8 +51,7 @@ define(function (require) {
                         task.isOverdueColor = 'btn-default';
                     } else {
                         task.isTimeAssigned = 'btn-default';
-                        var d = new Date();
-                        if (d >= task.AppointedDay) {
+                        if (d <= dateUtil.jsonToDate(task.AppointedDay)) {
                             task.isOverdueColor = 'btn-default';
                         } else {
                             task.isOverdueColor = 'btn-danger';
@@ -59,8 +59,21 @@ define(function (require) {
                     }
                     if (currentUser.username == task.Staff) {
                         task.changeIsUnderwayButtonVisible = '';
+                        task.completeButtonDisabled = false;
+                        task.completeButtonContent = "完成任务";
                     } else {
                         task.changeIsUnderwayButtonVisible = 'none';
+                        task.completeButtonDisabled = true;
+                        task.completeButtonContent = "未完成";
+                    }
+                    if (task.AppointedDay != null) {
+                        //console.log(d);
+                        //console.log(dateUtil.jsonToDate(task.AppointedDay));
+                        if (d <= dateUtil.jsonToDate(task.AppointedDay)) {
+                            task.completeButtonContent += "(" + (dateUtil.jsonToDate(task.AppointedDay).getTime() - d.getTime()) / (24 * 60 * 60 * 1000) + ")";
+                        } else {
+                            task.completeButtonContent += "(已逾期)";
+                        }
                     }
                     withIsUnderwayChanged(task);
                 }
@@ -74,6 +87,13 @@ define(function (require) {
                     $scope.taskPanelDisplay = 'none'
                     clear();
                     var parentScope = $scope.$parent.$parent;
+                    if (currentUser.username == parentScope.activity.Creator) {
+                        $scope.addTaskButtonVisible = '';
+                        $scope.resumeButtonVisible = '';
+                    } else {
+                        $scope.addTaskButtonVisible = 'none';
+                        $scope.resumeButtonVisible = 'none';
+                    }
                     ParticipantService.query({ 'user': currentUser.username, 'projectId': parentScope.activity.ProjectId })
                         .$promise
                             .then(function (result) {
@@ -91,23 +111,74 @@ define(function (require) {
                     TaskService.query({ 'user': currentUser.username, 'activityId': parentScope.activity.Id })
                         .$promise
                             .then(function (result) {
-                                $scope.taskList = [];
-                                $scope.completedTaskList = [];
-                                for (var i = 0; i < result.length; i++) {
-                                    var task = result[i];
-                                    if (task.IsCompleted) {
-                                        renderCompletedTask(task);
-                                        $scope.completedTaskList.push(task);
-                                    } else {
-                                        renderTask(task);
-                                        $scope.taskList.push(task);
-                                    }
-                                }
+                                $scope.sortedTaskList = result;
+                                $scope.sortByTime();
                             }, function (error) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：任务列表加载失败";
                             });
+                }
+
+                $scope.sortByTime = function () {
+                    if ($scope.sortedTaskList != null) {
+                        $scope.sortedTaskList.sort(function (e1, e2) {
+                            if (e1.Creation > e2.Creation) {
+                                return -1;
+                            } else if (e1.Creation < e2.Creation) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                        $scope.taskList = [];
+                        $scope.completedTaskList = [];
+                        var temp = new Date();
+                        temp.setFullYear(1970, 0, 1);
+                        var d = dateUtil.formatDateByYMD(temp);
+                        for (var i = 0; i < $scope.sortedTaskList.length; i++) {
+                            console.log($scope.sortedTaskList[i].Staff);
+                            var task = $scope.sortedTaskList[i];
+                            var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(task.Creation));
+                            var addLabel = false;
+                            if (d != creation) {
+                                d = creation;
+                                addLabel = true;
+                            }
+                            task.isLabel = false;
+                            if (task.IsCompleted) {
+                                if (addLabel) {
+                                    $scope.completedTaskList.push({ 'isLabel': true, 'label': d });
+                                }
+                                renderCompletedTask(task);
+                                $scope.completedTaskList.push(task);
+                            } else {
+                                if (addLabel) {
+                                    $scope.taskList.push({ 'isLabel': true, 'label': d });
+                                }
+                                renderTask(task);
+                                $scope.taskList.push(task);
+                            }
+                        }
+                    }
+                }
+
+                $scope.sortByStaff = function () {
+                    if ($scope.sortedTaskList != null) {
+                        $scope.sortedTaskList.sort(function (e1, e2) {
+                            if (e1.Staff > e2.Staff) {
+                                return 1;
+                            } else if (e1.Staff < e2.Staff) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                        for (var i = 0; i < $scope.sortedTaskList.length; i++) {
+                            console.log($scope.sortedTaskList[i].Staff);
+                        }
+                    }
+
                 }
 
                 $scope.createTask = function () {
