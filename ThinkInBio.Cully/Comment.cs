@@ -11,7 +11,8 @@ namespace ThinkInBio.Cully
     /// </summary>
     public enum CommentTarget
     {
-        Log
+        Log,
+        Task
     }
 
     /// <summary>

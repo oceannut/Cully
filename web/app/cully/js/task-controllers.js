@@ -44,8 +44,6 @@ define(function (require) {
 
                 function renderTask(task) {
                     var d = new Date();
-                    var user = userCacheUtil.get(task.Staff);
-                    task.staffName = (user == null) ? task.Staff : user.Name;
                     if (task.AppointedDay == null) {
                         task.isTimeAssigned = 'btn-warning';
                         task.isOverdueColor = 'btn-default';
@@ -67,10 +65,14 @@ define(function (require) {
                         task.completeButtonContent = "未完成";
                     }
                     if (task.AppointedDay != null) {
+                        var appointedDay = dateUtil.jsonToDate(task.AppointedDay);
+                        appointedDay.setHours(23);
+                        appointedDay.setMinutes(59);
+                        appointedDay.setSeconds(59);
                         //console.log(d);
-                        //console.log(dateUtil.jsonToDate(task.AppointedDay));
-                        if (d <= dateUtil.jsonToDate(task.AppointedDay)) {
-                            task.completeButtonContent += "(" + (dateUtil.jsonToDate(task.AppointedDay).getTime() - d.getTime()) / (24 * 60 * 60 * 1000) + ")";
+                        //console.log(appointedDay);
+                        if (d <= appointedDay) {
+                            task.completeButtonContent += "(还剩" + dateUtil.getDateDiff(d, appointedDay, 'day') + "天)";
                         } else {
                             task.completeButtonContent += "(已逾期)";
                         }
@@ -79,8 +81,68 @@ define(function (require) {
                 }
 
                 function renderCompletedTask(task) {
-                    var user = userCacheUtil.get(task.Staff);
-                    task.staffName = (user == null) ? task.Staff : user.Name;
+                    // do nothing.
+                }
+
+                function interceptByTime(rawList, renderList, renderFunc) {
+                    if (rawList != null) {
+                        rawList.sort(function (e1, e2) {
+                            if (e1.Creation > e2.Creation) {
+                                return -1;
+                            } else if (e1.Creation < e2.Creation) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                    }
+                    var temp = new Date();
+                    temp.setFullYear(1970, 0, 1);
+                    var d = dateUtil.formatDateByYMD(temp);
+                    for (var i = 0; i < rawList.length; i++) {
+                        var task = rawList[i];
+                        var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(task.Creation));
+                        var addLabel = false;
+                        if (d != creation) {
+                            d = creation;
+                            addLabel = true;
+                        }
+                        task.isLabel = false;
+                        if (addLabel) {
+                            renderList.push({ 'isLabel': true, 'label': d });
+                        }
+                        renderFunc(task);
+                        renderList.push(task);
+                    }
+                }
+
+                function interceptByStaff(rawList, renderList, renderFunc) {
+                    if (rawList != null) {
+                        rawList.sort(function (e1, e2) {
+                            if (e1.staffName > e2.staffName) {
+                                return -1;
+                            } else if (e1.staffName < e2.staffName) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        });
+                    }
+                    var temp = '';
+                    for (var i = 0; i < rawList.length; i++) {
+                        var task = rawList[i];
+                        var addLabel = false;
+                        if (temp != task.staffName) {
+                            temp = task.staffName;
+                            addLabel = true;
+                        }
+                        task.isLabel = false;
+                        if (addLabel) {
+                            renderList.push({ 'isLabel': true, 'label': temp });
+                        }
+                        renderFunc(task);
+                        renderList.push(task);
+                    }
                 }
 
                 $scope.init = function () {
@@ -98,10 +160,12 @@ define(function (require) {
                         .$promise
                             .then(function (result) {
                                 $scope.participants = result;
-                                for (var i = 0; i < $scope.participants.length; i++) {
-                                    var participant = $scope.participants[i];
-                                    var user = userCacheUtil.get(participant.Staff);
-                                    participant.staffName = (user == null) ? participant.Staff : user.Name;
+                                if ($scope.participants != null) {
+                                    for (var i = 0; i < $scope.participants.length; i++) {
+                                        var participant = $scope.participants[i];
+                                        var user = userCacheUtil.get(participant.Staff);
+                                        participant.staffName = (user == null) ? participant.Staff : user.Name;
+                                    }
                                 }
                             }, function (error) {
                                 $log.error(error);
@@ -111,8 +175,22 @@ define(function (require) {
                     TaskService.query({ 'user': currentUser.username, 'activityId': parentScope.activity.Id })
                         .$promise
                             .then(function (result) {
-                                $scope.sortedTaskList = result;
-                                $scope.sortByTime();
+                                $scope.rawTaskList = [];
+                                $scope.rawCompletedTaskList = [];
+                                if (result != null) {
+                                    for (var i = 0; i < result.length; i++) {
+                                        var task = result[i];
+                                        var user = userCacheUtil.get(task.Staff);
+                                        task.staffName = (user == null) ? task.Staff : user.Name;
+                                        if (task.IsCompleted) {
+                                            $scope.rawCompletedTaskList.push(task);
+                                        } else {
+                                            $scope.rawTaskList.push(task);
+                                        }
+                                    }
+                                    $scope.sortByTime();
+                                    //$scope.sortByStaff();
+                                }
                             }, function (error) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';
@@ -120,65 +198,24 @@ define(function (require) {
                             });
                 }
 
+
+
                 $scope.sortByTime = function () {
-                    if ($scope.sortedTaskList != null) {
-                        $scope.sortedTaskList.sort(function (e1, e2) {
-                            if (e1.Creation > e2.Creation) {
-                                return -1;
-                            } else if (e1.Creation < e2.Creation) {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
-                        });
-                        $scope.taskList = [];
-                        $scope.completedTaskList = [];
-                        var temp = new Date();
-                        temp.setFullYear(1970, 0, 1);
-                        var d = dateUtil.formatDateByYMD(temp);
-                        for (var i = 0; i < $scope.sortedTaskList.length; i++) {
-                            console.log($scope.sortedTaskList[i].Staff);
-                            var task = $scope.sortedTaskList[i];
-                            var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(task.Creation));
-                            var addLabel = false;
-                            if (d != creation) {
-                                d = creation;
-                                addLabel = true;
-                            }
-                            task.isLabel = false;
-                            if (task.IsCompleted) {
-                                if (addLabel) {
-                                    $scope.completedTaskList.push({ 'isLabel': true, 'label': d });
-                                }
-                                renderCompletedTask(task);
-                                $scope.completedTaskList.push(task);
-                            } else {
-                                if (addLabel) {
-                                    $scope.taskList.push({ 'isLabel': true, 'label': d });
-                                }
-                                renderTask(task);
-                                $scope.taskList.push(task);
-                            }
-                        }
-                    }
+                    $scope.sortByTimeActive = 'active';
+                    $scope.sortByStaffActive = '';
+                    $scope.taskList = [];
+                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                    $scope.completedTaskList = [];
+                    interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
                 }
 
                 $scope.sortByStaff = function () {
-                    if ($scope.sortedTaskList != null) {
-                        $scope.sortedTaskList.sort(function (e1, e2) {
-                            if (e1.Staff > e2.Staff) {
-                                return 1;
-                            } else if (e1.Staff < e2.Staff) {
-                                return -1;
-                            } else {
-                                return 0;
-                            }
-                        });
-                        for (var i = 0; i < $scope.sortedTaskList.length; i++) {
-                            console.log($scope.sortedTaskList[i].Staff);
-                        }
-                    }
-
+                    $scope.sortByTimeActive = '';
+                    $scope.sortByStaffActive = 'active';
+                    $scope.taskList = [];
+                    interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                    $scope.completedTaskList = [];
+                    interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
                 }
 
                 $scope.createTask = function () {

@@ -94,7 +94,31 @@ define(function (require) {
                     var m = date.getMonth() + 1;
                     var y = date.getFullYear();
                     return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+                },
+                getDateDiff: function (startTime, endTime, diffType) {
+                    //将计算间隔类性字符转换为小写
+                    diffType = diffType.toLowerCase();
+                    //作为除数的数字
+                    var divNum = 1;
+                    switch (diffType) {
+                        case "second":
+                            divNum = 1000;
+                            break;
+                        case "minute":
+                            divNum = 1000 * 60;
+                            break;
+                        case "hour":
+                            divNum = 1000 * 3600;
+                            break;
+                        case "day":
+                            divNum = 1000 * 3600 * 24;
+                            break;
+                        default:
+                            break;
+                    }
+                    return Math.ceil((endTime.getTime() - startTime.getTime()) / (divNum));
                 }
+
             }
 
         } ]);

@@ -8,9 +8,9 @@
                 href="javascript:void(0)" class="navbar-link" ng-click="createTask()">添加任务</a></span>
         </div>
         <div class="navbar-text navbar-right">
-            <a href="javascript:void(0)" class="btn btn-default btn-xs active" role="button"
+            <a href="javascript:void(0)" class="btn btn-default btn-xs {{sortByTimeActive}}" role="button"
                 ng-click="sortByTime()"><i class="fa fa-sort-numeric-desc"></i>&nbsp;按时间排序</a>&nbsp;&nbsp;
-            <a href="javascript:void(0)" class="btn btn-default btn-xs" role="button" ng-click="sortByStaff()">
+            <a href="javascript:void(0)" class="btn btn-default btn-xs {{sortByStaffActive}}" role="button" ng-click="sortByStaff()">
                 <i class="fa fa-sort-alpha-asc"></i>&nbsp;按人名排序</a>&nbsp;&nbsp;
         </div>
     </div>
@@ -56,8 +56,9 @@
         <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
             ng-switch="item.isLabel">
             <p ng-switch-when="true">
-                <span class="lead text-light-blue"><i class="fa fa-star-o"></i>&nbsp;{{item.label}}</span></p>
+                <span class="lead text-light-blue">{{item.label}}</span></p>
             <p ng-switch-when="false" style="font-weight: {{item.isUnderwayStatus}};">
+                <i class="fa fa-leaf"></i>&nbsp;
                 <input type="checkbox" title="标记为是否正在进行" ng-model="item.IsUnderway" ng-change="markIsUnderway(item)"
                     style="display: {{item.changeIsUnderwayButtonVisible}};" />
                 {{item.Content}}
@@ -80,8 +81,10 @@
                     <br />
                     <br />
                 </li>
-                <li ng-repeat="item in completedTaskList"><i class="fa fa-user bg-blue"></i>
-                    <div class="timeline-item">
+                <li ng-repeat="item in completedTaskList" ng-switch="item.isLabel"><span ng-switch-when="true"
+                    class="bg-light-blue time-label">{{item.label}}</span> <i ng-switch-when="false"
+                        class="fa fa-leaf bg-blue"></i>
+                    <div ng-switch-when="false" class="timeline-item">
                         <span class="time"><i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.AppointedDay
                             | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
                         <div class="timeline-body">
