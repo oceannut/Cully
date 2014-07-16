@@ -60,21 +60,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/log/{logId}/comment/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Comment SaveComment(string user, string logId, string content);
-
-        [OperationContract]
-        [WebInvoke(Method = "PUT",
-            BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/comment/{id}/",
-            RequestFormat = WebMessageFormat.Json,
-            ResponseFormat = WebMessageFormat.Json)]
-        Comment UpdateComment(string user, string id, string content);
-
-        [OperationContract]
-        [WebGet(UriTemplate = "/{user}/log/{logId}/comment/",
-            RequestFormat = WebMessageFormat.Json,
-            ResponseFormat = WebMessageFormat.Json)]
-        Comment[] GetCommentList(string user, string logId);
+        Comment SaveComment(string user, string logId, string content); 
 
     }
 }

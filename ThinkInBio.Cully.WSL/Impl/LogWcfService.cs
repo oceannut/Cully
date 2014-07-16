@@ -238,60 +238,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 });
         }
 
-        public Comment UpdateComment(string user, string id, string content)
-        {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new ArgumentNullException("user");
-            }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
-            {
-                throw new ArgumentNullException();
-            }
-
-            Comment comment = CommentService.GetComment(Convert.ToInt64(id));
-            if (comment == null)
-            {
-                throw new ObjectNotFoundException(id);
-            }
-            comment.Content = content;
-            comment.Update(
-                (e) =>
-                {
-                    CommentService.UpdateComment(comment);
-                });
-            return comment;
-        }
-
-        public Comment[] GetCommentList(string user, string logId)
-        {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new ArgumentNullException("user");
-            }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(logId))
-            {
-                throw new ArgumentNullException();
-            }
-            IList<Comment> list = LogService.GetCommentList(Convert.ToInt64(logId));
-            if (list != null)
-            {
-                return list.ToArray();
-            }
-            else
-            {
-                return null;
-            }
-        }
-
     }
 
 }

@@ -34,6 +34,16 @@ namespace ThinkInBio.Cully.BLL.Impl
             return CommentDao.Get(id);
         }
 
+        public IList<Comment> GetCommentList(CommentTarget target, long targetId)
+        {
+            if (targetId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return CommentDao.GetList(target, targetId);
+        }
+
     }
 
 }

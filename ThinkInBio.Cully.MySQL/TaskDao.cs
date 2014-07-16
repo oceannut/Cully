@@ -67,6 +67,19 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public bool Update4CommentCount(long id, int count)
+        {
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"update cyTask 
+                                                set commentCount=@commentCount 
+                                                where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("commentCount", count));
+                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+                });
+        }
+
         public override bool Delete(Task entity)
         {
             return DbTemplate.UpdateOrDelete(dataSource,

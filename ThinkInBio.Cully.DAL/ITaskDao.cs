@@ -12,6 +12,8 @@ namespace ThinkInBio.Cully.DAL
     public interface ITaskDao : IDao<Task>
     {
 
+        bool Update4CommentCount(long id, int count);
+
         IList<Task> GetTaskList(DateTime? startTime, DateTime? endTime, 
             long activityId, string staff, 
             bool asc,

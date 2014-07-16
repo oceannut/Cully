@@ -15,6 +15,8 @@ namespace ThinkInBio.Cully.BLL
 
         Comment GetComment(long id);
 
+        IList<Comment> GetCommentList(CommentTarget target, long targetId);
+
     }
 
 }

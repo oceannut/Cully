@@ -38,7 +38,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             LogDao.Update(log);
         }
 
-        public void UpdateLog4Comment(Log log, Comment comment, BizNotification notification)
+        public void UpdateLog4Comment(Log log, Comment comment, ICollection<BizNotification> notificationList)
         {
             if (log == null || comment == null)
             {
@@ -47,9 +47,9 @@ namespace ThinkInBio.Cully.BLL.Impl
 
             LogDao.Update4CommentCount(log.Id, log.CommentCount);
             CommentDao.Save(comment);
-            if (notification != null)
+            if (notificationList != null && notificationList.Count > 0)
             {
-                BizNotificationService.SaveNotification(notification);
+                BizNotificationService.SaveNotification(notificationList);
             }
         }
 
@@ -115,16 +115,6 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             return LogDao.GetList(user, startTime, endTime, startRowIndex, maxRowsCount);
-        }
-
-        public IList<Comment> GetCommentList(long logId)
-        {
-            if (logId == 0)
-            {
-                throw new ArgumentException();
-            }
-
-            return CommentDao.GetList(CommentTarget.Log, logId);
         }
 
     }

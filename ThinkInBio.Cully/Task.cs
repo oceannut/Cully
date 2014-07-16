@@ -11,7 +11,7 @@ namespace ThinkInBio.Cully
     /// <summary>
     /// 任务，包括任务的指派人员、截止时间等定义。
     /// </summary>
-    public class Task
+    public class Task : ICommentable
     {
 
         #region events
@@ -76,6 +76,11 @@ namespace ThinkInBio.Cully
         public DateTime? AppointedDay { get; set; }
 
         /// <summary>
+        /// 评论次数。
+        /// </summary>
+        public int CommentCount { get; set; }
+
+        /// <summary>
         /// 创建时间。
         /// </summary>
         public DateTime Creation { get; set; }
@@ -84,6 +89,16 @@ namespace ThinkInBio.Cully
         /// 修改时间。
         /// </summary>
         public DateTime Modification { get; set; }
+
+        public long TargetId
+        {
+            get { return this.Id; }
+        }
+
+        public CommentTarget Target
+        {
+            get { return CommentTarget.Task; }
+        }
 
         #endregion
 
@@ -489,6 +504,44 @@ namespace ThinkInBio.Cully
             {
                 action(activity, this);
             }
+        }
+
+        /// <summary>
+        /// 评论任务。
+        /// </summary>
+        /// <param name="observers">要通知的人员集合。</param>
+        /// <param name="user">评论人。</param>
+        /// <param name="content">评论内容。</param>
+        /// <param name="action">评论操作定义。</param>
+        /// <returns>返回评论信息。</returns>
+        public Comment Remark(ICollection<string> observers, 
+            string user, string content,
+            Action<Task, Comment, ICollection<BizNotification>> action)
+        {
+            if (string.IsNullOrWhiteSpace(content)
+                && string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
+            if (this.Id == 0)
+            {
+                throw new ArgumentNullException();
+            }
+
+            DateTime now = DateTime.Now;
+
+            Comment comment = new Comment(content, user);
+            ICollection<BizNotification> notificationList = comment.Save(this, observers, now, null);
+
+            this.CommentCount++;
+            this.Modification = now;
+
+            if (action != null)
+            {
+                action(this, comment, notificationList);
+            }
+
+            return comment;
         }
 
         private BizNotification BuildBizNotification(string sender, string receiver)

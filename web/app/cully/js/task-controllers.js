@@ -9,11 +9,12 @@ define(function (require) {
     require('../../../static/js/utils');
     require('./project-services');
     require('./task-services');
+    require('./comment-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services'])
-        .controller('TaskCtrl', ['$scope', '$log', 'currentUser', 'TaskService', 'UpdateTaskService', 'Update4IsUnderwayTaskService',
+    angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services', 'comment.services'])
+        .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService', 'Update4IsUnderwayTaskService',
                                  'Update4IsCompletedTaskService', 'ParticipantService', 'userCacheUtil', 'dateUtil',
-            function ($scope, $log, currentUser, TaskService, UpdateTaskService, Update4IsUnderwayTaskService,
+            function ($scope, $location, $log, currentUser, TaskService, TaskListService, Update4IsUnderwayTaskService,
                       Update4IsCompletedTaskService, ParticipantService, userCacheUtil, dateUtil) {
 
                 function clear() {
@@ -172,7 +173,7 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：成员列表加载失败";
                             });
-                    TaskService.query({ 'user': currentUser.username, 'activityId': parentScope.activity.Id })
+                    TaskListService.query({ 'user': currentUser.username, 'activityId': parentScope.activity.Id })
                         .$promise
                             .then(function (result) {
                                 $scope.rawTaskList = [];
@@ -255,7 +256,7 @@ define(function (require) {
                                     $scope.alertMessage = "提示：任务保存失败";
                                 });
                     } else {
-                        UpdateTaskService.update({ 'user': currentUser.username, 'activityId': parentScope.activity.Id, 'id': $scope.task.id, 'staff': $scope.task.staff, 'content': $scope.task.content, 'appointedDay': $scope.task.appointedDay })
+                        TaskService.update({ 'user': currentUser.username, 'activityId': parentScope.activity.Id, 'id': $scope.task.id, 'staff': $scope.task.staff, 'content': $scope.task.content, 'appointedDay': $scope.task.appointedDay })
                             .$promise
                                 .then(function (result) {
                                     toggleTaskPanelVisibible();
@@ -327,6 +328,71 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：任务状态修改失败";
                             });
+                }
+
+                $scope.gotoTask = function (task) {
+                    $location.path('/task-details/' + task.ActivityId + '/' + task.Id + '/');
+                }
+
+            } ])
+        .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'TaskService', 'Update4CommentTaskService', 'userCacheUtil', 'dateUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, TaskService, Update4CommentTaskService, userCacheUtil, dateUtil) {
+
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
+
+                $scope.init = function () {
+                    ActivityDetailsService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId })
+                        .$promise
+                            .then(function (result) {
+                                $scope.activity = result;
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载活动详细信息失败";
+                                $log.error(error);
+                            });
+
+                    TaskService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId, 'id': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.task = result;
+                                var user = userCacheUtil.get($scope.task.Staff);
+                                $scope.task.staffName = (user == null) ? $scope.task.Staff : user.Name;
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载任务详细信息失败";
+                            });
+                }
+
+                $scope.gotoActivity = function (id) {
+                    $location.path('/activity-details/' + id + "/");
+                }
+
+                $scope.saveComment = function () {
+                    var observerrs = [];
+                    if ($scope.task.Staff == currentUser.username) {
+                        observers.push($scope.activity.Creator);
+                    } else {
+                        observers.push($scope.task.Staff);
+                    }
+                    Update4CommentTaskService.save({ 'user': currentUser.username,
+                        'activityId': $routeParams.activityId,
+                        'id': $routeParams.id,
+                        'content': $scope.comment.content,
+                        'observers': observers
+                    })
+                        .$promise
+                            .then(function (result) {
+                                console.log(result);
+                                $scope.clearComment();
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
+                }
+
+                $scope.clearComment = function () {
+                    $scope.comment.content = '';
                 }
 
             } ]);

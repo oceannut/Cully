@@ -11,7 +11,7 @@ namespace ThinkInBio.Cully
     /// <summary>
     /// 工作记录。
     /// </summary>
-    public class Log
+    public class Log : ICommentable
     {
 
         #region properties
@@ -65,6 +65,16 @@ namespace ThinkInBio.Cully
         /// 修改时间。
         /// </summary>
         public DateTime Modification { get; set; }
+
+        public long TargetId
+        {
+            get { return this.Id; }
+        }
+
+        public CommentTarget Target
+        {
+            get { return CommentTarget.Log; }
+        }
 
         #endregion
 
@@ -130,9 +140,10 @@ namespace ThinkInBio.Cully
         /// </summary>
         /// <param name="user">评论人。</param>
         /// <param name="content">评论内容。</param>
-        /// <param name="action">评论保存操作定义。</param>
+        /// <param name="action">评论操作定义。</param>
+        /// <returns>返回评论信息。</returns>
         public Comment Remark(string user, string content,
-            Action<Log, Comment, BizNotification> action)
+            Action<Log, Comment, ICollection<BizNotification>> action)
         {
             if (string.IsNullOrWhiteSpace(content)
                 && string.IsNullOrWhiteSpace(user))
@@ -147,28 +158,29 @@ namespace ThinkInBio.Cully
             DateTime now = DateTime.Now;
 
             Comment comment = new Comment(content, user);
-            comment.Target = CommentTarget.Log;
-            comment.TargetId = this.Id;
-            comment.Creation = now;
-            comment.Modification = now;
+            ICollection<BizNotification> notificationList = comment.Save(this, new string[] { this.Creator }, now, null);
+            //comment.Target = CommentTarget.Log;
+            //comment.TargetId = this.Id;
+            //comment.Creation = now;
+            //comment.Modification = now;
 
             this.CommentCount++;
             this.Modification = now;
 
-            BizNotification notification = null;
-            if (user != this.Creator)
-            {
-                //只有发送人和接收人不是同一人，才创建通知。
-                notification = new BizNotification(user, this.Creator);
-                notification.Content = content;
-                notification.Resource = "log";
-                notification.ResourceId = this.Id.ToString();
-                notification.Creation = now;
-            }
+            //BizNotification notification = null;
+            //if (user != this.Creator)
+            //{
+            //    //只有发送人和接收人不是同一人，才创建通知。
+            //    notification = new BizNotification(user, this.Creator);
+            //    notification.Content = content;
+            //    notification.Resource = "log";
+            //    notification.ResourceId = this.Id.ToString();
+            //    notification.Creation = now;
+            //}
 
             if (action != null)
             {
-                action(this, comment, notification);
+                action(this, comment, notificationList);
             }
 
             return comment;

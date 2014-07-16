@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
+
 namespace ThinkInBio.Cully
 {
 
@@ -11,7 +13,13 @@ namespace ThinkInBio.Cully
     /// </summary>
     public enum CommentTarget
     {
+        /// <summary>
+        /// 工作记录。
+        /// </summary>
         Log,
+        /// <summary>
+        /// 任务。
+        /// </summary>
         Task
     }
 
@@ -63,15 +71,15 @@ namespace ThinkInBio.Cully
         #region constructors
 
         /// <summary>
-        /// 
+        /// 构建一个评论。
         /// </summary>
         public Comment() { }
 
         /// <summary>
-        /// 
+        /// 构建一个评论。
         /// </summary>
-        /// <param name="content"></param>
-        /// <param name="creator"></param>
+        /// <param name="content">评论内容。</param>
+        /// <param name="creator">创建人。</param>
         public Comment(string content, string creator)
         {
             if (string.IsNullOrWhiteSpace(content)
@@ -84,6 +92,52 @@ namespace ThinkInBio.Cully
         }
 
         #endregion
+
+        public ICollection<BizNotification> Save(ICommentable commentable, 
+            ICollection<string> observers, 
+            DateTime timeStamp, 
+            Action<Comment, ICollection<BizNotification>> action)
+        {
+            if (commentable == null || timeStamp == DateTime.MinValue)
+            {
+                throw new ArgumentException();
+            }
+            if (string.IsNullOrWhiteSpace(this.Content)
+                || string.IsNullOrWhiteSpace(this.Creator)
+                || this.TargetId == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            this.Target = commentable.Target;
+            this.TargetId = commentable.TargetId;
+            this.Creation = timeStamp;
+            this.Modification = timeStamp;
+
+            List<BizNotification> notificationList = new List<BizNotification>();
+            if (observers != null && observers.Count > 0)
+            {  
+                foreach (string observer in observers)
+                {
+                    if (observer != this.Creator)
+                    {
+                        //只有发送人和接收人不是同一人，才创建通知。
+                        BizNotification notification = new BizNotification(this.Creator, observer);
+                        notification.Content = this.Content;
+                        notification.Resource = commentable.Target.ToString();
+                        notification.ResourceId = commentable.TargetId.ToString();
+                        notification.Creation = timeStamp;
+                        notificationList.Add(notification);
+                    }
+                }
+            }
+
+            if (action != null)
+            {
+                action(this, notificationList);
+            }
+
+            return notificationList;
+        }
 
         public void Update(Action<Comment> action)
         {

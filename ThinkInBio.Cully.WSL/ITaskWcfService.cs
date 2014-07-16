@@ -17,7 +17,7 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/",
+            UriTemplate = "/{user}/task/{activityId}/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Task SaveTask(string user, string activityId, string staff, string content, string appointedDay);
@@ -47,10 +47,24 @@ namespace ThinkInBio.Cully.WSL
         Task UpdateTask4IsCompleted(string user, string activityId, string id, string isCompleted);
 
         [OperationContract]
+        [WebGet(UriTemplate = "/{user}/task/{activityId}/{id}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Task GetTask(string user, string activityId, string id);
+
+        [OperationContract]
         [WebGet(UriTemplate = "/{user}/task/{activityId}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Task[] GetTaskList(string user, string activityId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/task/{activityId}/{id}/comment/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Comment SaveComment(string user, string activityId, string id, string content, string[] observers);
 
     }
 

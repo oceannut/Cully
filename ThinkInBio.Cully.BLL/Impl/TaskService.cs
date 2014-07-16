@@ -17,6 +17,7 @@ namespace ThinkInBio.Cully.BLL.Impl
         internal ITaskDao TaskDao { get; set; }
         internal IBizNotificationService BizNotificationService { get; set; }
         internal IActivityDao ActivityDao { get; set; }
+        internal ICommentDao CommentDao { get; set; }
 
         public void SaveTask(Task task, BizNotification notification)
         {
@@ -67,6 +68,21 @@ namespace ThinkInBio.Cully.BLL.Impl
             if (activity != null)
             {
                 ActivityDao.Update(activity);
+            }
+        }
+
+        public void UpdateTask(Task task, Comment comment, ICollection<BizNotification> notificationList)
+        {
+            if (task == null || comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            TaskDao.Update4CommentCount(task.Id, task.CommentCount);
+            CommentDao.Save(comment);
+            if (notificationList != null && notificationList.Count > 0)
+            {
+                BizNotificationService.SaveNotification(notificationList);
             }
         }
 

@@ -43,6 +43,7 @@
     <Compile Include="DayReport.cs" />
     <Compile Include="Activity.cs" />
     <Compile Include="Comment.cs" />
+    <Compile Include="ICommentable.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Participant.cs" />
     <Compile Include="Project.cs" />

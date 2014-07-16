@@ -50,6 +50,10 @@ define(function (require) {
                     templateUrl: 'partials/activity-details.htm',
                     controller: 'ActivityDetailsCtrl'
                 }).
+                when('/task-details/:activityId/:id/', {
+                    templateUrl: 'partials/task-details.htm',
+                    controller: 'TaskDetailsCtrl'
+                }).
                 when('/log-summary/', {
                     templateUrl: 'partials/log-summary.htm',
                     controller: 'LogSummaryCtrl'

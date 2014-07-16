@@ -175,7 +175,7 @@ define(function (require) {
                                 }
                                 var user = userCacheUtil.get($scope.activity.Creator);
                                 $scope.activity.creatorName = (user == null) ? $scope.activity.Creator : user.Name;
-                                $scope.taskListPage = 'partials/task-list-details.htm';
+                                $scope.taskListPage = 'partials/task-list.htm';
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载活动详细信息失败";

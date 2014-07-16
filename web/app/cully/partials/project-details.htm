@@ -1,8 +1,9 @@
 ﻿<div class="container" ng-init="init()">
     <div class="navbar" role="navigation">
         <div class="navbar-header">
-            <h3>
-                <i class="fa fa-cube"></i>&nbsp;{{project.Name}}</h3>
+            <h3 ng-switch="project.IsSolo">
+                <i ng-switch-when="true" class="fa fa-cube"></i><i ng-switch-when="false" class="fa fa-cubes">
+                </i>&nbsp;{{project.Name}}</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
             <li><a title="管理成员" class="navbar-link"><span class="glyphicon glyphicon-user"></span>
@@ -80,7 +81,7 @@
                 jsonDateFormat | date:'yyyy-MM-dd'}}</span>
             <p>
                 {{activity.Description}}</p>
-            <div ng-include="'partials/task-list-details.htm'">
+            <div ng-include="'partials/task-list.htm'">
             </div>
             <hr />
         </li>

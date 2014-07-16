@@ -15,7 +15,7 @@ namespace ThinkInBio.Cully.BLL
 
         void UpdateLog(Log log);
 
-        void UpdateLog4Comment(Log log, Comment comment, BizNotification notification);
+        void UpdateLog4Comment(Log log, Comment comment, ICollection<BizNotification> notificationList);
 
         Log GetLog(long id);
 
@@ -30,8 +30,6 @@ namespace ThinkInBio.Cully.BLL
         IList<Log> GetLogList(string user, 
             DateTime startTime, DateTime endTime, 
             int startRowIndex, int maxRowsCount);
-
-        IList<Comment> GetCommentList(long logId);
 
     }
 }

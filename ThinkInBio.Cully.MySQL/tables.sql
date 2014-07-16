@@ -59,6 +59,7 @@ create table cyTask
 	isCompleted				TINYINT(1)      NOT NULL,
 	staff					VARCHAR(32)		NOT NULL,
 	appointedDay			DATETIME,
+	commentCount			INT				NOT NULL default 0,
 	creation				DATETIME		NOT NULL,
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
