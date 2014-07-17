@@ -17,10 +17,10 @@ namespace ThinkInBio.Cully.DAL
 
         IList<Activity> GetList(long projectId);
 
-        int GetCountByParticipant(string participant,
+        int GetCountByParticipant(string participant, string category,
             DateTime? startTime, DateTime? endTime);
 
-        IList<Activity> GetListByParticipant(string participant,
+        IList<Activity> GetListByParticipant(string participant, string category,
             DateTime? startTime, DateTime? endTime, bool asc,
             int startRowIndex, int maxRowsCount);
 

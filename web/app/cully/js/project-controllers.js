@@ -125,8 +125,10 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'ProjectDetailsService', 'categoryCacheUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, ProjectDetailsService, categoryCacheUtil) {
+        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ProjectDetailsService', 
+                                            'ActivityService', 'ActivityOfProjectService', 'categoryCacheUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ProjectDetailsService, 
+                        ActivityService, ActivityOfProjectService, categoryCacheUtil) {
 
                 $scope.addActivityBtnTitle = '添加活动';
                 $scope.addActivityPanelDisplay = 'none';
@@ -150,7 +152,7 @@ define(function (require) {
                                 $scope.alertMessage = "提示：加载项目详细信息失败";
                                 $log.error(error);
                             });
-                    ActivityService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                    ActivityOfProjectService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.activityList = result;

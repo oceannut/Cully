@@ -60,6 +60,7 @@ namespace ThinkInBio.Cully.WSL
         /// 
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="category"></param>
         /// <param name="name"></param>
         /// <param name="description"></param>
         /// <param name="participants"></param>
@@ -67,37 +68,102 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract(Name = "SaveActivityDirectly")]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/project/0/activity/",
+            UriTemplate = "/{user}/project/0/activity/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Activity SaveActivity(string user, string category, string name, string description, string[] participants);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
+        /// <param name="category"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/project/{projectId}/activity/",
+            UriTemplate = "/{user}/project/{projectId}/activity/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Activity SaveActivity(string user, string projectId, string category, string name, string description);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="activityId"></param>
+        /// <returns></returns>
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/project/0/activity/{activityId}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Activity GetActivity(string user, string activityId);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/project/0/activity/range/{start}/{count}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Activity[] GetActivityList(string user, string start, string count);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="date"></param>
+        /// <param name="span"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [OperationContract(Name = "GetActivityList2")]
+        [WebGet(UriTemplate = "/{user}/project/0/activity/time/{date}/{span}/range/{start}/{count}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Activity[] GetActivityList(string user, string date, string span, string start, string count);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="category"></param>
+        /// <param name="date"></param>
+        /// <param name="span"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [OperationContract(Name = "GetActivityList3")]
+        [WebGet(UriTemplate = "/{user}/project/0/activity/category/{category}/time/{date}/{span}/range/{start}/{count}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Activity[] GetActivityList(string user, string category, string date, string span, string start, string count);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
         [OperationContract(Name = "GetActivityListByProject")]
         [WebGet(UriTemplate = "/{user}/project/{projectId}/activity/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Activity[] GetActivityList(string user, string projectId);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
         [OperationContract(Name = "GetParticipantListByProject")]
         [WebGet(UriTemplate = "/{user}/project/{projectId}/participant/",
             RequestFormat = WebMessageFormat.Json,

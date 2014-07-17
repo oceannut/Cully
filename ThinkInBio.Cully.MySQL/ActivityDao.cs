@@ -132,7 +132,7 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public int GetCountByParticipant(string participant, DateTime? startTime, DateTime? endTime)
+        public int GetCountByParticipant(string participant, string category, DateTime? startTime, DateTime? endTime)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetCount(dataSource,
@@ -144,14 +144,14 @@ namespace ThinkInBio.Cully.MySQL
                     {
                         sql.Append(" inner join cyProject p on t.projectId=p.id inner join cyParticipant pa on pa.projectId=p.id ");
                     }
-                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    BuildSqlByParticipant(sql, parameters, participant, category, startTime, endTime);
                     Console.WriteLine(sql.ToString());
                     command.CommandText = sql.ToString();
                 },
                 parameters);
         }
 
-        public IList<Activity> GetListByParticipant(string participant, DateTime? startTime, DateTime? endTime, 
+        public IList<Activity> GetListByParticipant(string participant, string category, DateTime? startTime, DateTime? endTime, 
             bool asc, int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
@@ -164,7 +164,7 @@ namespace ThinkInBio.Cully.MySQL
                     {
                         sql.Append(" inner join cyProject p on t.projectId=p.id inner join cyParticipant pa on pa.projectId=p.id ");
                     }
-                    BuildSqlByParticipant(sql, parameters, participant, startTime, endTime);
+                    BuildSqlByParticipant(sql, parameters, participant, category, startTime, endTime);
                     sql.Append(" order by t.modification ");
                     if (!asc)
                     {
@@ -184,7 +184,7 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSqlByParticipant(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string participant, DateTime? startTime, DateTime? endTime)
+            string participant, string category, DateTime? startTime, DateTime? endTime)
         {
             if (startTime.HasValue && startTime.Value != DateTime.MinValue
                     && endTime.HasValue && endTime.Value != DateTime.MinValue
@@ -200,6 +200,12 @@ namespace ThinkInBio.Cully.MySQL
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" pa.staff=@participant ");
                 parameters.Add(new KeyValuePair<string, object>("participant", participant));
+            }
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.category=@category ");
+                parameters.Add(new KeyValuePair<string, object>("category", category));
             }
         }
 

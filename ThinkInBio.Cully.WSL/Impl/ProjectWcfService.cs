@@ -169,6 +169,16 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Activity[] GetActivityList(string user, string start, string count)
         {
+            throw new NotImplementedException();
+        }
+
+        public Activity[] GetActivityList(string user, string date, string span, string start, string count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Activity[] GetActivityList(string user, string category, string date, string span, string start, string count)
+        {
             if (string.IsNullOrWhiteSpace(user))
             {
                 throw new ArgumentNullException("user");
@@ -233,6 +243,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 return null;
             }
         }
+
     }
 
 }

@@ -14,7 +14,10 @@ define(function (require) {
             function ($scope, $location, $log, currentUser, dateUtil, ActivityListService, categoryCacheUtil, userCacheUtil) {
 
                 $scope.init = function () {
-                    ActivityListService.query({ 'user': currentUser.username, 'start': 0, 'count': 10 })
+                    categoryCacheUtil.list('activity', function (result) {
+                        $scope.categoryList = result;
+                    });
+                    ActivityListService.query1({ 'user': currentUser.username, 'start': 0, 'count': 10 })
                         .$promise
                             .then(function (result) {
                                 $scope.activityList = [];
@@ -62,8 +65,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'SoloActivityService', 'userCacheUtil', 'categoryCacheUtil',
-            function ($scope, $location, $log, currentUser, SoloActivityService, userCacheUtil, categoryCacheUtil) {
+        .controller('ActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ActivityService', 'userCacheUtil', 'categoryCacheUtil',
+            function ($scope, $location, $log, currentUser, ActivityService, userCacheUtil, categoryCacheUtil) {
 
                 $scope.activity = {};
                 $scope.participants = [];
@@ -134,7 +137,7 @@ define(function (require) {
                             usernameArray.push($scope.participants[i].Username);
                         }
                         $scope.isLoading = true;
-                        SoloActivityService.save({
+                        ActivityService.saveSolo({
                             'user': currentUser.username,
                             'category': $scope.category.Code,
                             'name': $scope.activity.name,
@@ -158,13 +161,13 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'categoryCacheUtil', 'userCacheUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, categoryCacheUtil, userCacheUtil) {
+        .controller('ActivityDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'categoryCacheUtil', 'userCacheUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, categoryCacheUtil, userCacheUtil) {
 
                 $scope.alertMessageVisible = 'hidden';
 
                 $scope.init = function () {
-                    ActivityDetailsService.get({ 'user': currentUser.username, 'activityId': $routeParams.id })
+                    ActivityService.get({ 'user': currentUser.username, 'activityId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.activity = result;

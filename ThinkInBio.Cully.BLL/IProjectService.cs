@@ -72,6 +72,31 @@ namespace ThinkInBio.Cully.BLL
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="user"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="startRowIndex"></param>
+        /// <param name="maxRowsCount"></param>
+        /// <returns></returns>
+        IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, 
+            int startRowIndex, int maxRowsCount);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="category"></param>
+        /// <param name="startRowIndex"></param>
+        /// <param name="maxRowsCount"></param>
+        /// <returns></returns>
+        IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, string category,
+            int startRowIndex, int maxRowsCount);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="projectId"></param>
         /// <returns></returns>
         IList<Activity> GetActivityList(long projectId);

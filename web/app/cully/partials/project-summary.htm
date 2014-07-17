@@ -12,33 +12,56 @@
         </div>
     </div>
     <hr class="header-hr" />
-    <div class="row" style="margin-top: 20px;">
-        <div class="col-sm-8 blog-main">
-            <div ng-controller="ActivityListCtrl" ng-init="init()">
-                <ul class="timeline">
-                    <li><span class="bg-orange time-label">活动时间轴</span>
-                        <br />
-                        <br />
-                    </li>
-                    <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
-                        class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="{{item.icon}} bg-blue">
-                        </i>
-                        <div ng-switch-when="false" class="timeline-item">
-                            <span class="time"><i class="fa fa-user"></i>&nbsp;{{item.creator}}&nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.creation
-                                | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
-                            <h3 class="timeline-header">
-                                <a href="javascript:void(0)" ng-click="gotoDetails(item.id)">{{item.name}}</a></h3>
-                            <div class="timeline-body">
-                                {{item.desc}}
-                            </div>
-                            <div class='timeline-footer'>
-                                <a class="btn btn-primary btn-xs" ng-click="gotoDetails(item.id)">详细信息</a> <a class="btn btn-danger btn-xs"
-                                    ng-click="gotoProject(item.projectId)">所属项目</a>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+    <div class="row">
+        <div class="col-sm-8 blog-main" ng-controller="ActivityListCtrl" ng-init="init()">
+            <div style="margin: 0 0 0 64px;">
+                <form class="form-inline" role="form">
+                <label class="control-label">
+                    记录筛选</label>
+                <div class="form-group">
+                    <select class="form-control input-sm" ng-model="queryModel.staff" ng-change="query()">
+                        <option value="">所有类型</option>
+                        <option ng-repeat="item in categoryList | orderBy : 'Sequence'" value="{{item.Code}}">{{item.Name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query()">
+                        <option value="">所有时间</option>
+                        <option value="0">今天</option>
+                        <option value="-1">昨天</option>
+                        <option value="7">本周</option>
+                        <option value="-7">上周</option>
+                    </select>
+                </div>
+                </form>
             </div>
+            <br />
+            <ul class="timeline">
+                <li><span class="bg-orange time-label">活动时间轴</span>
+                    <br />
+                </li>
+                <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
+                    class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="{{item.icon}} bg-blue">
+                    </i>
+                    <div ng-switch-when="false" class="timeline-item">
+                        <span class="time"><i class="fa fa-user"></i>&nbsp;{{item.creator}}&nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.creation
+                            | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                        <h3 class="timeline-header">
+                            <a href="javascript:void(0)" ng-click="gotoDetails(item.id)">{{item.name}}</a></h3>
+                        <div class="timeline-body">
+                            {{item.desc}}
+                        </div>
+                        <div class='timeline-footer'>
+                            <a class="btn btn-primary btn-xs" ng-click="gotoDetails(item.id)">详细信息</a> <a class="btn btn-danger btn-xs"
+                                ng-click="gotoProject(item.projectId)">所属项目</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul class="pager">
+                <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
+                <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
+            </ul>
         </div>
         <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
             <div class="sidebar-module sidebar-module-inset">

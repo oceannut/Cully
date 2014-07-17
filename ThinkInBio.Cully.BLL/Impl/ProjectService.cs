@@ -88,7 +88,33 @@ namespace ThinkInBio.Cully.BLL.Impl
             {
                 throw new ArgumentNullException();
             }
-            return ActivityDao.GetListByParticipant(user, null, null, false, startRowIndex, maxRowsCount);
+            return ActivityDao.GetListByParticipant(user, null, null, null, false, startRowIndex, maxRowsCount);
+        }
+
+        public IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            if (startTime > endTime)
+            {
+                throw new ArgumentException("startTime or endTime");
+            }
+            return ActivityDao.GetListByParticipant(user, null, startTime, endTime, false, startRowIndex, maxRowsCount);
+        }
+
+        public IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, string category, int startRowIndex, int maxRowsCount)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            if (startTime > endTime)
+            {
+                throw new ArgumentException("startTime or endTime");
+            }
+            return ActivityDao.GetListByParticipant(user, category, startTime, endTime, false, startRowIndex, maxRowsCount);
         }
 
         public IList<Activity> GetActivityList(long projectId)
@@ -110,6 +136,7 @@ namespace ThinkInBio.Cully.BLL.Impl
 
             return ParticipantDao.GetList(projectId);
         }
+
     }
 
 }

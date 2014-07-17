@@ -24,35 +24,32 @@ define(function (require) {
         .factory('TopProjectService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/top/:count/', {}, {
-                    query: { method: 'GET', params: { 'user': '@user', 'count':'@count' }, isArray: true }
+                    query: { method: 'GET', params: { 'user': '@user', 'count': '@count' }, isArray: true }
                 });
             } ])
         .factory('ActivityListService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/:user/project/0/activity/range/:start/:count/', {}, {
-                    query: { method: 'GET', params: { 'user': '@user', 'start': '@start', 'count': '@count' }, isArray: true }
-                });
-            } ])
-        .factory('SoloActivityService', ['$resource', 'wcfApp', 'projectWcfService',
-            function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/:user/project/0/activity/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'category': '@category', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false }
+                return $resource(wcfApp + projectWcfService + '/:user/project/0/activity/category/:category/time/:date/:span/range/:start/:count/', {}, {
+                    query1: { method: 'GET', params: { 'user': '@user', 'category': 'null', 'date': 'null', 'span': 'null', 'start': '@start', 'count': '@count' }, isArray: true },
+                    query2: { method: 'GET', params: { 'user': '@user', 'category': 'null', 'date': '@date', 'span': '@span', 'start': '@start', 'count': '@count' }, isArray: true },
+                    query3: { method: 'GET', params: { 'user': '@user', 'category': '@category', 'date': '@date', 'span': '@span', 'start': '@start', 'count': '@count' }, isArray: true }
                 });
             } ])
         .factory('ActivityService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/activity/:activityId/', {}, {
+                    saveSolo: { method: 'POST', params: { 'user': '@user', 'projectId': '0', 'activityId': '0', 'category': '@category', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false },
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'activityId': '0', 'category': '@category', 'name': '@name', 'description': '@description' }, isArray: false },
+                    get: { method: 'GET', params: { 'user': '@user', 'projectId': '0', 'activityId': '@activityId' }, isArray: false }
+                });
+            } ])
+        .factory('ActivityOfProjectService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/activity/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'category': '@category', 'name': '@name', 'description': '@description' }, isArray: false },
                     query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }
                 });
             } ])
-        .factory('ActivityDetailsService', ['$resource', 'wcfApp', 'projectWcfService',
-            function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/:user/project/0/activity/:activityId/', {}, {
-                    get: { method: 'GET', params: { 'user': '@user', 'activityId': '@activityId' }, isArray: false }
-                });
-            } ])
-        .factory('ParticipantService', ['$resource', 'wcfApp', 'projectWcfService',
+        .factory('ParticipantOfProjectService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/participant/', {}, {
                     query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }

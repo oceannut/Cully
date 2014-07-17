@@ -13,9 +13,9 @@ define(function (require) {
 
     angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services', 'comment.services'])
         .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService', 'Update4IsUnderwayTaskService',
-                                 'Update4IsCompletedTaskService', 'ParticipantService', 'userCacheUtil', 'dateUtil',
+                                 'Update4IsCompletedTaskService', 'ParticipantOfProjectService', 'userCacheUtil', 'dateUtil',
             function ($scope, $location, $log, currentUser, TaskService, TaskListService, Update4IsUnderwayTaskService,
-                      Update4IsCompletedTaskService, ParticipantService, userCacheUtil, dateUtil) {
+                      Update4IsCompletedTaskService, ParticipantOfProjectService, userCacheUtil, dateUtil) {
 
                 function clear() {
                     $scope.task = {};
@@ -157,7 +157,7 @@ define(function (require) {
                         $scope.addTaskButtonVisible = 'none';
                         $scope.resumeButtonVisible = 'none';
                     }
-                    ParticipantService.query({ 'user': currentUser.username, 'projectId': parentScope.activity.ProjectId })
+                    ParticipantOfProjectService.query({ 'user': currentUser.username, 'projectId': parentScope.activity.ProjectId })
                         .$promise
                             .then(function (result) {
                                 $scope.participants = result;
@@ -335,9 +335,9 @@ define(function (require) {
                 }
 
             } ])
-        .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'TaskService',
+        .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'TaskService',
                                         'Update4CommentTaskService', 'CommentListService', 'CommentService', 'userCacheUtil', 'dateUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, TaskService,
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, TaskService,
                         Update4CommentTaskService, CommentListService, CommentService, userCacheUtil, dateUtil) {
 
                 $scope.isLoading = false;
@@ -356,7 +356,7 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    ActivityDetailsService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId })
+                    ActivityService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId })
                         .$promise
                             .then(function (result) {
                                 $scope.activity = result;

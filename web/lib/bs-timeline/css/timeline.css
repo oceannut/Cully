@@ -32,7 +32,7 @@
 .timeline > li {
   position: relative;
   margin-right: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 .timeline > li:before,
 .timeline > li:after {
@@ -43,7 +43,7 @@
   clear: both;
 }
 .timeline > li > .timeline-item {
-  margin-top: 10px;
+  margin-top: 6px;
   border: 0px solid #dfdfdf;
   background: #efefef;
   color: #555;
@@ -57,6 +57,7 @@
   color: #999;
   float: right;
   margin: 2px 0 0 0;
+  font-size: 15px;
 }
 .timeline > li > .timeline-item > .timeline-header {
   margin: 0;
@@ -71,7 +72,7 @@
 }
 .timeline > li > .timeline-item > .timeline-body,
 .timeline > li > .timeline-item > .timeline-footer {
-  padding: 10px;
+  padding: 6px 10px 6px 6px;
 }
 .timeline > li > .timeline-item > .timeline-body {
   font-size: 15px;
@@ -105,7 +106,7 @@
 }
 .timeline-footer > .fa
 {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 
