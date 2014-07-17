@@ -335,17 +335,33 @@ define(function (require) {
                 }
 
             } ])
-        .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'TaskService', 'Update4CommentTaskService', 'userCacheUtil', 'dateUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, TaskService, Update4CommentTaskService, userCacheUtil, dateUtil) {
+        .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityDetailsService', 'TaskService',
+                                        'Update4CommentTaskService', 'CommentListService', 'CommentService', 'userCacheUtil', 'dateUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityDetailsService, TaskService,
+                        Update4CommentTaskService, CommentListService, CommentService, userCacheUtil, dateUtil) {
 
                 $scope.isLoading = false;
                 $scope.alertMessageVisible = 'hidden';
+                $scope.comment = {};
+
+                function render(comment, i) {
+                    comment.index = (parseInt(i) + 1);
+                    var user = userCacheUtil.get(comment.Creator);
+                    comment.creatorName = (user == null) ? comment.Creator : user.Name;
+                    if (comment.Creator == currentUser.username) {
+                        comment.editCommentButtonVisible = '';
+                    } else {
+                        comment.editCommentButtonVisible = 'none';
+                    }
+                }
 
                 $scope.init = function () {
                     ActivityDetailsService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId })
                         .$promise
                             .then(function (result) {
                                 $scope.activity = result;
+                                var user = userCacheUtil.get($scope.activity.Creator);
+                                $scope.activity.CreatorName = (user == null) ? $scope.activity.Creator : user.Name;
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载活动详细信息失败";
@@ -363,6 +379,19 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载任务详细信息失败";
                             });
+                    CommentListService.query({ 'user': currentUser.username, 'commentTarget': 'task', 'targetId': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.commentList = result;
+                                for (var i in $scope.commentList) {
+                                    var comment = $scope.commentList[i];
+                                    render(comment, i);
+                                }
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载评论列表失败";
+                            });
                 }
 
                 $scope.gotoActivity = function (id) {
@@ -370,29 +399,61 @@ define(function (require) {
                 }
 
                 $scope.saveComment = function () {
-                    var observerrs = [];
-                    if ($scope.task.Staff == currentUser.username) {
-                        observers.push($scope.activity.Creator);
-                    } else {
-                        observers.push($scope.task.Staff);
-                    }
-                    Update4CommentTaskService.save({ 'user': currentUser.username,
-                        'activityId': $routeParams.activityId,
-                        'id': $routeParams.id,
-                        'content': $scope.comment.content,
-                        'observers': observers
-                    })
+                    if ($scope.comment.id == null || $scope.comment.id == '') {
+                        var observers = [];
+                        if ($scope.task.Staff == currentUser.username) {
+                            observers.push($scope.activity.Creator);
+                        } else {
+                            observers.push($scope.task.Staff);
+                        }
+                        Update4CommentTaskService.save({ 'user': currentUser.username,
+                            'activityId': $routeParams.activityId,
+                            'id': $routeParams.id,
+                            'content': $scope.comment.content,
+                            'observers': observers
+                        })
                         .$promise
                             .then(function (result) {
-                                console.log(result);
+                                $scope.commentList.push(result);
+                                render(result, $scope.commentList.length - 1);
                                 $scope.clearComment();
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：保存评论失败";
                             });
+                    } else {
+                        CommentService.update({ 'user': currentUser.username,
+                            'id': $scope.comment.id,
+                            'content': $scope.comment.content
+                        })
+                        .$promise
+                            .then(function (result) {
+                                for (var i in $scope.commentList) {
+                                    if ($scope.commentList[i].Id == result.Id) {
+                                        $scope.commentList[i].Content = result.Content;
+                                        break;
+                                    }
+                                }
+                                $scope.clearComment();
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：修改评论失败";
+                            });
+                    }
                 }
 
+
                 $scope.clearComment = function () {
+                    $scope.comment.id = '';
                     $scope.comment.content = '';
+                }
+
+                $scope.editComment = function (comment) {
+                    document.getElementsByName('editCommentPanel')[0].scrollIntoView(true);
+                    $scope.comment.id = comment.Id;
+                    $scope.comment.content = comment.Content;
                 }
 
             } ]);

@@ -103,8 +103,7 @@ namespace ThinkInBio.Cully
                 throw new ArgumentException();
             }
             if (string.IsNullOrWhiteSpace(this.Content)
-                || string.IsNullOrWhiteSpace(this.Creator)
-                || this.TargetId == 0)
+                || string.IsNullOrWhiteSpace(this.Creator))
             {
                 throw new InvalidOperationException();
             }

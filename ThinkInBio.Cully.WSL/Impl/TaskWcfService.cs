@@ -192,30 +192,29 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Comment SaveComment(string user, string activityId, string id, string content, string[] observers)
         {
-            //if (string.IsNullOrWhiteSpace(user))
-            //{
-            //    throw new ArgumentNullException("user");
-            //}
-            ///*
-            // * 验证用户的合法性逻辑暂省略。
-            // * */
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
 
-            //if (string.IsNullOrWhiteSpace(activityId) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
-            //{
-            //    throw new ArgumentNullException();
-            //}
+            if (string.IsNullOrWhiteSpace(activityId) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
+            {
+                throw new ArgumentNullException();
+            }
 
-            //Task task = TaskService.GetTask(Convert.ToInt64(id));
-            //if (task == null)
-            //{
-            //    throw new ObjectNotFoundException(id);
-            //}
-            //return task.Remark(observerrs, user, content,
-            //    (e1, e2, e3) =>
-            //    {
-            //        TaskService.UpdateTask(e1, e2, e3);
-            //    });
-            return null;
+            Task task = TaskService.GetTask(Convert.ToInt64(id));
+            if (task == null)
+            {
+                throw new ObjectNotFoundException(id);
+            }
+            return task.Remark(observers, user, content,
+                (e1, e2, e3) =>
+                {
+                    TaskService.UpdateTask(e1, e2, e3);
+                });
         }
 
     }
