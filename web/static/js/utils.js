@@ -7,7 +7,7 @@ define(function (require) {
 
             return {
                 //reference: http://www.cnblogs.com/liszt/archive/2011/08/16/2140007.html
-                removeHTML: function(str) {
+                removeHTML: function (str) {
                     str = str.replace(/<\/?[^>]*>/g, ''); //去除HTML tag
                     str = str.replace(/[ | ]*\n/g, '\n'); //去除行尾空白
                     //str = str.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
@@ -117,6 +117,32 @@ define(function (require) {
                             break;
                     }
                     return Math.ceil((endTime.getTime() - startTime.getTime()) / (divNum));
+                },
+                getDaysofMonth: function (month) {
+                    switch (month) {
+                        case 1:
+                        case 3:
+                        case 5:
+                        case 7:
+                        case 8:
+                        case 10:
+                        case 12:
+                            return 31;
+                        case 4:
+                        case 6:
+                        case 9:
+                        case 11:
+                            return 30;
+                        case 2:
+                            var year = d.getFullYear();
+                            if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+                                return 29;
+                            } else {
+                                return 28;
+                            }
+                        default:
+                            throw 'unsupport';
+                    }
                 }
 
             }

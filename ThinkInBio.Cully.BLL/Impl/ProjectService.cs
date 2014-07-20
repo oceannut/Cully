@@ -41,13 +41,27 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ProjectDao.Get(projectId);
         }
 
-        public IList<Project> GetTopProjectList(string user, int maxRowsCount)
+        public IList<Project> GetTopProjectList(string user, bool? isSolo, int maxRowsCount)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
                 throw new ArgumentNullException();
             }
-            return ProjectDao.GetListByParticipant(user, null, null, false, false, 0, maxRowsCount);
+            DateTime endTime = DateTime.Now;
+            DateTime startTime = endTime.AddDays(-30);
+            return ProjectDao.GetListByParticipant(user, startTime, endTime, isSolo, false, 0, maxRowsCount);
+        }
+
+        public IList<Project> GetProjectList(string user,
+            DateTime? startTime, DateTime? endTime,
+            bool? isSolo,
+            int startRowIndex, int maxRowsCount)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException();
+            }
+            return ProjectDao.GetListByParticipant(user, startTime, endTime, isSolo, false, 0, maxRowsCount);
         }
 
         public void SaveActivity(Activity activity)
@@ -91,7 +105,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ActivityDao.GetListByParticipant(user, null, null, null, false, startRowIndex, maxRowsCount);
         }
 
-        public IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        public IList<Activity> GetActivityList(string user, DateTime? startTime, DateTime? endTime, int startRowIndex, int maxRowsCount)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -104,7 +118,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ActivityDao.GetListByParticipant(user, null, startTime, endTime, false, startRowIndex, maxRowsCount);
         }
 
-        public IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, string category, int startRowIndex, int maxRowsCount)
+        public IList<Activity> GetActivityList(string user, DateTime? startTime, DateTime? endTime, string category, int startRowIndex, int maxRowsCount)
         {
             if (string.IsNullOrWhiteSpace(user))
             {

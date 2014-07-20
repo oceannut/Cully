@@ -28,7 +28,7 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/project/",
+            UriTemplate = "/{user}/project/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Project SaveProject(string user, string name, string description, string[] participants);
@@ -51,10 +51,26 @@ namespace ThinkInBio.Cully.WSL
         /// <param name="user">项目参与人，一般要求为登录验证通过的用户。</param>
         /// <returns>返回项目集合。</returns>
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/project/top/{count}/",
+        [WebGet(UriTemplate = "/{user}/project/top/isSoloInclude/{isSoloInclude}/{count}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Project[] GetTopProjectList(string user, string count);
+        Project[] GetTopProjectList(string user, string isSoloInclude, string count);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="isSoloInclude"></param>
+        /// <param name="date"></param>
+        /// <param name="span"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebGet(UriTemplate = "/{user}/project/isSoloInclude/{isSoloInclude}/time/{date}/{span}/range/{start}/{count}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Project[] GetProjectList(string user, string isSoloInclude, string date, string span, string start, string count);
 
         /// <summary>
         /// 

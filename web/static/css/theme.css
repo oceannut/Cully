@@ -122,6 +122,13 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
     margin-bottom: 0;
 }
 
+.sidebar-module h4
+{
+    color: #5277a9;
+    padding-bottom: 6px;
+    border-bottom: solid 1px;
+}
+
 .css-form input.ng-invalid.ng-dirty
 {
     background-color: #FA787E;

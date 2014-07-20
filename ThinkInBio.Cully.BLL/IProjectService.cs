@@ -33,9 +33,25 @@ namespace ThinkInBio.Cully.BLL
         /// 获取与指定参与人相关的最新的项目。
         /// </summary>
         /// <param name="user">参与人。</param>
+        /// <param name="isSoloInclude">是否是单一活动项目。</param>
         /// <param name="maxRowsCount">返回项目的最大个数。</param>
         /// <returns>返回项目集合。</returns>
-        IList<Project> GetTopProjectList(string user, int maxRowsCount);
+        IList<Project> GetTopProjectList(string user, bool? isSolo, int maxRowsCount);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="isSolo"></param>
+        /// <param name="startRowIndex"></param>
+        /// <param name="maxRowsCount"></param>
+        /// <returns></returns>
+        IList<Project> GetProjectList(string user,
+            DateTime? startTime, DateTime? endTime,
+            bool? isSolo,
+            int startRowIndex, int maxRowsCount);
 
         /// <summary>
         /// 保存活动。
@@ -78,7 +94,7 @@ namespace ThinkInBio.Cully.BLL
         /// <param name="startRowIndex"></param>
         /// <param name="maxRowsCount"></param>
         /// <returns></returns>
-        IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, 
+        IList<Activity> GetActivityList(string user, DateTime? startTime, DateTime? endTime, 
             int startRowIndex, int maxRowsCount);
 
         /// <summary>
@@ -91,7 +107,7 @@ namespace ThinkInBio.Cully.BLL
         /// <param name="startRowIndex"></param>
         /// <param name="maxRowsCount"></param>
         /// <returns></returns>
-        IList<Activity> GetActivityList(string user, DateTime startTime, DateTime endTime, string category,
+        IList<Activity> GetActivityList(string user, DateTime? startTime, DateTime? endTime, string category,
             int startRowIndex, int maxRowsCount);
 
         /// <summary>

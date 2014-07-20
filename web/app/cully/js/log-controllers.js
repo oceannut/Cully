@@ -142,7 +142,6 @@ define(function (require) {
                             $scope.logList.push(item);
                         }
                         $scope.nextBtnClass = '';
-
                     } else {
                         if ($scope.currentPage > 0) {
                             $scope.currentPage--;

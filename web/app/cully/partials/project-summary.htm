@@ -13,31 +13,39 @@
     </div>
     <hr class="header-hr" />
     <div class="row">
-        <div class="col-sm-8 blog-main" ng-controller="ActivityListCtrl" ng-init="init()">
+        <div class="col-sm-9 blog-main" ng-controller="ActivityListCtrl" ng-init="init()">
             <div style="margin: 0 0 0 64px;">
                 <form class="form-inline" role="form">
                 <label class="control-label">
                     记录筛选</label>
                 <div class="form-group">
-                    <select class="form-control input-sm" ng-model="queryModel.staff" ng-change="query()">
+                    <select class="form-control input-sm" ng-model="queryModel.category" ng-change="query()">
                         <option value="">所有类型</option>
-                        <option ng-repeat="item in categoryList | orderBy : 'Sequence'" value="{{item.Code}}">{{item.Name}}</option>
+                        <option ng-repeat="item in categoryList | orderBy : 'Sequence'" value="{{item.Code}}">
+                            {{item.Name}}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query()">
                         <option value="">所有时间</option>
+                        <option value="-30">按月查询</option>
                         <option value="0">今天</option>
                         <option value="-1">昨天</option>
                         <option value="7">本周</option>
                         <option value="-7">上周</option>
                     </select>
                 </div>
+                <div class="form-group" style="display: {{monthInputVisible}};">
+                    <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
+                </div>
+                <!--<a href="javascript:void(0)" class="btn btn-success btn-sm" role="button" ng-click="">
+                    <i class="fa fa-ellipsis-h"></i></a>-->
                 </form>
             </div>
             <br />
             <ul class="timeline">
                 <li><span class="bg-orange time-label">活动时间轴</span>
+                    <br />
                     <br />
                 </li>
                 <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
@@ -63,19 +71,32 @@
                 <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
             </ul>
         </div>
-        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+        <div class="col-sm-3 blog-sidebar">
             <div class="sidebar-module sidebar-module-inset">
                 <h4>
                     统计</h4>
                 <p>
                 </p>
             </div>
-            <div class="sidebar-module" ng-controller="ProjectListCtrl" ng-init="init()">
+            <div class="sidebar-module sidebar-module-inset" ng-controller="ProjectListCtrl" ng-init="init()">
                 <h4>
                     最新项目</h4>
+                <form class="css-form" role="form">
+                <div class="form-group">
+                    <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="queryModel.isSoloInclude" ng-change="query()" />
+                        包括单一活动项目
+                    </label>
+                </div>
+                </form>
+                <br />
                 <ol class="list-unstyled">
-                    <li ng-repeat="item in projectList"><a href="javascript:void(0)" ng-click="gotoDetails(item.Id)">
-                        {{item.Name}}</a></li>
+                    <li ng-repeat="item in projectList"><a href="javascript:void(0)" ng-click="gotoDetails(item.Id)"
+                        ng-switch="item.IsSolo"><i class="fa fa-cube" ng-switch-when="true"></i><i class="fa fa-cubes"
+                            ng-switch-when="false"></i>&nbsp;{{item.Name}}</a></li>
                 </ol>
             </div>
         </div>

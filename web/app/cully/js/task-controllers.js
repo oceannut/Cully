@@ -44,6 +44,9 @@ define(function (require) {
                 }
 
                 function renderTask(task) {
+                    task.isLabel = false;
+                    var user = userCacheUtil.get(task.Staff);
+                    task.staffName = (user == null) ? task.Staff : user.Name;
                     var d = new Date();
                     if (task.AppointedDay == null) {
                         task.isTimeAssigned = 'btn-warning';
@@ -181,8 +184,6 @@ define(function (require) {
                                 if (result != null) {
                                     for (var i = 0; i < result.length; i++) {
                                         var task = result[i];
-                                        var user = userCacheUtil.get(task.Staff);
-                                        task.staffName = (user == null) ? task.Staff : user.Name;
                                         if (task.IsCompleted) {
                                             $scope.rawCompletedTaskList.push(task);
                                         } else {
@@ -249,7 +250,12 @@ define(function (require) {
                                 .then(function (result) {
                                     toggleTaskPanelVisibible();
                                     renderTask(result);
-                                    $scope.taskList.unshift(result);
+                                    $scope.rawTaskList.push(result);
+
+                                    $scope.sortByTimeActive = 'active';
+                                    $scope.sortByStaffActive = '';
+                                    $scope.taskList = [];
+                                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
                                 }, function (error) {
                                     $log.error(error);
                                     $scope.alertMessageVisible = 'show';

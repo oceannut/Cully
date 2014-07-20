@@ -22,21 +22,51 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectListCtrl', ['$scope', '$location', 'currentUser', 'TopProjectService',
-            function ($scope, $location, currentUser, TopProjectService) {
+        .controller('ProjectListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TopProjectListService', 'ProjectListService', 'dateUtil',
+            function ($scope, $location, $log, currentUser, TopProjectListService, ProjectListService, dateUtil) {
 
                 $scope.init = function () {
-                    TopProjectService.query({ 'user': currentUser.username, 'count': 10 })
+                    $scope.queryModel = {
+                        'month': '',
+                        'isSoloInclude': false
+                    }
+                    TopProjectListService.query({ 'user': currentUser.username, 'isSoloInclude': $scope.queryModel.isSoloInclude, 'count': 10 })
                         .$promise
                             .then(function (result) {
                                 $scope.projectList = result;
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：项目列表加载失败";
                             });
                 }
 
                 $scope.gotoDetails = function (id) {
                     $location.path('/project-details/' + id + "/");
+                }
+
+                $scope.query = function () {
+                    var startDay, span, d;
+                    if ($scope.queryModel.month != '') {
+                        var array = $scope.queryModel.month.split('-');
+                        d = new Date(array[0], parseInt(array[1]) - 1, 1);
+                    } else {
+                        var temp = new Date();
+                        d = new Date(temp.getFullYear(), temp.getMonth(), 1);
+                    }
+                    startDay = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+                    span = dateUtil.getDaysofMonth(d.getMonth() + 1);
+                    if (startDay != undefined && span != undefined) {
+                        ProjectListService.query({ 'user': currentUser.username, 'isSoloInclude': $scope.queryModel.isSoloInclude, 'date': startDay, 'span': span, 'start': 0, 'count': 1000 })
+                            .$promise
+                                .then(function (result) {
+                                    $scope.projectList = result;
+                                }, function (error) {
+                                    $log.error(error);
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessage = "提示：项目列表加载失败";
+                                });
+                    }
                 }
 
             } ])
@@ -62,6 +92,7 @@ define(function (require) {
                             }
                         }
                     }, function (error) {
+                        $log.error(error);
                         $scope.alertMessageVisible = 'show';
                         $scope.alertMessage = "提示：成员列表加载失败";
                     }, function () {
@@ -125,9 +156,9 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ProjectDetailsService', 
+        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ProjectService',
                                             'ActivityService', 'ActivityOfProjectService', 'categoryCacheUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ProjectDetailsService, 
+            function ($scope, $location, $log, $routeParams, currentUser, ProjectService,
                         ActivityService, ActivityOfProjectService, categoryCacheUtil) {
 
                 $scope.addActivityBtnTitle = '添加活动';
@@ -143,7 +174,7 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    ProjectDetailsService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                    ProjectService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.project = result;

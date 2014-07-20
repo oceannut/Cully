@@ -10,21 +10,21 @@ define(function (require) {
         .constant("projectWcfService", "/wcf/ProjectWcfService.svc")
         .factory('ProjectService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/:user/project/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false },
-                    query: { method: 'GET', params: { 'user': '@user' }, isArray: true }
-                });
-            } ])
-        .factory('ProjectDetailsService', ['$resource', 'wcfApp', 'projectWcfService',
-            function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/', {}, {
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '0', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false },
                     get: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: false }
                 });
             } ])
-        .factory('TopProjectService', ['$resource', 'wcfApp', 'projectWcfService',
+        .factory('TopProjectListService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/:user/project/top/:count/', {}, {
-                    query: { method: 'GET', params: { 'user': '@user', 'count': '@count' }, isArray: true }
+                return $resource(wcfApp + projectWcfService + '/:user/project/top/isSoloInclude/:isSoloInclude/:count/', {}, {
+                    query: { method: 'GET', params: { 'user': '@user', 'isSoloInclude': '@isSoloInclude', 'count': '@count' }, isArray: true }
+                });
+            } ])
+        .factory('ProjectListService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/:user/project/isSoloInclude/:isSoloInclude/time/:date/:span/range/:start/:count/', {}, {
+                    query: { method: 'GET', params: { 'user': '@user', 'isSoloInclude': '@isSoloInclude', 'date': '@date', 'span': '@span', 'start': '@start', 'count': '@count' }, isArray: true }
                 });
             } ])
         .factory('ActivityListService', ['$resource', 'wcfApp', 'projectWcfService',

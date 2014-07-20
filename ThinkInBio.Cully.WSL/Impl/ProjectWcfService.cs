@@ -59,7 +59,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return project;
         }
 
-        public Project[] GetTopProjectList(string user, string count)
+        public Project[] GetTopProjectList(string user, string isSoloInclude, string count)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -69,8 +69,52 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
+            bool isSoloIncludeBool= Convert.ToBoolean(isSoloInclude);
+            bool? isSolo = isSoloIncludeBool ? null : new bool?(false);
             int countInt = Convert.ToInt32(count);
-            IList<Project> list = ProjectService.GetTopProjectList(user, countInt);
+            IList<Project> list = ProjectService.GetTopProjectList(user, isSolo, countInt);
+            if (list != null)
+            {
+                return list.ToArray();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Project[] GetProjectList(string user, string isSoloInclude, string date, string span, string start, string count)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            DateTime? startTime = null;
+            DateTime? endTime = null;
+            if ("null" != date && "null" != span)
+            {
+                DateTime d = DateTime.Parse(date);
+                int spanInt = Convert.ToInt32(span);
+                if (spanInt < 0)
+                {
+                    startTime = d.AddDays(spanInt + 1);
+                    endTime = new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
+                }
+                else
+                {
+                    startTime = new DateTime(d.Year, d.Month, d.Day);
+                    endTime = d.AddDays(spanInt).AddSeconds(-1);
+                }
+            }
+            bool isSoloIncludeBool = Convert.ToBoolean(isSoloInclude);
+            bool? isSolo = isSoloIncludeBool ? null : new bool?(false);
+            int startInt = Convert.ToInt32(start);
+            int countInt = Convert.ToInt32(count);
+            IList<Project> list = ProjectService.GetProjectList(user, startTime, endTime, isSolo, startInt, countInt);
             if (list != null)
             {
                 return list.ToArray();
@@ -186,10 +230,30 @@ namespace ThinkInBio.Cully.WSL.Impl
             /*
              * 验证用户的合法性逻辑暂省略。
              * */
-
+            if ("null" == category)
+            {
+                category = null;
+            }
+            DateTime? startTime = null;
+            DateTime? endTime = null;
+            if ("null" != date && "null" != span)
+            {
+                DateTime d = DateTime.Parse(date);
+                int spanInt = Convert.ToInt32(span);
+                if (spanInt < 0)
+                {
+                    startTime = d.AddDays(spanInt + 1);
+                    endTime = new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
+                }
+                else
+                {
+                    startTime = new DateTime(d.Year, d.Month, d.Day);
+                    endTime = d.AddDays(spanInt).AddSeconds(-1);
+                }
+            }
             int startInt = Convert.ToInt32(start);
             int countInt = Convert.ToInt32(count);
-            IList<Activity> list = ProjectService.GetActivityList(user, startInt, countInt);
+            IList<Activity> list = ProjectService.GetActivityList(user, startTime, endTime, category, startInt, countInt);
             if (list != null)
             {
                 return list.ToArray();

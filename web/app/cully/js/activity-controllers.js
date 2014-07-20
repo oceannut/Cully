@@ -13,47 +13,137 @@ define(function (require) {
         .controller('ActivityListCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'categoryCacheUtil', 'userCacheUtil',
             function ($scope, $location, $log, currentUser, dateUtil, ActivityListService, categoryCacheUtil, userCacheUtil) {
 
+                var pageSize = 20;
+
+                function getActivityList() {
+                    var startRowIndex = $scope.currentPage * pageSize;
+                    var category = $scope.queryModel.category;
+                    var date = $scope.queryModel.date;
+
+                    if (category == '') {
+                        category = 'null';
+                    }
+                    var startDay, span;
+                    if (date != '') {
+                        if (date == '-30') {
+                            $scope.monthInputVisible = '';
+                            if ($scope.queryModel.month != '') {
+                                var array = $scope.queryModel.month.split('-');
+                                var d = new Date(array[0], parseInt(array[1]) - 1, 1);
+                                startDay = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+                                span = dateUtil.getDaysofMonth(d.getMonth() + 1);
+                            }
+                        } else {
+                            $scope.monthInputVisible = 'none';
+                            startDay = dateUtil.getDate(date);
+                            span = dateUtil.getSpan(date);
+                        }
+
+                    } else {
+                        $scope.monthInputVisible = 'none';
+                        startDay = 'null';
+                        span = 'null';
+                    }
+                    if (startDay != undefined && span != undefined) {
+                        //console.log(startDay);
+                        //console.log(span);
+                        ActivityListService.query3({ 'user': currentUser.username, 'category': category, 'date': startDay, 'span': span, 'start': startRowIndex, 'count': pageSize })
+                            .$promise
+                                .then(function (result) {
+                                    interceptActivityList(result);
+                                }, function (error) {
+                                    $log.error(error);
+                                });
+                    }
+                }
+
+                function interceptActivityList(result) {
+                    if (result != null && result.length > 0) {
+                        $scope.activityList = [];
+                        for (var i = 0; i < result.length; i++) {
+                            var temp = new Date();
+                            temp.setFullYear(1970, 0, 1);
+                            var d = dateUtil.formatDateByYMD(temp);
+                            for (var i = 0; i < result.length; i++) {
+                                var item = result[i];
+                                var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(item.Creation));
+                                if (d != creation) {
+                                    d = creation;
+                                    $scope.activityList.push({ 'isDate': true, 'date': d });
+                                }
+                                var category = categoryCacheUtil.get('activity', item.Category);
+                                var icon = 'fa fa-tasks';
+                                if (category != null) {
+                                    icon = category.Icon;
+                                }
+                                var user = userCacheUtil.get(item.Creator);
+                                item.creatorName = (user == null) ? item.Creator : user.Name;
+                                $scope.activityList.push({
+                                    'id': item.Id,
+                                    'icon': icon,
+                                    'isDate': false,
+                                    'name': item.Name,
+                                    'desc': item.Description,
+                                    'projectId': item.ProjectId,
+                                    'creator': item.creatorName,
+                                    'creation': item.Creation
+                                });
+                            }
+                        }
+                        $scope.nextBtnClass = '';
+                    } else {
+                        if ($scope.currentPage > 0) {
+                            $scope.currentPage--;
+                        } else {
+                            $scope.activityList = [];
+                        }
+                        $scope.nextBtnClass = 'disabled';
+                    }
+                    if ($scope.currentPage == 0) {
+                        $scope.prevBtnClass = 'disabled';
+                    } else {
+                        $scope.prevBtnClass = '';
+                    }
+                }
+
                 $scope.init = function () {
+                    $scope.monthInputVisible = 'none';
+                    $scope.queryModel = {
+                        'category': '',
+                        'date': '',
+                        'month': ''
+                    }
+                    $scope.prevBtnClass = 'disabled';
+                    $scope.nextBtnClass = '';
+                    $scope.currentPage = -1;
+
                     categoryCacheUtil.list('activity', function (result) {
                         $scope.categoryList = result;
                     });
-                    ActivityListService.query1({ 'user': currentUser.username, 'start': 0, 'count': 10 })
-                        .$promise
-                            .then(function (result) {
-                                $scope.activityList = [];
-                                if (result != null && result.length > 0) {
-                                    var temp = new Date();
-                                    temp.setFullYear(1970, 0, 1);
-                                    var d = dateUtil.formatDateByYMD(temp);
-                                    for (var i = 0; i < result.length; i++) {
-                                        var item = result[i];
-                                        var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(item.Creation));
-                                        if (d != creation) {
-                                            d = creation;
-                                            $scope.activityList.push({ 'isDate': true, 'date': d });
-                                        }
-                                        var category = categoryCacheUtil.get('activity', item.Category);
-                                        var icon = 'fa fa-tasks';
-                                        if (category != null) {
-                                            icon = category.Icon;
-                                        }
-                                        var user = userCacheUtil.get(item.Creator);
-                                        item.creatorName = (user == null) ? item.Creator : user.Name;
-                                        $scope.activityList.push({
-                                            'id': item.Id,
-                                            'icon': icon,
-                                            'isDate': false,
-                                            'name': item.Name,
-                                            'desc': item.Description,
-                                            'projectId': item.ProjectId,
-                                            'creator': item.creatorName,
-                                            'creation': item.Creation
-                                        });
-                                    }
-                                }
-                            }, function (error) {
-                                $log.error(error);
-                            });
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    $scope.currentPage = 0;
+                    getActivityList();
+                }
+
+                $scope.prevPage = function () {
+                    if ($scope.prevBtnClass == 'disabled') {
+                        return;
+                    }
+                    if ($scope.currentPage > 0) {
+                        $scope.currentPage--;
+                        getActivityList();
+                    }
+                }
+
+                $scope.nextPage = function () {
+                    if ($scope.nextBtnClass == 'disabled') {
+                        return;
+                    }
+                    $scope.currentPage++;
+                    getActivityList();
                 }
 
                 $scope.gotoDetails = function (id) {
