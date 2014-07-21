@@ -157,10 +157,11 @@ define(function (require) {
 
             } ])
         .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ProjectService',
-                                            'ActivityService', 'ActivityOfProjectService', 'categoryCacheUtil',
+                                            'ActivityService', 'ActivityOfProjectService', 'categoryCacheUtil', 'userCacheUtil',
             function ($scope, $location, $log, $routeParams, currentUser, ProjectService,
-                        ActivityService, ActivityOfProjectService, categoryCacheUtil) {
+                        ActivityService, ActivityOfProjectService, categoryCacheUtil, userCacheUtil) {
 
+                $scope.navbarLinkVisible = 'none';
                 $scope.addActivityBtnTitle = '添加活动';
                 $scope.addActivityPanelDisplay = 'none';
                 $scope.project = {};
@@ -173,11 +174,22 @@ define(function (require) {
                     $scope.activity.description = '';
                 }
 
+                $scope.gotoPariticipantList = function (projectId) {
+                    $location.path("/participant-list/" + projectId + "/");
+                }
+
                 $scope.init = function () {
                     ProjectService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.project = result;
+                                if (currentUser.username == $scope.project.Creator) {
+                                    $scope.navbarLinkVisible = '';
+                                } else {
+                                    $scope.navbarLinkVisible = 'none';
+                                }
+                                var user = userCacheUtil.get($scope.project.Creator);
+                                $scope.project.creatorName = (user == null) ? $scope.project.Creator : user.Name;
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载项目详细信息失败";
@@ -187,6 +199,17 @@ define(function (require) {
                         .$promise
                             .then(function (result) {
                                 $scope.activityList = result;
+                                for (var i = 0; i < $scope.activityList.length; i++) {
+                                    var activity = $scope.activityList[i];
+                                    activity.index = (i + 1);
+                                    var category = categoryCacheUtil.get('activity', activity.Category);
+                                    var icon = 'fa fa-tasks';
+                                    if (category != null) {
+                                        activity.icon = category.Icon;
+                                    }
+                                    var user = userCacheUtil.get(activity.Creator);
+                                    activity.creatorName = (user == null) ? activity.Creator : user.Name;
+                                }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载活动列表失败";

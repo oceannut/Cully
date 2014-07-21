@@ -179,6 +179,35 @@ namespace ThinkInBio.Cully.WSL
         /// </summary>
         /// <param name="user"></param>
         /// <param name="projectId"></param>
+        /// <param name="participant"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/project/{projectId}/participant/{participant}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Participant SaveParticipant(string user, string projectId, string participant);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
+        /// <param name="participant"></param>
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/project/{projectId}/participant/{participant}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteParticipant(string user, string projectId, string participant);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
         /// <returns></returns>
         [OperationContract(Name = "GetParticipantListByProject")]
         [WebGet(UriTemplate = "/{user}/project/{projectId}/participant/",

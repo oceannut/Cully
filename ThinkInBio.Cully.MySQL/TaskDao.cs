@@ -96,7 +96,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Task>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,content,activityId,isUnderway,isCompleted,staff,appointedDay,creation,modification from cyTask 
+                    command.CommandText = @"select id,content,activityId,isUnderway,isCompleted,staff,appointedDay,commentCount,creation,modification from cyTask 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -116,7 +116,7 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select id,content,activityId,isUnderway,isCompleted,staff,appointedDay,creation,modification from cyTask ");
+                    sql.Append("select id,content,activityId,isUnderway,isCompleted,staff,appointedDay,commentCount,creation,modification from cyTask ");
                     BuildSql(sql, parameters, startTime, endTime, activityId, staff);
                     sql.Append(" order by modification ");
                     if (!asc)
@@ -172,8 +172,9 @@ namespace ThinkInBio.Cully.MySQL
                 reader.GetBoolean(4),
                 reader.GetString(5),
                 reader.IsDBNull(6) ? null : new DateTime?(reader.GetDateTime(6)),
-                reader.GetDateTime(7),
-                reader.GetDateTime(8));
+                reader.GetInt32(7),
+                reader.GetDateTime(8),
+                reader.GetDateTime(9));
 
             return entity;
         }

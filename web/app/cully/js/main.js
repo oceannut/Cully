@@ -7,6 +7,7 @@ define(function (require) {
     require('./project-controllers');
     require('./activity-controllers');
     require('./task-controllers');
+    require('./participant-controllers');
     require('./log-controllers');
     require('./cache');
     require('../../../static/js/utils');
@@ -19,6 +20,7 @@ define(function (require) {
             'project.controllers',
             'activity.controllers',
             'task.controllers',
+            'participant.controllers',
             'log.controllers',
             'cache',
             'utils',
@@ -53,6 +55,10 @@ define(function (require) {
                 when('/task-details/:activityId/:id/', {
                     templateUrl: 'partials/task-details.htm',
                     controller: 'TaskDetailsCtrl'
+                }).
+                when('/participant-list/:projectId/', {
+                    templateUrl: 'partials/participant-list.htm',
+                    controller: 'ParticipantListCtrl'
                 }).
                 when('/log-summary/', {
                     templateUrl: 'partials/log-summary.htm',

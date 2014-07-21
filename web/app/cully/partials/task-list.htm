@@ -1,7 +1,8 @@
 ﻿<div ng-controller="TaskListCtrl" ng-init="init()">
     <div class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
-            <span class="navbar-brand list-title"><i class="fa fa-list"></i>&nbsp;任务列表</span>
+            <span class="navbar-brand list-title" style="color: #cc0033;"><i class="fa fa-list">
+            </i>&nbsp;任务列表</span>
         </div>
         <div class="navbar-text">
             <span style="display: {{addTaskButtonVisible}};"><i class="fa fa-plus"></i>&nbsp;<a
@@ -56,13 +57,14 @@
         <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
             ng-switch="item.isLabel">
             <p ng-switch-when="true">
-                <span class="lead text-light-blue">{{item.label}}</span></p>
+                <span class="text-green"><i class="fa fa-lemon-o"></i>&nbsp;{{item.label}}</span></p>
             <p ng-switch-when="false" style="font-weight: {{item.isUnderwayStatus}};">
                 <i class="fa fa-leaf"></i>&nbsp;
                 <input type="checkbox" title="标记为是否正在进行" ng-model="item.IsUnderway" ng-change="markIsUnderway(item)"
                     style="display: {{item.changeIsUnderwayButtonVisible}};" />
-                <a ng-click="gotoTask(item)">{{item.Content}}</a>
-                <button type="button" class="btn btn-xs {{item.isTimeAssigned}}" ng-click="editTask(item)">
+                <a ng-click="gotoTask(item)">{{item.Content}}&nbsp;&nbsp;<i ng-if="item.CommentCount>0">(有{{item.CommentCount}}个评论)</i></a>&nbsp;
+                <button type="button" class="btn btn-xs {{item.isTimeAssigned}}" ng-click="editTask(item)"
+                    ng-disabled="item.editButtonDisabled">
                     <i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>
                     {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}
                 </button>

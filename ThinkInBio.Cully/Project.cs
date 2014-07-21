@@ -171,6 +171,89 @@ namespace ThinkInBio.Cully
             }
         }
 
+        /// <summary>
+        /// 添加成员。
+        /// </summary>
+        /// <param name="participant">成员用户名。</param>
+        /// <param name="participantFactory">获取本项目成员列表的操作定义。</param>
+        /// <param name="action">添加成员操作定义。</param>
+        /// <returns>返回项目添加的成员信息。</returns>
+        public Participant AddParticipant(string participant, 
+            Func<long, IEnumerable<Participant>> participantFactory,
+            Action<Participant> action)
+        {
+            if (this.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (!IsRequireFieldSatisfied())
+            {
+                throw new InvalidOperationException();
+            }
+
+            Participant p = null;
+            IEnumerable<Participant> participants = participantFactory == null ? null : participantFactory(this.Id);
+            if (participants == null || participants.Count() == 0
+                || !participants.Any((e) =>
+                    {
+                        if (this.Id != e.ProjectId)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        return participant == e.Staff;
+                    }))
+            {
+                p = new Participant(this);
+                p.Staff = participant;
+                p.Creation = DateTime.Now;
+            }
+            if (action != null)
+            {
+                action(p);
+            }
+            return p;
+        }
+
+        /// <summary>
+        /// 删除成员。
+        /// </summary>
+        /// <param name="participant">成员用户名。</param>
+        /// <param name="participantFactory">获取本项目成员列表的操作定义。</param>
+        /// <param name="action">删除成员操作定义。</param>
+        /// <returns>返回项目删除的成员信息。</returns>
+        public Participant RemoveParticipant(string participant,
+            Func<long, IEnumerable<Participant>> participantFactory,
+            Action<Participant> action)
+        {
+            if (this.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+            if (!IsRequireFieldSatisfied())
+            {
+                throw new InvalidOperationException();
+            }
+
+            Participant p = null;
+            IEnumerable<Participant> participants = participantFactory == null ? null : participantFactory(this.Id);
+            if (participants != null && participants.Count() > 0)
+            {
+                p = participants.SingleOrDefault((e) =>
+                    {
+                        if (this.Id != e.ProjectId)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                        return participant == e.Staff;
+                    });
+            }
+            if (p != null && action != null)
+            {
+                action(p);
+            }
+            return p;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null)

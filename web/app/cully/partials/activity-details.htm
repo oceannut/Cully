@@ -2,12 +2,12 @@
     <div class="navbar" role="navigation">
         <div class="navbar-header">
             <h3>
-                <i class="fa fa-share-alt"></i>&nbsp;{{activity.Name}}</h3>
+                <i class="{{activity.icon}}"></i>&nbsp;{{activity.Name}}</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a title="所属项目" ng-click="gotoProject(activity.ProjectId)"><i class="fa fa-level-up">
+            <li><a ng-click="gotoProject(activity.ProjectId)"><i class="fa fa-level-up">
             </i>&nbsp;所属项目</a></li>
-            <li><a title="管理成员"><i class="fa fa-print"></i>&nbsp;打印预览</a></li>
+            <li><a><i class="fa fa-print"></i>&nbsp;打印预览</a></li>
         </ul>
     </div>
     <hr class="header-hr" />
@@ -16,7 +16,7 @@
     <blockquote>
         <p>
             {{activity.Description}}</p>
-        <footer> &nbsp; <i class="{{activity.Icon}} fa-lg"></i> &nbsp;&nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{activity.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+        <footer> &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{activity.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
     </blockquote>
     <div ng-include="taskListPage">
     </div>

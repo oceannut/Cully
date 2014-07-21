@@ -6,20 +6,23 @@
                 </i>&nbsp;{{project.Name}}</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a title="管理成员" class="navbar-link"><span class="glyphicon glyphicon-user"></span>
-                成员</a></li>
-            <li><a title="管理成员"><span class="glyphicon glyphicon-cog"></span>设置</a></li>
-            <li><a title="管理成员"><span class="glyphicon glyphicon-print"></span>打印</a></li>
-            <li><a title="管理成员"><span class="glyphicon glyphicon-tasks"></span>进展</a></li>
-            <li><a title="管理成员"><span class="glyphicon glyphicon-stats"></span>统计</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a ng-click="gotoPariticipantList(project.Id)"><i class="fa fa-users"></i>&nbsp;成员管理</a></li>
+            <li><a><i class="fa fa-print"></i>&nbsp;打印预览</a></li>
+            <li><a><i class="glyphicon glyphicon-stats"></i>&nbsp;统计</a></li>
         </ul>
     </div>
-    <hr style="border-top: solid 3px #5277a9; border-bottom: solid 1px #5277a9; padding-top: 2px;" />
+    <hr class="header-hr" />
     <div class="alert alert-danger {{alertMessageVisible}}">
         {{alertMessage}}</div>
+    <blockquote>
+        <p>
+            {{project.Description}}</p>
+        <footer> &nbsp; <a>{{project.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+    </blockquote>
     <div class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
-            <span class="navbar-brand list-title"><i class="fa fa-th-list"></i>&nbsp;活动列表</span>
+            <span class="navbar-brand list-title" style="color: #5277a9;"><i class="fa fa-th-list">
+            </i>&nbsp;活动列表</span>
         </div>
         <div class="navbar-text">
             <i class="fa fa-plus"></i><a href="javascript:void(0)" class="navbar-link" ng-click="toggleAddActivityPanelVisibible()">
@@ -73,17 +76,19 @@
         </div>
         </form>
     </div>
-    <ol class="list-unstyled">
-        <li ng-repeat="activity in activityList">
-            <h4>
-                <a href="javascript:void(0)" ng-click="gotoActivity(activity.Id)">{{activity.Name}}</a></h4>
-            <span class="pull-right">{{activity.Creator}}&nbsp;于&nbsp;{{activity.Modification |
-                jsonDateFormat | date:'yyyy-MM-dd'}}</span>
-            <p>
-                {{activity.Description}}</p>
+    <ol class="list-group">
+        <li class="list-group-item" ng-repeat="activity in activityList">
+            <h4 class="list-group-item-heading">
+                <mark>[活动{{activity.index}}]</mark>
+                &nbsp;<i class="{{activity.icon}}"></i>&nbsp; <a href="javascript:void(0)" ng-click="gotoActivity(activity.Id)">
+                    {{activity.Name}}</a></h4>
+            <blockquote>
+                <p>
+                    {{activity.Description}}</p>
+                <footer> &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+            </blockquote>
             <div ng-include="'partials/task-list.htm'">
             </div>
-            <hr />
         </li>
     </ol>
 </div>

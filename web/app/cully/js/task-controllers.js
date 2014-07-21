@@ -43,41 +43,41 @@ define(function (require) {
                     }
                 }
 
-                function renderTask(task) {
-                    task.isLabel = false;
+                function buildStaffName(task) {
                     var user = userCacheUtil.get(task.Staff);
                     task.staffName = (user == null) ? task.Staff : user.Name;
+                }
+
+                function renderTask(task) {
+                    var parentScope = $scope.$parent.$parent;
+                    if (currentUser.username == parentScope.activity.Creator) {
+                        task.editButtonDisabled = false;
+                    } else {
+                        task.editButtonDisabled = true;
+                    }
+                    if (currentUser.username == task.Staff) {
+                        task.changeIsUnderwayButtonVisible = '';
+                        task.completeButtonDisabled = false;
+                    } else {
+                        task.changeIsUnderwayButtonVisible = 'none';
+                        task.completeButtonDisabled = true;
+                    }
+                    task.completeButtonContent = "未完成";
                     var d = new Date();
                     if (task.AppointedDay == null) {
                         task.isTimeAssigned = 'btn-warning';
                         task.isOverdueColor = 'btn-default';
                     } else {
                         task.isTimeAssigned = 'btn-default';
-                        if (d <= dateUtil.jsonToDate(task.AppointedDay)) {
-                            task.isOverdueColor = 'btn-default';
-                        } else {
-                            task.isOverdueColor = 'btn-danger';
-                        }
-                    }
-                    if (currentUser.username == task.Staff) {
-                        task.changeIsUnderwayButtonVisible = '';
-                        task.completeButtonDisabled = false;
-                        task.completeButtonContent = "完成任务";
-                    } else {
-                        task.changeIsUnderwayButtonVisible = 'none';
-                        task.completeButtonDisabled = true;
-                        task.completeButtonContent = "未完成";
-                    }
-                    if (task.AppointedDay != null) {
                         var appointedDay = dateUtil.jsonToDate(task.AppointedDay);
                         appointedDay.setHours(23);
                         appointedDay.setMinutes(59);
                         appointedDay.setSeconds(59);
-                        //console.log(d);
-                        //console.log(appointedDay);
                         if (d <= appointedDay) {
+                            task.isOverdueColor = 'btn-default';
                             task.completeButtonContent += "(还剩" + dateUtil.getDateDiff(d, appointedDay, 'day') + "天)";
                         } else {
+                            task.isOverdueColor = 'btn-danger';
                             task.completeButtonContent += "(已逾期)";
                         }
                     }
@@ -85,7 +85,7 @@ define(function (require) {
                 }
 
                 function renderCompletedTask(task) {
-                    // do nothing.
+
                 }
 
                 function interceptByTime(rawList, renderList, renderFunc) {
@@ -184,6 +184,7 @@ define(function (require) {
                                 if (result != null) {
                                     for (var i = 0; i < result.length; i++) {
                                         var task = result[i];
+                                        buildStaffName(task);
                                         if (task.IsCompleted) {
                                             $scope.rawCompletedTaskList.push(task);
                                         } else {
@@ -249,13 +250,16 @@ define(function (require) {
                             .$promise
                                 .then(function (result) {
                                     toggleTaskPanelVisibible();
-                                    renderTask(result);
+                                    buildStaffName(result);
                                     $scope.rawTaskList.push(result);
 
-                                    $scope.sortByTimeActive = 'active';
-                                    $scope.sortByStaffActive = '';
                                     $scope.taskList = [];
-                                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                                    if ($scope.sortByTimeActive == 'active') {
+                                        interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                                    }
+                                    else {
+                                        interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                                    }
                                 }, function (error) {
                                     $log.error(error);
                                     $scope.alertMessageVisible = 'show';
@@ -266,14 +270,22 @@ define(function (require) {
                             .$promise
                                 .then(function (result) {
                                     toggleTaskPanelVisibible();
-                                    renderTask(result);
-                                    for (var i in $scope.taskList) {
-                                        if ($scope.taskList[i].Id == result.Id) {
-                                            $scope.taskList.splice(i, 1);
+                                    for (var i in $scope.rawTaskList) {
+                                        if ($scope.rawTaskList[i].Id == result.Id) {
+                                            $scope.rawTaskList.splice(i, 1);
                                             break;
                                         }
                                     }
-                                    $scope.taskList.unshift(result);
+                                    buildStaffName(result);
+                                    $scope.rawTaskList.push(result);
+
+                                    $scope.taskList = [];
+                                    if ($scope.sortByTimeActive == 'active') {
+                                        interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                                    }
+                                    else {
+                                        interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                                    }
                                 }, function (error) {
                                     $log.error(error);
                                     $scope.alertMessageVisible = 'show';
@@ -302,14 +314,25 @@ define(function (require) {
                     Update4IsCompletedTaskService.update({ 'user': currentUser.username, 'activityId': task.ActivityId, 'id': task.Id, 'isCompleted': 'true' })
                         .$promise
                             .then(function (result) {
-                                for (var i in $scope.taskList) {
-                                    if ($scope.taskList[i].Id == result.Id) {
-                                        $scope.taskList.splice(i, 1);
+                                for (var i in $scope.rawTaskList) {
+                                    if ($scope.rawTaskList[i].Id == result.Id) {
+                                        $scope.rawTaskList.splice(i, 1);
                                         break;
                                     }
                                 }
-                                renderCompletedTask(result);
-                                $scope.completedTaskList.push(result);
+                                buildStaffName(result);
+                                $scope.rawCompletedTaskList.push(result);
+
+                                $scope.taskList = [];
+                                $scope.completedTaskList = [];
+                                if ($scope.sortByTimeActive == 'active') {
+                                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                                    interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                                }
+                                else {
+                                    interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                                    interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                                }
                             }, function (error) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';
@@ -321,14 +344,25 @@ define(function (require) {
                     Update4IsCompletedTaskService.update({ 'user': currentUser.username, 'activityId': task.ActivityId, 'id': task.Id, 'isCompleted': 'false' })
                         .$promise
                             .then(function (result) {
-                                for (var i in $scope.completedTaskList) {
-                                    if ($scope.completedTaskList[i].Id == result.Id) {
-                                        $scope.completedTaskList.splice(i, 1);
+                                for (var i in $scope.rawCompletedTaskList) {
+                                    if ($scope.rawCompletedTaskList[i].Id == result.Id) {
+                                        $scope.rawCompletedTaskList.splice(i, 1);
                                         break;
                                     }
                                 }
-                                renderTask(result);
-                                $scope.taskList.push(result);
+                                buildStaffName(result);
+                                $scope.rawTaskList.push(result);
+
+                                $scope.taskList = [];
+                                $scope.completedTaskList = [];
+                                if ($scope.sortByTimeActive == 'active') {
+                                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                                    interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                                }
+                                else {
+                                    interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                                    interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                                }
                             }, function (error) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';

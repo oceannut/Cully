@@ -136,7 +136,8 @@ namespace ThinkInBio.Cully
         /// <param name="modification"></param>
         public Task(long id, string content, long activityId,
             bool isUnderway, bool isCompleted, string staff, 
-            DateTime? appointedDay, DateTime creation, DateTime modification)
+            DateTime? appointedDay, int commentCount,
+            DateTime creation, DateTime modification)
         {
             if (id == 0
                 || string.IsNullOrWhiteSpace(content)
@@ -155,6 +156,7 @@ namespace ThinkInBio.Cully
             this.IsCompleted = isCompleted;
             this.Staff = staff;
             this.AppointedDay = appointedDay;
+            this.CommentCount = commentCount;
             this.Creation = creation;
             this.Modification = modification;
         }

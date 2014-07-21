@@ -45,8 +45,6 @@ define(function (require) {
                         span = 'null';
                     }
                     if (startDay != undefined && span != undefined) {
-                        //console.log(startDay);
-                        //console.log(span);
                         ActivityListService.query3({ 'user': currentUser.username, 'category': category, 'date': startDay, 'span': span, 'start': startRowIndex, 'count': pageSize })
                             .$promise
                                 .then(function (result) {
@@ -264,7 +262,7 @@ define(function (require) {
                                 var category = categoryCacheUtil.get('activity', $scope.activity.Category);
                                 var icon = 'fa fa-tasks';
                                 if (category != null) {
-                                    $scope.activity.Icon = category.Icon;
+                                    $scope.activity.icon = category.Icon;
                                 }
                                 var user = userCacheUtil.get($scope.activity.Creator);
                                 $scope.activity.creatorName = (user == null) ? $scope.activity.Creator : user.Name;

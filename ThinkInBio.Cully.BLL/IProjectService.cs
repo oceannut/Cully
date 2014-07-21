@@ -120,6 +120,18 @@ namespace ThinkInBio.Cully.BLL
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="participant"></param>
+        void SaveParticipant(Participant participant);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="participant"></param>
+        void DeleteParticipant(Participant participant);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="projectId"></param>
         /// <returns></returns>
         IList<Participant> GetParticipantList(long projectId);

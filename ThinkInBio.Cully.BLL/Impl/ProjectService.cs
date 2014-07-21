@@ -141,6 +141,24 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ActivityDao.GetList(projectId);
         }
 
+        public void SaveParticipant(Participant participant)
+        {
+            if (participant == null)
+            {
+                throw new ArgumentNullException();
+            }
+            ParticipantDao.Save(participant);
+        }
+
+        public void DeleteParticipant(Participant participant)
+        {
+            if (participant == null)
+            {
+                throw new ArgumentNullException();
+            }
+            ParticipantDao.Delete(participant);
+        }
+
         public IList<Participant> GetParticipantList(long projectId)
         {
             if (projectId == 0)

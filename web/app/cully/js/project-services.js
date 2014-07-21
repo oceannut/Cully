@@ -49,6 +49,13 @@ define(function (require) {
                     query: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: true }
                 });
             } ])
+        .factory('ParticipantService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/participant/:participant/', {}, {
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'participant': '@participant'}, isArray: false },
+                    remove: { method: 'DELETE', params: { 'user': '@user', 'projectId': '@projectId', 'participant': '@participant' }, isArray: false }
+                });
+            } ])
         .factory('ParticipantOfProjectService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/participant/', {}, {

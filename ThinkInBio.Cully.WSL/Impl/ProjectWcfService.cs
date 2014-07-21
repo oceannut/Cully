@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.Common.Exceptions;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -284,6 +285,62 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 return null;
             }
+        }
+
+        public Participant SaveParticipant(string user, string projectId, string participant)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(participant))
+            {
+                throw new ArgumentNullException();
+            }
+            Project project = ProjectService.GetProject(Convert.ToInt64(projectId));
+            if (project == null)
+            {
+                throw new ObjectNotFoundException(projectId);
+            }
+            return project.AddParticipant(participant, null, (e) =>
+            {
+                ProjectService.SaveParticipant(e);
+            });
+        }
+
+        public void DeleteParticipant(string user, string projectId, string participant)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(participant))
+            {
+                throw new ArgumentNullException();
+            }
+            long projectIdLong = Convert.ToInt64(projectId);
+            Project project = ProjectService.GetProject(projectIdLong);
+            if (project == null)
+            {
+                throw new ObjectNotFoundException(projectId);
+            }
+            project.RemoveParticipant(participant,
+                (e) =>
+                {
+                    return ProjectService.GetParticipantList(e);
+                },
+                (e) =>
+                {
+                    ProjectService.DeleteParticipant(e);
+                });
         }
 
         public Participant[] GetParticipantList(string user, string projectId)
