@@ -57,7 +57,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
-        public void UpdateTask(Activity activity, Task task)
+        public void UpdateTask(Task task, Activity activity)
         {
             if (task == null)
             {
@@ -68,21 +68,6 @@ namespace ThinkInBio.Cully.BLL.Impl
             if (activity != null)
             {
                 ActivityDao.Update(activity);
-            }
-        }
-
-        public void UpdateTask(Task task, Comment comment, ICollection<BizNotification> notificationList)
-        {
-            if (task == null || comment == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            TaskDao.Update4CommentCount(task.Id, task.CommentCount);
-            CommentDao.Save(comment);
-            if (notificationList != null && notificationList.Count > 0)
-            {
-                BizNotificationService.SaveNotification(notificationList);
             }
         }
 
@@ -104,6 +89,36 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             return TaskDao.GetTaskList(null, null, activityId, null, false, 0, int.MaxValue);
+        }
+
+        public void SaveComment(Task task, Comment comment, ICollection<BizNotification> notificationList)
+        {
+            if (task == null || comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            TaskDao.Update4CommentCount(task.Id, task.CommentCount);
+            CommentDao.Save(comment);
+            if (notificationList != null && notificationList.Count > 0)
+            {
+                BizNotificationService.SaveNotification(notificationList);
+            }
+        }
+
+        public void DeleteComment(Task task, Comment comment, ICollection<BizNotification> notificationList)
+        {
+            if (task == null || comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            TaskDao.Update4CommentCount(task.Id, task.CommentCount);
+            CommentDao.Delete(comment);
+            if (notificationList != null && notificationList.Count > 0)
+            {
+                BizNotificationService.SaveNotification(notificationList);
+            }
         }
 
     }

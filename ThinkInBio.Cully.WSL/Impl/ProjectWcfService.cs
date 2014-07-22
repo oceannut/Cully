@@ -46,6 +46,43 @@ namespace ThinkInBio.Cully.WSL.Impl
             return project;
         }
 
+        public Project UpdateProject(string user, string projectId, string name, string description)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException("name");
+            }
+            if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
+            {
+                throw new ArgumentOutOfRangeException("description", description.Length, "");
+            }
+            Project project = ProjectService.GetProject(Convert.ToInt64(projectId));
+            if (project == null)
+            {
+                throw new ObjectNotFoundException(projectId);
+            }
+            project.Name = name;
+            project.Description = description;
+            project.Update((e) =>
+            {
+                ProjectService.UpdateProject(e);
+            });
+            return project;
+        }
+
+        public void DeleteProject(string user, string projectId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Project GetProject(string user, string projectId)
         {
             if (string.IsNullOrWhiteSpace(user))

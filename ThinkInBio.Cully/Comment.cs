@@ -93,6 +93,14 @@ namespace ThinkInBio.Cully
 
         #endregion
 
+        /// <summary>
+        /// 保存评论。
+        /// </summary>
+        /// <param name="commentable">评论的对象。</param>
+        /// <param name="observers">评论要通知的观察人集合。</param>
+        /// <param name="timeStamp">时间戳。</param>
+        /// <param name="action">保存操作定义。</param>
+        /// <returns>返回通知集合。</returns>
         public ICollection<BizNotification> Save(ICommentable commentable, 
             ICollection<string> observers, 
             DateTime timeStamp, 
@@ -112,45 +120,86 @@ namespace ThinkInBio.Cully
             this.Creation = timeStamp;
             this.Modification = timeStamp;
 
-            List<BizNotification> notificationList = new List<BizNotification>();
-            if (observers != null && observers.Count > 0)
-            {  
-                foreach (string observer in observers)
-                {
-                    if (observer != this.Creator)
-                    {
-                        //只有发送人和接收人不是同一人，才创建通知。
-                        BizNotification notification = new BizNotification(this.Creator, observer);
-                        notification.Content = this.Content;
-                        notification.Resource = commentable.Target.ToString();
-                        notification.ResourceId = commentable.TargetId.ToString();
-                        notification.Creation = timeStamp;
-                        notificationList.Add(notification);
-                    }
-                }
-            }
-
+            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "添加了评论", timeStamp);
             if (action != null)
             {
                 action(this, notificationList);
             }
-
             return notificationList;
         }
 
-        public void Update(Action<Comment> action)
+        /// <summary>
+        /// 更新评论。
+        /// </summary>
+        /// <param name="observers">评论要通知的观察人集合。</param>
+        /// <param name="action">更新操作定义。</param>
+        /// <returns>返回通知集合。</returns>
+        public ICollection<BizNotification> Update(ICollection<string> observers,
+            Action<Comment, ICollection<BizNotification>> action)
+        {
+            if (this.Id == 0
+                || string.IsNullOrWhiteSpace(this.Content)
+                || string.IsNullOrWhiteSpace(this.Creator))
+            {
+                throw new InvalidOperationException();
+            }
+
+            DateTime timeStamp = DateTime.Now;
+            this.Modification = timeStamp;
+            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "更新了评论", timeStamp);
+            if (action != null)
+            {
+                action(this, notificationList);
+            }
+            return notificationList;
+        }
+
+        /// <summary>
+        /// 删除评论。
+        /// </summary>
+        /// <param name="observers">评论要通知的观察人集合。</param>
+        /// <param name="timeStamp">时间戳。</param>
+        /// <param name="action">删除操作定义。</param>
+        /// <returns>返回通知集合。</returns>
+        public ICollection<BizNotification> Delete(ICollection<string> observers,
+            DateTime timeStamp, 
+            Action<Comment, ICollection<BizNotification>> action)
         {
             if (this.Id == 0)
             {
                 throw new InvalidOperationException();
             }
 
-            DateTime now = DateTime.Now;
-            this.Modification = now;
+            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "删除了评论", timeStamp);
             if (action != null)
             {
-                action(this);
+                action(this, notificationList);
             }
+            return notificationList;
+        }
+
+        private ICollection<BizNotification> BuildNotificaiton(ICollection<string> observers, string contentPrefix, DateTime timeStamp)
+        {
+            List<BizNotification> notificationList = new List<BizNotification>();
+            if (observers != null && observers.Count > 0)
+            {
+                foreach (string observer in observers)
+                {
+                    if (observer != this.Creator)
+                    {
+                        //只有发送人和接收人不是同一人，才创建通知。
+                        BizNotification notification = new BizNotification(this.Creator, observer);
+                        notification.Content = string.Format("{0}: {1}...", contentPrefix, 
+                            this.Content.Length < 120 ? this.Content : this.Content.Substring(0, 120));
+                        notification.Resource = this.Target.ToString();
+                        notification.ResourceId = this.TargetId.ToString();
+                        notification.Creation = timeStamp;
+                        notificationList.Add(notification);
+                    }
+                }
+            }
+
+            return notificationList;
         }
 
     }

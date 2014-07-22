@@ -23,6 +23,12 @@ namespace ThinkInBio.Cully.BLL
             ICollection<Participant> participants);
 
         /// <summary>
+        /// 更新项目。
+        /// </summary>
+        /// <param name="project"></param>
+        void UpdateProject(Project project);
+
+        /// <summary>
         /// 获取项目。
         /// </summary>
         /// <param name="projectId">项目编号。</param>

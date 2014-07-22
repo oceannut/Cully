@@ -11,8 +11,10 @@ define(function (require) {
         .factory('ProjectService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '0', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false },
-                    get: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' }, isArray: false }
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '0', 'name': '@name', 'description': '@description', 'participants': '@participants' } },
+                    update: { method: 'PUT', params: { 'user': '@user', 'projectId': '@projectId', 'name': '@name', 'description': '@description' } },
+                    remove: { method: 'DELETE', params: { 'user': '@user', 'projectId': '@projectId' } },
+                    get: { method: 'GET', params: { 'user': '@user', 'projectId': '@projectId' } }
                 });
             } ])
         .factory('TopProjectListService', ['$resource', 'wcfApp', 'projectWcfService',

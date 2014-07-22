@@ -135,7 +135,7 @@ namespace ThinkInBio.Cully
         /// <param name="creation"></param>
         /// <param name="modification"></param>
         public Task(long id, string content, long activityId,
-            bool isUnderway, bool isCompleted, string staff, 
+            bool isUnderway, bool isCompleted, string staff,
             DateTime? appointedDay, int commentCount,
             DateTime creation, DateTime modification)
         {
@@ -212,7 +212,7 @@ namespace ThinkInBio.Cully
         /// <param name="appointedDay">任务完成截止时间。</param>
         /// <param name="action">更新操作定义。</param>
         public void Appoint(string user,
-            string staff, 
+            string staff,
             DateTime? appointedDay,
             Action<Task, BizNotification> action)
         {
@@ -303,8 +303,8 @@ namespace ThinkInBio.Cully
         /// <param name="activity">所属的活动。</param>
         /// <param name="tasks">与本任务同属一个活动的任务集合。</param>
         /// <param name="action">更新操作定义。</param>
-        public void Complete(Activity activity, 
-            ICollection<Task> tasks, 
+        public void Complete(Activity activity,
+            ICollection<Task> tasks,
             Action<Activity, Task> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
@@ -363,7 +363,7 @@ namespace ThinkInBio.Cully
         /// </summary>
         /// <param name="activityFetch">获取活动的操作定义。</param>
         /// <param name="action">更新操作定义。</param>
-        public void Resume(Func<long, Activity> activityFetch, 
+        public void Resume(Func<long, Activity> activityFetch,
             Action<Activity, Task> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
@@ -383,7 +383,7 @@ namespace ThinkInBio.Cully
         /// </summary>
         /// <param name="activity">所属的活动。</param>
         /// <param name="action">更新操作定义。</param>
-        public void Resume(Activity activity, 
+        public void Resume(Activity activity,
             Action<Activity, Task> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
@@ -509,14 +509,14 @@ namespace ThinkInBio.Cully
         }
 
         /// <summary>
-        /// 评论任务。
+        /// 添加评论。
         /// </summary>
         /// <param name="observers">要通知的人员集合。</param>
         /// <param name="user">评论人。</param>
         /// <param name="content">评论内容。</param>
-        /// <param name="action">评论操作定义。</param>
+        /// <param name="action">添加评论操作定义。</param>
         /// <returns>返回评论信息。</returns>
-        public Comment Remark(ICollection<string> observers, 
+        public Comment AddRemark(ICollection<string> observers,
             string user, string content,
             Action<Task, Comment, ICollection<BizNotification>> action)
         {
@@ -527,11 +527,10 @@ namespace ThinkInBio.Cully
             }
             if (this.Id == 0)
             {
-                throw new ArgumentNullException();
+                throw new InvalidOperationException();
             }
 
             DateTime now = DateTime.Now;
-
             Comment comment = new Comment(content, user);
             ICollection<BizNotification> notificationList = comment.Save(this, observers, now, null);
 
@@ -544,6 +543,37 @@ namespace ThinkInBio.Cully
             }
 
             return comment;
+        }
+
+        /// <summary>
+        /// 删除评论。
+        /// </summary>
+        /// <param name="observers">要通知的人员集合。</param>
+        /// <param name="comment">要删除的评论。</param>
+        /// <param name="action">删除评论操作定义。</param>
+        public void RemoveRemark(ICollection<string> observers,
+            Comment comment,
+            Action<Task, Comment, ICollection<BizNotification>> action)
+        {
+            if (comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (this.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            DateTime now = DateTime.Now;
+            ICollection<BizNotification> notificationList = comment.Delete(observers, now, null);
+
+            this.CommentCount--;
+            this.Modification = now;
+
+            if (action != null)
+            {
+                action(this, comment, notificationList);
+            }
         }
 
         private BizNotification BuildBizNotification(string sender, string receiver)

@@ -375,12 +375,64 @@ define(function (require) {
                 }
 
             } ])
+        .controller('TaskEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'TaskService', 'userCacheUtil',
+            function ($scope, $location, $routeParams, $log, currentUser, TaskService, userCacheUtil) {
+
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
+
+                $scope.init = function () {
+                    TaskService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId, 'id': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.task = result;
+                                $scope.alertMessageVisible = 'hidden';
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-danger';
+                                $scope.alertMessage = "提示：加载任务详细信息失败";
+                                $log.error(error);
+                            });
+                }
+
+                $scope.gotoback = function () {
+                    $location.path("/task-details/" + $scope.task.ActivityId + "/" + $scope.task.Id + "/");
+                }
+
+                $scope.save = function () {
+                    if ($scope.project.Name != null) {
+                        $scope.isLoading = true;
+                        //                        TaskService.update({
+                        //                            'user': currentUser.username,
+                        //                            'projectId': $scope.project.Id,
+                        //                            'name': $scope.project.Name,
+                        //                            'description': $scope.project.Description
+                        //                        })
+                        //                        .$promise
+                        //                            .then(function (result) {
+                        //                                $scope.isLoading = false;
+                        //                                $scope.project = result;
+                        //                                $scope.alertMessageVisible = 'show';
+                        //                                $scope.alertMessageColor = 'alert-success';
+                        //                                $scope.alertMessage = "提示：修改任务成功";
+                        //                            }, function (error) {
+                        //                                $scope.isLoading = false;
+                        //                                $scope.alertMessageVisible = 'show';
+                        //                                $scope.alertMessageColor = 'alert-danger';
+                        //                                $scope.alertMessage = "提示：修改任务失败";
+                        //                                $log.error(error);
+                        //                            });
+                    }
+                }
+
+            } ])
         .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'TaskService',
                                         'Update4CommentTaskService', 'CommentListService', 'CommentService', 'userCacheUtil', 'dateUtil',
             function ($scope, $location, $log, $routeParams, currentUser, ActivityService, TaskService,
                         Update4CommentTaskService, CommentListService, CommentService, userCacheUtil, dateUtil) {
 
                 $scope.isLoading = false;
+                $scope.navbarLinkVisible = 'none';
                 $scope.alertMessageVisible = 'hidden';
                 $scope.comment = {};
 
@@ -402,6 +454,11 @@ define(function (require) {
                                 $scope.activity = result;
                                 var user = userCacheUtil.get($scope.activity.Creator);
                                 $scope.activity.CreatorName = (user == null) ? $scope.activity.Creator : user.Name;
+                                if ($scope.activity.Creator == currentUser.username) {
+                                    $scope.navbarLinkVisible = '';
+                                } else {
+                                    $scope.navbarLinkVisible = 'none';
+                                }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载活动详细信息失败";
@@ -435,7 +492,11 @@ define(function (require) {
                 }
 
                 $scope.gotoActivity = function (id) {
-                    $location.path('/activity-details/' + id + "/");
+                    $location.path("/activity-details/" + id + "/");
+                }
+
+                $scope.gotoTaskEdit = function (task) {
+                    $location.path("/task-edit/" + task.ActivityId + "/" + task.Id + "/");
                 }
 
                 $scope.saveComment = function () {
@@ -494,6 +555,42 @@ define(function (require) {
                     document.getElementsByName('editCommentPanel')[0].scrollIntoView(true);
                     $scope.comment.id = comment.Id;
                     $scope.comment.content = comment.Content;
+                }
+
+                $scope.removeComment = function (comment) {
+                    $scope.comment.id = comment.Id;
+                    $scope.comment.content = comment.Content;
+                }
+
+                $scope.deleteComment = function () {
+                    var observers = [];
+                    if ($scope.task.Staff == currentUser.username) {
+                        observers.push($scope.activity.Creator);
+                    } else {
+                        observers.push($scope.task.Staff);
+                    }
+                    Update4CommentTaskService.remove({ 'user': currentUser.username,
+                        'activityId': $routeParams.activityId,
+                        'id': $routeParams.id,
+                        'commentId': $scope.comment.id,
+                        'observers': observers
+                    })
+                        .$promise
+                            .then(function (result) {
+                                $('#removeCommentDialog').modal('hide');
+                                for (var i in $scope.commentList) {
+                                    if ($scope.comment.id == $scope.commentList[i].Id) {
+                                        $scope.commentList.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                                $scope.clearComment();
+                            }, function (error) {
+                                $('#removeCommentDialog').modal('hide');
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：删除评论失败";
+                            });
                 }
 
             } ]);

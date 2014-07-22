@@ -61,10 +61,18 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/{id}/comment/",
+            UriTemplate = "/{user}/task/{activityId}/{id}/comment/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Comment SaveComment(string user, string activityId, string id, string content, string[] observers);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/task/{activityId}/{id}/comment/{commentId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteComment(string user, string activityId, string id, string commentId, string[] observers);
 
     }
 

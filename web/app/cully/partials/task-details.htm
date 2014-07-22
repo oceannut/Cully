@@ -1,12 +1,37 @@
 ﻿<div class="container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="removeCommentDialog" tabindex="-1" role="dialog" aria-labelledby="removeCommentDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeCommentDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除评论对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">确定要删除这个评论吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="deleteComment()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="navbar" role="navigation">
         <div class="navbar-header">
             <h3>
                 <i class="fa fa-leaf"></i>&nbsp;任务</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a ng-click="gotoActivity(task.ActivityId)"><i class="fa fa-level-up"></i>&nbsp;所属活动</a></li>
-            <li><a><i class="fa fa-print"></i>&nbsp;打印预览</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a ng-click="gotoTaskEdit(task)"><i
+                class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a><i class="fa fa-print"></i>&nbsp;打印</a></li>
+            <li><a ng-click="gotoActivity(task.ActivityId)"><i class="fa fa-level-up"></i>&nbsp;活动</a></li>
         </ul>
     </div>
     <hr class="header-hr" />
@@ -26,13 +51,15 @@
                 <p>
                     {{item.Content}}</p>
                 <p class="text-right">
-                    <a style="display: {{item.editCommentButtonVisible}};" ng-click="editComment(item)">
-                        <i class="fa fa-edit"></i>&nbsp;编辑</a>&nbsp;&nbsp;|&nbsp;&nbsp;<small>
-                            <abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
-                                通知方式：</abbr></small> &nbsp;&nbsp;<a href="mailto:#" class="btn btn-default btn-xs"><i
-                                    class="fa fa-envelope"></i>&nbsp;邮件</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
-                                        class="fa fa-qq"></i>&nbsp;QQ</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
-                                            class="fa fa-phone"></i>&nbsp;电话</a></p>
+                    <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
+                        data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
+                        </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
+                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;|&nbsp;&nbsp;</a><small>
+                                <abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
+                                    其它通知：</abbr></small> &nbsp;&nbsp;<a href="mailto:#" class="btn btn-default btn-xs"><i
+                                        class="fa fa-envelope"></i>&nbsp;邮件</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
+                                            class="fa fa-qq"></i>&nbsp;QQ</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
+                                                class="fa fa-phone"></i>&nbsp;电话</a></p>
             </li>
         </ol>
     </div>

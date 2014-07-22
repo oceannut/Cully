@@ -31,6 +31,16 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
+        public void UpdateProject(Project project)
+        {
+            if (project == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            ProjectDao.Update(project);
+        }
+
         public Project GetProject(long projectId)
         {
             if (projectId == 0)
@@ -168,6 +178,7 @@ namespace ThinkInBio.Cully.BLL.Impl
 
             return ParticipantDao.GetList(projectId);
         }
+
 
     }
 

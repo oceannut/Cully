@@ -6,8 +6,11 @@
                 </i>&nbsp;{{project.Name}}</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li style="display: {{navbarLinkVisible}};"><a ng-click="gotoPariticipantList(project.Id)"><i class="fa fa-users"></i>&nbsp;成员管理</a></li>
-            <li><a><i class="fa fa-print"></i>&nbsp;打印预览</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a ng-click="gotoProjectEdit(project.Id)">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a ng-click="gotoPariticipantList(project.Id)">
+                <i class="fa fa-users"></i>&nbsp;成员</a></li>
+            <li><a><i class="fa fa-print"></i>&nbsp;打印</a></li>
             <li><a><i class="glyphicon glyphicon-stats"></i>&nbsp;统计</a></li>
         </ul>
     </div>
@@ -26,7 +29,7 @@
         </div>
         <div class="navbar-text">
             <i class="fa fa-plus"></i><a href="javascript:void(0)" class="navbar-link" ng-click="toggleAddActivityPanelVisibible()">
-                {{addActivityBtnTitle}}</a></div>
+                添加活动</a></div>
     </div>
     <div style="display: {{addActivityPanelDisplay}};">
         <form class="form-horizontal css-form" role="form" name="form">
@@ -71,7 +74,8 @@
             <div class="col-sm-6">
                 <button class="btn btn-primary" ng-click="saveActivity()" ng-disabled="form.$invalid || isLoading"
                     ng-switch="isLoading">
-                    <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建活动</span></button>
+                    <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建活动</span></button>&nbsp;&nbsp;
+                <a href="javascript:void(0)" ng-click="cancel()">取消</a>
             </div>
         </div>
         </form>

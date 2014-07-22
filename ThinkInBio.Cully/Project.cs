@@ -171,6 +171,14 @@ namespace ThinkInBio.Cully
             }
         }
 
+        public void Delete()
+        {
+            if (this.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         /// <summary>
         /// 添加成员。
         /// </summary>

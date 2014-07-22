@@ -14,6 +14,7 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         internal ITaskService TaskService { get; set; }
         internal IProjectService ProjectService { get; set; }
+        internal ICommentService CommentService { get; set; }
 
         public Task SaveTask(string user, string activityId, string staff, string content, string appointedDay)
         {
@@ -132,7 +133,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 task.Complete(activity, taskList, 
                     (e1, e2) =>
                     {
-                        TaskService.UpdateTask(e1, e2);
+                        TaskService.UpdateTask(e2, e1);
                     });
             }
             else
@@ -140,7 +141,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 task.Resume(activity,
                     (e1, e2) =>
                     {
-                        TaskService.UpdateTask(e1, e2);
+                        TaskService.UpdateTask(e2, e1);
                     });
             }
 
@@ -210,10 +211,41 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 throw new ObjectNotFoundException(id);
             }
-            return task.Remark(observers, user, content,
+            return task.AddRemark(observers, user, content,
                 (e1, e2, e3) =>
                 {
-                    TaskService.UpdateTask(e1, e2, e3);
+                    TaskService.SaveComment(e1, e2, e3);
+                });
+        }
+
+        public void DeleteComment(string user, string activityId, string id, string commentId, string[] observers)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(activityId) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(commentId))
+            {
+                throw new ArgumentNullException();
+            }
+            Task task = TaskService.GetTask(Convert.ToInt64(id));
+            if (task == null)
+            {
+                throw new ObjectNotFoundException(id);
+            }
+            Comment comment = CommentService.GetComment(Convert.ToInt64(commentId));
+            if (comment == null)
+            {
+                throw new ObjectNotFoundException(id);
+            }
+            task.RemoveRemark(observers, comment,
+                (e1, e2, e3) =>
+                {
+                    TaskService.DeleteComment(e1, e2, e3);
                 });
         }
 

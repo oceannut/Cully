@@ -34,6 +34,34 @@ namespace ThinkInBio.Cully.WSL
         Project SaveProject(string user, string name, string description, string[] participants);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/project/{projectId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Project UpdateProject(string user, string projectId, string name, string description);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="projectId"></param>
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            UriTemplate = "/{user}/project/{projectId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteProject(string user, string projectId);
+
+        /// <summary>
         /// 获取项目。
         /// </summary>
         /// <param name="user">项目参与人，一般要求为登录验证通过的用户。</param>

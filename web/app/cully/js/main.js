@@ -40,6 +40,10 @@ define(function (require) {
                     templateUrl: 'partials/project-add.htm',
                     controller: 'ProjectAddCtrl'
                 }).
+                when('/project-edit/:id/', {
+                    templateUrl: 'partials/project-edit.htm',
+                    controller: 'ProjectEditCtrl'
+                }).
                 when('/project-details/:id/', {
                     templateUrl: 'partials/project-details.htm',
                     controller: 'ProjectDetailsCtrl'
@@ -51,6 +55,10 @@ define(function (require) {
                 when('/activity-details/:id/', {
                     templateUrl: 'partials/activity-details.htm',
                     controller: 'ActivityDetailsCtrl'
+                }).
+                when('/task-edit/:activityId/:id/', {
+                    templateUrl: 'partials/task-edit.htm',
+                    controller: 'TaskEditCtrl'
                 }).
                 when('/task-details/:activityId/:id/', {
                     templateUrl: 'partials/task-details.htm',

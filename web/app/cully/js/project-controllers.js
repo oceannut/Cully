@@ -156,13 +156,63 @@ define(function (require) {
                 }
 
             } ])
+        .controller('ProjectEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'ProjectService', 'userCacheUtil',
+            function ($scope, $location, $routeParams, $log, currentUser, ProjectService, userCacheUtil) {
+
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
+
+                $scope.init = function () {
+                    ProjectService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.project = result;
+                                $scope.alertMessageVisible = 'hidden';
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-danger';
+                                $scope.alertMessage = "提示：加载项目详细信息失败";
+                                $log.error(error);
+                            });
+                }
+
+                $scope.gotoback = function () {
+                    $location.path("/project-details/" + $scope.project.Id + "/");
+                }
+
+                $scope.save = function () {
+                    if ($scope.project.Name != null) {
+                        $scope.isLoading = true;
+                        ProjectService.update({
+                            'user': currentUser.username,
+                            'projectId': $scope.project.Id,
+                            'name': $scope.project.Name,
+                            'description': $scope.project.Description
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.isLoading = false;
+                                $scope.project = result;
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-success';
+                                $scope.alertMessage = "提示：修改项目成功";
+                            }, function (error) {
+                                $scope.isLoading = false;
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-danger';
+                                $scope.alertMessage = "提示：修改项目失败";
+                                $log.error(error);
+                            });
+                    }
+                }
+
+            } ])
         .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ProjectService',
                                             'ActivityService', 'ActivityOfProjectService', 'categoryCacheUtil', 'userCacheUtil',
             function ($scope, $location, $log, $routeParams, currentUser, ProjectService,
                         ActivityService, ActivityOfProjectService, categoryCacheUtil, userCacheUtil) {
 
                 $scope.navbarLinkVisible = 'none';
-                $scope.addActivityBtnTitle = '添加活动';
                 $scope.addActivityPanelDisplay = 'none';
                 $scope.project = {};
                 $scope.activity = {};
@@ -172,6 +222,10 @@ define(function (require) {
                 function clear() {
                     $scope.activity.name = '';
                     $scope.activity.description = '';
+                }
+
+                $scope.gotoProjectEdit = function (projectId) {
+                    $location.path("/project-edit/" + projectId + "/");
                 }
 
                 $scope.gotoPariticipantList = function (projectId) {
@@ -232,10 +286,8 @@ define(function (require) {
 
                 $scope.toggleAddActivityPanelVisibible = function () {
                     if ($scope.addActivityPanelDisplay == 'none') {
-                        $scope.addActivityBtnTitle = '取消';
                         $scope.addActivityPanelDisplay = '';
                     } else {
-                        $scope.addActivityBtnTitle = '添加活动';
                         $scope.addActivityPanelDisplay = 'none';
                         clear();
                     }
@@ -263,6 +315,10 @@ define(function (require) {
                                 $log.error(error);
                             });
                     }
+                }
+
+                $scope.cancel = function () {
+                    $scope.toggleAddActivityPanelVisibible();
                 }
 
             } ]);

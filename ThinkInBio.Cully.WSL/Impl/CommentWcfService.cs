@@ -36,10 +36,10 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new ObjectNotFoundException(id);
             }
             comment.Content = content;
-            comment.Update(
-                (e) =>
+            comment.Update(null,
+                (e1, e2) =>
                 {
-                    CommentService.UpdateComment(comment);
+                    CommentService.UpdateComment(e1);
                 });
             return comment;
         }
