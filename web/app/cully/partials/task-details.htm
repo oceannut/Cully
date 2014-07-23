@@ -1,5 +1,32 @@
 ﻿<div class="container" ng-init="init()">
     <!-- Modal -->
+    <div class="modal fade" id="removeTaskDialog" tabindex="-1" role="dialog" aria-labelledby="removeTaskDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeTaskDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除任务对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个任务吗？</p>
+                    <p class="alert alert-warning">
+                        注意：删除任务的同时，对其的评论也全部将被删除。
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="deleteTask()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
     <div class="modal fade" id="removeCommentDialog" tabindex="-1" role="dialog" aria-labelledby="removeCommentDialogLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -11,7 +38,8 @@
                         <i class="fa fa-trash-o"></i>&nbsp;删除评论对话框</h4>
                 </div>
                 <div class="modal-body">
-                    <p class="lead text-danger">确定要删除这个评论吗？</p>
+                    <p class="lead text-danger">
+                        确定要删除这个评论吗？</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" ng-click="deleteComment()">
@@ -28,10 +56,14 @@
                 <i class="fa fa-leaf"></i>&nbsp;任务</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li style="display: {{navbarLinkVisible}};"><a ng-click="gotoTaskEdit(task)"><i
-                class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a data-toggle="modal" data-target="#removeTaskDialog"><i class="fa fa-trash-o">
+            </i>&nbsp;删除</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a href="#/task-edit/{{task.ActivityId}}/{{task.Id}}/">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a href="#/task-notification-list/{{task.ActivityId}}/{{task.Id}}/"><i class="fa fa-send-o"></i>&nbsp;通知</a></li>
             <li><a><i class="fa fa-print"></i>&nbsp;打印</a></li>
-            <li><a ng-click="gotoActivity(task.ActivityId)"><i class="fa fa-level-up"></i>&nbsp;活动</a></li>
+            <li><a href="#/activity-details/{{task.ActivityId}}/"><i class="fa fa-level-up"></i>
+                &nbsp;活动</a></li>
         </ul>
     </div>
     <hr class="header-hr" />

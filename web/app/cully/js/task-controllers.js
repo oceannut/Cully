@@ -10,8 +10,9 @@ define(function (require) {
     require('./project-services');
     require('./task-services');
     require('./comment-services');
+    require('../../common/js/biz-notification-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services', 'comment.services'])
+    angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
         .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService', 'Update4IsUnderwayTaskService',
                                  'Update4IsCompletedTaskService', 'ParticipantOfProjectService', 'userCacheUtil', 'dateUtil',
             function ($scope, $location, $log, currentUser, TaskService, TaskListService, Update4IsUnderwayTaskService,
@@ -246,7 +247,12 @@ define(function (require) {
                     $scope.alertMessageVisible = 'hide';
                     var parentScope = $scope.$parent.$parent;
                     if ($scope.task.id == null) {
-                        TaskService.save({ 'user': currentUser.username, 'activityId': parentScope.activity.Id, 'staff': $scope.task.staff, 'content': $scope.task.content, 'appointedDay': $scope.task.appointedDay })
+                        TaskService.save({ 'user': currentUser.username,
+                            'activityId': parentScope.activity.Id,
+                            'content': $scope.task.content,
+                            'staff': $scope.task.staff,
+                            'appointedDay': $scope.task.appointedDay
+                        })
                             .$promise
                                 .then(function (result) {
                                     toggleTaskPanelVisibible();
@@ -266,7 +272,13 @@ define(function (require) {
                                     $scope.alertMessage = "提示：任务保存失败";
                                 });
                     } else {
-                        TaskService.update({ 'user': currentUser.username, 'activityId': parentScope.activity.Id, 'id': $scope.task.id, 'staff': $scope.task.staff, 'content': $scope.task.content, 'appointedDay': $scope.task.appointedDay })
+                        TaskService.update({ 'user': currentUser.username,
+                            'activityId': parentScope.activity.Id,
+                            'id': $scope.task.id,
+                            'content': $scope.task.content,
+                            'staff': $scope.task.staff,
+                            'appointedDay': $scope.task.appointedDay
+                        })
                             .$promise
                                 .then(function (result) {
                                     toggleTaskPanelVisibible();
@@ -375,8 +387,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('TaskEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'TaskService', 'userCacheUtil',
-            function ($scope, $location, $routeParams, $log, currentUser, TaskService, userCacheUtil) {
+        .controller('TaskEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'TaskService', 'userCacheUtil', 'dateUtil',
+            function ($scope, $location, $routeParams, $log, currentUser, TaskService, userCacheUtil, dateUtil) {
 
                 $scope.isLoading = false;
                 $scope.alertMessageVisible = 'hidden';
@@ -400,29 +412,46 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
-                    if ($scope.project.Name != null) {
-                        $scope.isLoading = true;
-                        //                        TaskService.update({
-                        //                            'user': currentUser.username,
-                        //                            'projectId': $scope.project.Id,
-                        //                            'name': $scope.project.Name,
-                        //                            'description': $scope.project.Description
-                        //                        })
-                        //                        .$promise
-                        //                            .then(function (result) {
-                        //                                $scope.isLoading = false;
-                        //                                $scope.project = result;
-                        //                                $scope.alertMessageVisible = 'show';
-                        //                                $scope.alertMessageColor = 'alert-success';
-                        //                                $scope.alertMessage = "提示：修改任务成功";
-                        //                            }, function (error) {
-                        //                                $scope.isLoading = false;
-                        //                                $scope.alertMessageVisible = 'show';
-                        //                                $scope.alertMessageColor = 'alert-danger';
-                        //                                $scope.alertMessage = "提示：修改任务失败";
-                        //                                $log.error(error);
-                        //                            });
+                    $scope.isLoading = true;
+                    var d = '';
+                    if ($scope.task.AppointedDay != null && $scope.task.AppointedDay != '') {
+                        d = dateUtil.formatDateByYMD(dateUtil.jsonToDate($scope.task.AppointedDay));
                     }
+                    TaskService.update({ 'user': currentUser.username,
+                        'activityId': $scope.task.ActivityId,
+                        'id': $scope.task.Id,
+                        'content': $scope.task.Content,
+                        'staff': $scope.task.Staff,
+                        'appointedDay': d
+                    })
+                        .$promise
+                            .then(function (result) {
+                                $scope.isLoading = false;
+                                $scope.task = result;
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-success';
+                                $scope.alertMessage = "提示：修改任务成功";
+                            }, function (error) {
+                                $scope.isLoading = false;
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-danger';
+                                $scope.alertMessage = "提示：修改任务失败";
+                                $log.error(error);
+                            });
+                }
+
+                $scope.deleteTask = function () {
+                    TaskService.remove({ 'user': currentUser.username, 'activityId': $scope.task.ActivityId, 'id': $scope.task.Id })
+                        .$promise
+                            .then(function (result) {
+                                $('#removeTaskDialog').modal('hide');
+                                $location.path("/activity-details/" + $scope.task.ActivityId + "/");
+                            }, function (error) {
+                                $('#removeTaskDialog').modal('hide');
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：删除任务失败";
+                            });
                 }
 
             } ])
@@ -491,12 +520,18 @@ define(function (require) {
                             });
                 }
 
-                $scope.gotoActivity = function (id) {
-                    $location.path("/activity-details/" + id + "/");
-                }
-
-                $scope.gotoTaskEdit = function (task) {
-                    $location.path("/task-edit/" + task.ActivityId + "/" + task.Id + "/");
+                $scope.deleteTask = function () {
+                    TaskService.remove({ 'user': currentUser.username, 'activityId': $scope.task.ActivityId, 'id': $scope.task.Id })
+                        .$promise
+                            .then(function (result) {
+                                $('#removeTaskDialog').modal('hide');
+                                $location.path("/activity-details/" + $scope.task.ActivityId + "/");
+                            }, function (error) {
+                                $('#removeTaskDialog').modal('hide');
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：删除任务失败";
+                            });
                 }
 
                 $scope.saveComment = function () {
@@ -591,6 +626,64 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：删除评论失败";
                             });
+                }
+
+            } ])
+        .controller('TaskNotificationListCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCacheUtil', 'dateUtil', 'BizNotificationService4Resource',
+            function ($scope, $location, $routeParams, $log, currentUser, userCacheUtil, dateUtil, BizNotificationService4Resource) {
+
+                $scope.init = function () {
+                    $scope.alertMessageVisible = 'hidden';
+                    $scope.activityId = $routeParams.activityId;
+                    $scope.taskId = $routeParams.id;
+
+                    BizNotificationService4Resource.query({ 'user': currentUser.username, 'resource': 'task', 'resourceId': $scope.taskId })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessageVisible = 'hidden';
+                                $scope.notificationList = [];
+                                var temp = new Date();
+                                temp.setFullYear(1970, 0, 1);
+                                var d = dateUtil.formatDateByYMD(temp);
+                                for (var i = 0; i < result.length; i++) {
+                                    var notification = result[i];
+                                    var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(notification.Creation));
+                                    var addLabel = false;
+                                    if (d != creation) {
+                                        d = creation;
+                                        addLabel = true;
+                                    }
+                                    notification.isLabel = false;
+                                    if (addLabel) {
+                                        $scope.notificationList.push({ 'isLabel': true, 'label': d });
+                                    }
+                                    var user = userCacheUtil.get(notification.Sender);
+                                    notification.senderName = (user == null) ? notification.Sender : user.Name;
+                                    user = userCacheUtil.get(notification.Receiver);
+                                    notification.receiverName = (user == null) ? notification.Receiver : user.Name;
+                                    $scope.notificationList.push(notification);
+                                    if (notification.Review == null) {
+                                        notification.isUntreated = true;
+                                        notification.isUntreatedStatus = 'bold';
+                                    } else {
+                                        notification.isUntreated = false;
+                                        notification.isUntreatedStatus = 'normal';
+                                    }
+                                    if (currentUser.username == notification.Receiver && notification.isUntreated) {
+                                        notification.checkButtonVisible = '';
+                                    } else {
+                                        notification.checkButtonVisible = 'none';
+                                    }
+                                }
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载任务通知集合失败";
+                                $log.error(error);
+                            });
+                }
+
+                $scope.check = function (notification) {
+                    console.log(notification);
                 }
 
             } ]);

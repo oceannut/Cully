@@ -19,6 +19,8 @@ namespace ThinkInBio.Cully.BLL
 
         void UpdateTask(Task task, Activity activity);
 
+        void DeleteTask(Task task, Activity activity, BizNotification notification);
+
         Task GetTask(long id);
 
         IList<Task> GetTaskList(long activityId);

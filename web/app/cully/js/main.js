@@ -64,6 +64,10 @@ define(function (require) {
                     templateUrl: 'partials/task-details.htm',
                     controller: 'TaskDetailsCtrl'
                 }).
+                when('/task-notification-list/:activityId/:id/', {
+                    templateUrl: 'partials/task-notification-list.htm',
+                    controller: 'TaskNotificationListCtrl'
+                }).
                 when('/participant-list/:projectId/', {
                     templateUrl: 'partials/participant-list.htm',
                     controller: 'ParticipantListCtrl'

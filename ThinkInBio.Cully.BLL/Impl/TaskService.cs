@@ -71,6 +71,32 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
+        public void DeleteTask(Task task, Activity activity, BizNotification notification)
+        {
+            if (task == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            IList<Comment> commentList = CommentDao.GetList(CommentTarget.Task, task.Id);
+            if (commentList != null && commentList.Count > 0)
+            {
+                foreach (Comment comment in commentList)
+                {
+                    CommentDao.Delete(comment);
+                }
+            }
+            TaskDao.Delete(task);
+            if (activity != null)
+            {
+                ActivityDao.Update(activity);
+            }
+            if (notification != null)
+            {
+                BizNotificationService.SaveNotification(notification);
+            }
+        }
+
         public Task GetTask(long id)
         {
             if (id == 0)

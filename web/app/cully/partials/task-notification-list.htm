@@ -1,0 +1,29 @@
+﻿<div class="container" ng-init="init()">
+    <div class="navbar" role="navigation">
+        <div class="navbar-header">
+            <h3>
+                <i class="fa fa-send-o"></i>&nbsp;任务通知</h3>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/task-details/{{activityId}}/{{taskId}}/"><i class="fa fa-level-up"></i>
+                &nbsp;返回</a></li>
+        </ul>
+    </div>
+    <hr class="header-hr" />
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <ol class="list-unstyled">
+        <li ng-repeat="item in notificationList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
+            ng-switch="item.isLabel">
+            <p ng-switch-when="true">
+                <span class="text-green"><i class="fa fa-lemon-o"></i>&nbsp;{{item.label}}</span></p>
+            <p ng-switch-when="false" style="font-weight: {{item.isUntreatedStatus}};">
+                <mark>{{item.senderName}}</mark>
+                &nbsp; {{item.Content}}&nbsp;&nbsp;<span class="text-danger">[<i class="fa fa-long-arrow-right"></i>{{item.receiverName}}]</span>
+                <button type="button" class="btn btn-xs btn-default" ng-click="check(item)" style="display: {{item.checkButtonVisible}};">
+                    <i class="fa fa-check-square-o"></i>&nbsp;签收
+                </button>
+            </p>
+        </li>
+    </ol>
+</div>

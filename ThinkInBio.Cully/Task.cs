@@ -197,7 +197,7 @@ namespace ThinkInBio.Cully
             this.Creation = timeStamp;
             this.Modification = timeStamp;
 
-            BizNotification notification = BuildBizNotification(user, this.Staff);
+            BizNotification notification = BuildBizNotification(user, this.Staff, "添加了任务", this.Id);
 
             if (action != null)
             {
@@ -230,7 +230,7 @@ namespace ThinkInBio.Cully
             DateTime timeStamp = DateTime.Now;
             this.Modification = timeStamp;
 
-            BizNotification notification = BuildBizNotification(user, this.Staff);
+            BizNotification notification = BuildBizNotification(user, this.Staff, "更新了任务", this.Id);
 
             if (action != null)
             {
@@ -445,7 +445,7 @@ namespace ThinkInBio.Cully
         /// <param name="action">删除操作定义。</param>
         public void Delete(Func<long, Activity> activityFetch,
             Func<long, ICollection<Task>> tasksFetch,
-            Action<Activity, Task> action)
+            Action<Task, Activity, BizNotification> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
@@ -468,7 +468,7 @@ namespace ThinkInBio.Cully
         /// <param name="action">删除操作定义。</param>
         public void Delete(Activity activity,
             ICollection<Task> tasks,
-            Action<Activity, Task> action)
+            Action<Task, Activity, BizNotification> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
@@ -502,9 +502,12 @@ namespace ThinkInBio.Cully
             {
                 activity.IsCompleted = allOtherTaskCompleted;
             }
+
+            BizNotification notification = BuildBizNotification(activity.Creator, this.Staff, "删除了任务", 0);
+
             if (action != null)
             {
-                action(activity, this);
+                action(this, activity, notification);
             }
         }
 
@@ -576,19 +579,27 @@ namespace ThinkInBio.Cully
             }
         }
 
-        private BizNotification BuildBizNotification(string sender, string receiver)
+        private BizNotification BuildBizNotification(string sender, string receiver, string contentPrefix, long id)
         {
             BizNotification notification = null;
             if (sender != receiver)
             {
                 //只有发送人和接收人不是同一人，才创建通知。
                 notification = new BizNotification(sender, receiver);
-                notification.Content = this.Content;
+                notification.Content = string.Format("{0}: {1}...", contentPrefix,
+                            this.Content.Length <= 120 ? this.Content : this.Content.Substring(0, 120));
                 notification.Resource = "task";
-                this.IdChanged += (e) =>
+                if (this.Id == 0)
                 {
-                    notification.ResourceId = e.ToString();
-                };
+                    this.IdChanged += (e) =>
+                    {
+                        notification.ResourceId = e.ToString();
+                    };
+                }
+                else
+                {
+                    notification.ResourceId = id.ToString();
+                }
                 notification.Send(null);
             }
             return notification;

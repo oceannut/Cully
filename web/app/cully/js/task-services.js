@@ -11,8 +11,9 @@ define(function (require) {
         .factory('TaskService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
                 return $resource(wcfApp + taskWcfService + '/:user/task/:activityId/:id/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'activityId': '@activityId', 'id': '0', 'staff': '@staff', 'content': '@content', 'appointedDay': '@appointedDay'} },
-                    update: { method: 'PUT', params: { 'user': '@user', 'activityId': '@activityId', 'id': '@id', 'staff': '@staff', 'content': '@content', 'appointedDay': '@appointedDay'} },
+                    save: { method: 'POST', params: { 'user': '@user', 'activityId': '@activityId', 'id': '0', 'content': '@content', 'staff': '@staff', 'appointedDay': '@appointedDay'} },
+                    update: { method: 'PUT', params: { 'user': '@user', 'activityId': '@activityId', 'id': '@id', 'content': '@content', 'staff': '@staff', 'appointedDay': '@appointedDay'} },
+                    remove: { method: 'DELETE', params: { 'user': '@user', 'activityId': '@activityId', 'id': '@id' } },
                     get: { method: 'GET', params: { 'user': '@user', 'activityId': '@activityId', 'id': '@id' }, isArray: false }
                 });
             } ])

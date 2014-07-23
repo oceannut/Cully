@@ -20,7 +20,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/task/{activityId}/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Task SaveTask(string user, string activityId, string staff, string content, string appointedDay);
+        Task SaveTask(string user, string activityId, string content, string staff, string appointedDay);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
@@ -28,7 +28,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/task/{activityId}/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Task UpdateTask(string user, string activityId, string id, string staff, string content, string appointedDay);
+        Task UpdateTask(string user, string activityId, string id, string content, string staff, string appointedDay);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
@@ -45,6 +45,13 @@ namespace ThinkInBio.Cully.WSL
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Task UpdateTask4IsCompleted(string user, string activityId, string id, string isCompleted);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            UriTemplate = "/{user}/task/{activityId}/{id}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteTask(string user, string activityId, string id);
 
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/task/{activityId}/{id}/",

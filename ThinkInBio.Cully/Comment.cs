@@ -120,7 +120,7 @@ namespace ThinkInBio.Cully
             this.Creation = timeStamp;
             this.Modification = timeStamp;
 
-            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "添加了评论", timeStamp);
+            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "添加了评论", this.TargetId, timeStamp);
             if (action != null)
             {
                 action(this, notificationList);
@@ -146,7 +146,7 @@ namespace ThinkInBio.Cully
 
             DateTime timeStamp = DateTime.Now;
             this.Modification = timeStamp;
-            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "更新了评论", timeStamp);
+            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "更新了评论", this.TargetId, timeStamp);
             if (action != null)
             {
                 action(this, notificationList);
@@ -170,7 +170,7 @@ namespace ThinkInBio.Cully
                 throw new InvalidOperationException();
             }
 
-            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "删除了评论", timeStamp);
+            ICollection<BizNotification> notificationList = BuildNotificaiton(observers, "删除了评论", 0, timeStamp);
             if (action != null)
             {
                 action(this, notificationList);
@@ -178,7 +178,7 @@ namespace ThinkInBio.Cully
             return notificationList;
         }
 
-        private ICollection<BizNotification> BuildNotificaiton(ICollection<string> observers, string contentPrefix, DateTime timeStamp)
+        private ICollection<BizNotification> BuildNotificaiton(ICollection<string> observers, string contentPrefix, long id, DateTime timeStamp)
         {
             List<BizNotification> notificationList = new List<BizNotification>();
             if (observers != null && observers.Count > 0)
@@ -190,9 +190,9 @@ namespace ThinkInBio.Cully
                         //只有发送人和接收人不是同一人，才创建通知。
                         BizNotification notification = new BizNotification(this.Creator, observer);
                         notification.Content = string.Format("{0}: {1}...", contentPrefix, 
-                            this.Content.Length < 120 ? this.Content : this.Content.Substring(0, 120));
-                        notification.Resource = this.Target.ToString();
-                        notification.ResourceId = this.TargetId.ToString();
+                            this.Content.Length <= 120 ? this.Content : this.Content.Substring(0, 120));
+                        notification.Resource = this.Target.ToString().ToLower();
+                        notification.ResourceId = id.ToString();
                         notification.Creation = timeStamp;
                         notificationList.Add(notification);
                     }

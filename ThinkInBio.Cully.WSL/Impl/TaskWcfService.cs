@@ -16,7 +16,7 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal IProjectService ProjectService { get; set; }
         internal ICommentService CommentService { get; set; }
 
-        public Task SaveTask(string user, string activityId, string staff, string content, string appointedDay)
+        public Task SaveTask(string user, string activityId, string content, string staff, string appointedDay)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -45,7 +45,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return task;
         }
 
-        public Task UpdateTask(string user, string activityId, string id, string staff, string content, string appointedDay)
+        public Task UpdateTask(string user, string activityId, string id, string content, string staff, string appointedDay)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -56,6 +56,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * */
 
             if (string.IsNullOrWhiteSpace(activityId)
+                || string.IsNullOrWhiteSpace(id)
                 || string.IsNullOrWhiteSpace(staff)
                 || string.IsNullOrWhiteSpace(content))
             {
@@ -84,7 +85,8 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId))
+            if (string.IsNullOrWhiteSpace(activityId)
+                || string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException();
             }
@@ -119,7 +121,8 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId))
+            if (string.IsNullOrWhiteSpace(activityId)
+                || string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException();
             }
@@ -146,6 +149,32 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
 
             return task;
+        }
+
+        public void DeleteTask(string user, string activityId, string id)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(activityId)
+                || string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException();
+            }
+
+            Task task = TaskService.GetTask(Convert.ToInt64(id));
+            Activity activity = ProjectService.GetActivity(task.ActivityId);
+            IList<Task> taskList = TaskService.GetTaskList(task.ActivityId);
+            task.Delete(activity, taskList,
+                (e1, e2, e3) =>
+                {
+                    TaskService.DeleteTask(e1, e2, e3);
+                });
         }
 
         public Task GetTask(string user, string activityId, string id)

@@ -8,11 +8,11 @@ define(function (require) {
     require('../../common/js/biz-notification-services');
 
     angular.module('bizNotification.controllers', ['configs', 'filters', 'bizNotification.services'])
-        .controller('BizNotificationCtrl', ['$scope', '$location', 'currentUser', 'BizNotificationService',
-            function ($scope, $location, currentUser, BizNotificationService) {
+        .controller('BizNotificationCtrl', ['$scope', '$location', 'currentUser', 'UntreatedBizNotificationService',
+            function ($scope, $location, currentUser, UntreatedBizNotificationService) {
 
                 $scope.init = function () {
-                    BizNotificationService.query({ 'user': currentUser.username })
+                    UntreatedBizNotificationService.query({ 'user': currentUser.username })
                         .$promise
                             .then(function (result) {
                                 $scope.bizNotificationList = result;
