@@ -249,6 +249,67 @@ define(function (require) {
                 }
 
             } ])
+        .controller('ActivityEditCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'categoryCacheUtil', 'userCacheUtil',
+            function ($scope, $location, $log, $routeParams, currentUser, ActivityService, categoryCacheUtil, userCacheUtil) {
+
+                $scope.activity = {};
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
+
+                $scope.init = function () {
+
+                    categoryCacheUtil.list('activity', function (result) {
+                        $scope.categoryList = result;
+                    });
+
+                    ActivityService.get({ 'user': currentUser.username, 'activityId': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.activity = result;
+                                var category = categoryCacheUtil.get('activity', $scope.activity.Category);
+                                if (category != null) {
+                                    $scope.category = category;
+                                }
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载活动详细信息失败";
+                                $log.error(error);
+                            });
+
+                }
+
+                $scope.selectCategory = function (selectedCategory) {
+                    $scope.category = selectedCategory;
+                }
+
+                $scope.save = function () {
+                    if ($scope.activity.Name != undefined && $scope.activity.Name != null) {
+                        $scope.isLoading = true;
+                        ActivityService.update({
+                            'user': currentUser.username,
+                            'activityId': $scope.activity.Id,
+                            'category': $scope.category.Code,
+                            'name': $scope.activity.Name,
+                            'description': $scope.activity.Description
+                        })
+                            .$promise
+                                .then(function (result) {
+                                    $scope.isLoading = false;
+                                    $scope.activity = result;
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessageColor = 'alert-success';
+                                    $scope.alertMessage = "提示：修改活动成功";
+                                }, function (error) {
+                                    $scope.isLoading = false;
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessageColor = 'alert-danger';
+                                    $scope.alertMessage = "提示：修改活动失败";
+                                    $log.error(error);
+                                });
+                    }
+                }
+
+            } ])
         .controller('ActivityDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'categoryCacheUtil', 'userCacheUtil',
             function ($scope, $location, $log, $routeParams, currentUser, ActivityService, categoryCacheUtil, userCacheUtil) {
 
@@ -273,10 +334,6 @@ define(function (require) {
                                 $log.error(error);
                             });
 
-                }
-
-                $scope.gotoProject = function (projectId) {
-                    $location.path('/project-details/' + projectId + "/");
                 }
 
             } ]);

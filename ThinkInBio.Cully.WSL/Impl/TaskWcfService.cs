@@ -45,7 +45,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return task;
         }
 
-        public Task UpdateTask(string user, string activityId, string id, string content, string staff, string appointedDay)
+        public Task UpdateTask(string user, string id, string content, string staff, string appointedDay)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -55,8 +55,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId)
-                || string.IsNullOrWhiteSpace(id)
+            if (string.IsNullOrWhiteSpace(id)
                 || string.IsNullOrWhiteSpace(staff)
                 || string.IsNullOrWhiteSpace(content))
             {
@@ -75,7 +74,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return task;
         }
 
-        public Task UpdateTask4IsUnderway(string user, string activityId, string id, string isUnderway)
+        public Task UpdateTask4IsUnderway(string user, string id, string isUnderway)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -85,8 +84,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId)
-                || string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException();
             }
@@ -111,7 +109,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return task;
         }
 
-        public Task UpdateTask4IsCompleted(string user, string activityId, string id, string isCompleted)
+        public Task UpdateTask4IsCompleted(string user, string id, string isCompleted)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -121,8 +119,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId)
-                || string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException();
             }
@@ -151,7 +148,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return task;
         }
 
-        public void DeleteTask(string user, string activityId, string id)
+        public void DeleteTask(string user, string id)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -161,8 +158,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId)
-                || string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException();
             }
@@ -177,7 +173,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 });
         }
 
-        public Task GetTask(string user, string activityId, string id)
+        public Task GetTask(string user, string id)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -186,11 +182,6 @@ namespace ThinkInBio.Cully.WSL.Impl
             /*
              * 验证用户的合法性逻辑暂省略。
              * */
-
-            if (string.IsNullOrWhiteSpace(activityId))
-            {
-                throw new ArgumentNullException();
-            }
 
             return TaskService.GetTask(Convert.ToInt64(id));
         }
@@ -220,7 +211,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Comment SaveComment(string user, string activityId, string id, string content, string[] observers)
+        public Comment SaveComment(string user, string id, string content, string[] observers)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -230,7 +221,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
             {
                 throw new ArgumentNullException();
             }
@@ -247,7 +238,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 });
         }
 
-        public void DeleteComment(string user, string activityId, string id, string commentId, string[] observers)
+        public void DeleteComment(string user, string id, string commentId, string[] observers)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -257,7 +248,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(activityId) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(commentId))
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(commentId))
             {
                 throw new ArgumentNullException();
             }

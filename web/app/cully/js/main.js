@@ -12,6 +12,7 @@ define(function (require) {
     require('./cache');
     require('../../../static/js/utils');
     require('../../../static/js/configs');
+    require('../../../static/js/angular-directive');
     require('../../common/js/user-services');
 
     angular.module('CullyApp',
@@ -23,6 +24,7 @@ define(function (require) {
             'participant.controllers',
             'log.controllers',
             'cache',
+            'ng-directives',
             'utils',
             'configs',
             'user.services'])
@@ -52,19 +54,23 @@ define(function (require) {
                     templateUrl: 'partials/activity-add.htm',
                     controller: 'ActivityAddCtrl'
                 }).
+                when('/activity-edit/:id/', {
+                    templateUrl: 'partials/activity-edit.htm',
+                    controller: 'ActivityEditCtrl'
+                }).
                 when('/activity-details/:id/', {
                     templateUrl: 'partials/activity-details.htm',
                     controller: 'ActivityDetailsCtrl'
                 }).
-                when('/task-edit/:activityId/:id/', {
+                when('/task-edit/:id/', {
                     templateUrl: 'partials/task-edit.htm',
                     controller: 'TaskEditCtrl'
                 }).
-                when('/task-details/:activityId/:id/', {
+                when('/task-details/:id/', {
                     templateUrl: 'partials/task-details.htm',
                     controller: 'TaskDetailsCtrl'
                 }).
-                when('/task-notification-list/:activityId/:id/', {
+                when('/task-notification-list/:id/', {
                     templateUrl: 'partials/task-notification-list.htm',
                     controller: 'TaskNotificationListCtrl'
                 }).
@@ -88,6 +94,10 @@ define(function (require) {
                     templateUrl: 'partials/log-details.htm',
                     controller: 'LogDetailsCtrl'
                 }).
+                when('/notification-list/', {
+                    templateUrl: 'partials/notification-list.htm',
+                    controller: 'BizNotificationListCtrl'
+                }).
                 otherwise({
                     redirectTo: '/overview/'
                 });
@@ -110,6 +120,14 @@ define(function (require) {
 
                     userCacheUtil.init();
                     categoryCacheUtil.init('activity');
+
+                    $scope.$watch('notificationCount', function () {
+                        if ($scope.notificationCount > 0) {
+                            $scope.notificationCountColor = 'label-danger';
+                        } else {
+                            $scope.notificationCountColor = 'label-default';
+                        }
+                    });
                 }
 
             } ]);

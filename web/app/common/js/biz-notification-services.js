@@ -10,8 +10,9 @@ define(function (require) {
         .constant("bizNotificationWcfService", "/wcf/BizNotificationWcfService.svc")
         .factory('UntreatedBizNotificationService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
             function ($resource, wcfApp, bizNotificationWcfService) {
-                return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/inbox/:user/untreated/', {}, {
-                    query: { method: 'GET', params: { 'user': '@user' }, isArray: true }
+                return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/inbox/:user/untreated/:notificationId/', {}, {
+                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} },
+                    query: { method: 'GET', params: { 'user': '@user', 'notificationId': 'all' }, isArray: true }
                 });
             } ])
         .factory('BizNotificationService4Resource', ['$resource', 'wcfApp', 'bizNotificationWcfService',

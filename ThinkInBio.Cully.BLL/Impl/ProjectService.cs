@@ -96,6 +96,15 @@ namespace ThinkInBio.Cully.BLL.Impl
             ActivityDao.Save(activity);
         }
 
+        public void UpdateActivity(Activity activity)
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException();
+            }
+            ActivityDao.Update(activity);
+        }
+
         public Activity GetActivity(long activityId)
         {
             if (activityId == 0)

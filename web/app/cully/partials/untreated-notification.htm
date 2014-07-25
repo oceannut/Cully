@@ -1,0 +1,17 @@
+﻿<div ng-controller="BizNotificationCtrl" ng-init="init()" style="margin: 16px 16px 24px 16px;">
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <ul class="list-unstyled" style="max-height: 480px; overflow: auto;">
+        <li ng-repeat="item in notificationList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
+            <mark>{{item.senderName}}</mark>
+            &nbsp; <a>{{item.Content}}</a>&nbsp; <span class="pull-right">{{item.Creation | jsonDateFormat
+                | date:'yyyy-MM-dd'}}</span></li>
+    </ul>
+    <p class="text-center" style="margin-top: 24px;">
+        <button type="button" class="btn btn-info">
+            <i class="fa fa-check-square-o"></i>&nbsp;全部标记为已签收
+        </button>
+        <a role="button" class="btn btn-default" href="#/notification-list/"><i class="fa fa-ellipsis-h">
+        </i>&nbsp;更多通知 </a>
+    </p>
+</div>

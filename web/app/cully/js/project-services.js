@@ -40,8 +40,9 @@ define(function (require) {
         .factory('ActivityService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
                 return $resource(wcfApp + projectWcfService + '/:user/project/:projectId/activity/:activityId/', {}, {
-                    saveSolo: { method: 'POST', params: { 'user': '@user', 'projectId': '0', 'activityId': '0', 'category': '@category', 'name': '@name', 'description': '@description', 'participants': '@participants' }, isArray: false },
-                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'activityId': '0', 'category': '@category', 'name': '@name', 'description': '@description' }, isArray: false },
+                    saveSolo: { method: 'POST', params: { 'user': '@user', 'projectId': '0', 'activityId': '0', 'category': '@category', 'name': '@name', 'description': '@description', 'participants': '@participants' } },
+                    save: { method: 'POST', params: { 'user': '@user', 'projectId': '@projectId', 'activityId': '0', 'category': '@category', 'name': '@name', 'description': '@description'} },
+                    update: { method: 'PUT', params: { 'user': '@user', 'projectId': '0', 'activityId': '@activityId', 'category': '@category', 'name': '@name', 'description': '@description'} },
                     get: { method: 'GET', params: { 'user': '@user', 'projectId': '0', 'activityId': '@activityId' }, isArray: false }
                 });
             } ])

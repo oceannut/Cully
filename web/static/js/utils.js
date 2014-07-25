@@ -95,6 +95,12 @@ define(function (require) {
                     var y = date.getFullYear();
                     return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
                 },
+                formatTimeByHMS: function (date) {
+                    var h = date.getHours();
+                    var m = date.getMinutes();
+                    var s = date.getSeconds();
+                    return '' + (h <= 9 ? '0' + h : h) + ':' + (m <= 9 ? '0' + m : m) + ':' + (s <= 9 ? '0' + s : s);
+                },
                 getDateDiff: function (startTime, endTime, diffType) {
                     //将计算间隔类性字符转换为小写
                     diffType = diffType.toLowerCase();

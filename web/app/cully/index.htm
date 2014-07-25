@@ -30,20 +30,22 @@
                                     <li><a href="#/overview">概要</a></li>
                                     <li><a href="#/project-summary">活动/项目</a></li>
                                     <li><a href="#/log-summary">工作记录</a></li>
-                                    <!--<li><a href="#/">历史回顾</a></li>
-                                    <li><a href="#/">工作汇报</a></li>-->
-                                </ul>
-                                <ul class="nav navbar-nav">
-                                    <li class="dropdown"><a id="dLabel" data-toggle="dropdown" href="javascript:void(0);">
-                                        <span class="badge">10</span></a>
-                                        <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                            <div ng-include="'partials/notification.htm'">
-                                            </div>
-                                        </div>
-                                    </li>
                                 </ul>
                                 <ul class="nav navbar-nav navbar-right">
                                     <li class="divider-vertical hidden-xs"></li>
+                                    <li class="dropdown"><a id="dLabel" data-toggle="dropdown" href="javascript:void(0);">
+                                        <span class="label {{notificationCountColor}}"><i class="fa fa-send"></i>&nbsp;&nbsp;{{notificationCount}}</span></a>
+                                        <div class="dropdown-menu" role="menu" aria-labelledby="dLabel" id="notification-dropdown-menu">
+                                            <div ng-include="'partials/untreated-notification.htm'">
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!--<li><a href="javascript:void(0);" data-container="body" data-toggle="popover" data-trigger="hover focus"
+                                        data-placement="bottom" bshtmlpopover="notificationDiv"><span class="label label-danger">
+                                            <i class="fa fa-send"></i>&nbsp;10</span></a><div id="notificationDiv" style="display: none;"
+                                                ng-include="'partials/untreated-notification.htm'">
+                                            </div>
+                                    </li>-->
                                     <li><a href="javascript:void(0);">{{user.name}}</a></li>
                                     <li><a href="javascript:void(0);">帮助</a></li>
                                 </ul>
@@ -67,10 +69,6 @@
         </div>
     </div>
     <script src="../../lib/jquery/jquery.min.js" type="text/javascript"></script>
-    <!--<script src="../../lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>-->
-    <!--<script type="text/javascript">
-        $("#notificationLink").popover();
-    </script>-->
     <script src="../../lib/sea/sea.js" type="text/javascript"></script>
     <script type="text/javascript">
         seajs.config({

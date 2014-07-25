@@ -5,8 +5,15 @@
                 <i class="{{activity.icon}}"></i>&nbsp;{{activity.Name}}</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a><i class="fa fa-print"></i>&nbsp;打印</a></li>
-            <li><a ng-click="gotoProject(activity.ProjectId)"><i class="fa fa-level-up"></i>&nbsp;项目</a></li>
+            <!--<li><a href="javascript:void(0)" data-toggle="modal" data-target="#removeActivityDialog">
+                <i class="fa fa-trash-o"></i>&nbsp;删除</a></li>-->
+            <li style="display: {{navbarLinkVisible}};"><a href="#/activity-edit/{{activity.Id}}/">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+           <!-- <li><a><i class="fa fa-bar-chart-o"></i>&nbsp;延误</a></li>-->
+            <li><a href="#/project-details/{{activity.ProjectId}}/"><i class="fa fa-level-up"></i>
+                &nbsp;项目</a></li>
         </ul>
     </div>
     <hr class="header-hr" />

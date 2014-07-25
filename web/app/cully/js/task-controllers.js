@@ -7,12 +7,13 @@ define(function (require) {
     require('../../../static/js/configs');
     require('../../../static/js/filters');
     require('../../../static/js/utils');
+    require('../../../static/js/angular-directive');
     require('./project-services');
     require('./task-services');
     require('./comment-services');
     require('../../common/js/biz-notification-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
+    angular.module('task.controllers', ['configs', 'filters', 'ng-directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
         .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService', 'Update4IsUnderwayTaskService',
                                  'Update4IsCompletedTaskService', 'ParticipantOfProjectService', 'userCacheUtil', 'dateUtil',
             function ($scope, $location, $log, currentUser, TaskService, TaskListService, Update4IsUnderwayTaskService,
@@ -273,7 +274,6 @@ define(function (require) {
                                 });
                     } else {
                         TaskService.update({ 'user': currentUser.username,
-                            'activityId': parentScope.activity.Id,
                             'id': $scope.task.id,
                             'content': $scope.task.content,
                             'staff': $scope.task.staff,
@@ -311,7 +311,7 @@ define(function (require) {
                 }
 
                 $scope.markIsUnderway = function (task) {
-                    Update4IsUnderwayTaskService.update({ 'user': currentUser.username, 'activityId': task.ActivityId, 'id': task.Id, 'isUnderway': task.IsUnderway })
+                    Update4IsUnderwayTaskService.update({ 'user': currentUser.username, 'id': task.Id, 'isUnderway': task.IsUnderway })
                         .$promise
                             .then(function (result) {
                                 withIsUnderwayChanged(task);
@@ -323,7 +323,7 @@ define(function (require) {
                 }
 
                 $scope.completeTask = function (task) {
-                    Update4IsCompletedTaskService.update({ 'user': currentUser.username, 'activityId': task.ActivityId, 'id': task.Id, 'isCompleted': 'true' })
+                    Update4IsCompletedTaskService.update({ 'user': currentUser.username, 'id': task.Id, 'isCompleted': 'true' })
                         .$promise
                             .then(function (result) {
                                 for (var i in $scope.rawTaskList) {
@@ -353,7 +353,7 @@ define(function (require) {
                 }
 
                 $scope.resumeTask = function (task) {
-                    Update4IsCompletedTaskService.update({ 'user': currentUser.username, 'activityId': task.ActivityId, 'id': task.Id, 'isCompleted': 'false' })
+                    Update4IsCompletedTaskService.update({ 'user': currentUser.username, 'id': task.Id, 'isCompleted': 'false' })
                         .$promise
                             .then(function (result) {
                                 for (var i in $scope.rawCompletedTaskList) {
@@ -382,10 +382,6 @@ define(function (require) {
                             });
                 }
 
-                $scope.gotoTask = function (task) {
-                    $location.path('/task-details/' + task.ActivityId + '/' + task.Id + '/');
-                }
-
             } ])
         .controller('TaskEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'TaskService', 'userCacheUtil', 'dateUtil',
             function ($scope, $location, $routeParams, $log, currentUser, TaskService, userCacheUtil, dateUtil) {
@@ -394,7 +390,7 @@ define(function (require) {
                 $scope.alertMessageVisible = 'hidden';
 
                 $scope.init = function () {
-                    TaskService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId, 'id': $routeParams.id })
+                    TaskService.get({ 'user': currentUser.username, 'id': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.task = result;
@@ -407,10 +403,6 @@ define(function (require) {
                             });
                 }
 
-                $scope.gotoback = function () {
-                    $location.path("/task-details/" + $scope.task.ActivityId + "/" + $scope.task.Id + "/");
-                }
-
                 $scope.save = function () {
                     $scope.isLoading = true;
                     var d = '';
@@ -418,7 +410,6 @@ define(function (require) {
                         d = dateUtil.formatDateByYMD(dateUtil.jsonToDate($scope.task.AppointedDay));
                     }
                     TaskService.update({ 'user': currentUser.username,
-                        'activityId': $scope.task.ActivityId,
                         'id': $scope.task.Id,
                         'content': $scope.task.Content,
                         'staff': $scope.task.Staff,
@@ -441,7 +432,7 @@ define(function (require) {
                 }
 
                 $scope.deleteTask = function () {
-                    TaskService.remove({ 'user': currentUser.username, 'activityId': $scope.task.ActivityId, 'id': $scope.task.Id })
+                    TaskService.remove({ 'user': currentUser.username, 'id': $scope.task.Id })
                         .$promise
                             .then(function (result) {
                                 $('#removeTaskDialog').modal('hide');
@@ -477,24 +468,7 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    ActivityService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId })
-                        .$promise
-                            .then(function (result) {
-                                $scope.activity = result;
-                                var user = userCacheUtil.get($scope.activity.Creator);
-                                $scope.activity.CreatorName = (user == null) ? $scope.activity.Creator : user.Name;
-                                if ($scope.activity.Creator == currentUser.username) {
-                                    $scope.navbarLinkVisible = '';
-                                } else {
-                                    $scope.navbarLinkVisible = 'none';
-                                }
-                            }, function (error) {
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：加载活动详细信息失败";
-                                $log.error(error);
-                            });
-
-                    TaskService.get({ 'user': currentUser.username, 'activityId': $routeParams.activityId, 'id': $routeParams.id })
+                    TaskService.get({ 'user': currentUser.username, 'id': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.task = result;
@@ -504,7 +478,26 @@ define(function (require) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载任务详细信息失败";
+                            })
+                            .then(function () {
+                                ActivityService.get({ 'user': currentUser.username, 'activityId': $scope.task.ActivityId })
+                                    .$promise
+                                        .then(function (result) {
+                                            $scope.activity = result;
+                                            var user = userCacheUtil.get($scope.activity.Creator);
+                                            $scope.activity.CreatorName = (user == null) ? $scope.activity.Creator : user.Name;
+                                            if ($scope.activity.Creator == currentUser.username) {
+                                                $scope.navbarLinkVisible = '';
+                                            } else {
+                                                $scope.navbarLinkVisible = 'none';
+                                            }
+                                        }, function (error) {
+                                            $scope.alertMessageVisible = 'show';
+                                            $scope.alertMessage = "提示：加载活动详细信息失败";
+                                            $log.error(error);
+                                        });
                             });
+                    
                     CommentListService.query({ 'user': currentUser.username, 'commentTarget': 'task', 'targetId': $routeParams.id })
                         .$promise
                             .then(function (result) {
@@ -521,7 +514,7 @@ define(function (require) {
                 }
 
                 $scope.deleteTask = function () {
-                    TaskService.remove({ 'user': currentUser.username, 'activityId': $scope.task.ActivityId, 'id': $scope.task.Id })
+                    TaskService.remove({ 'user': currentUser.username, 'id': $scope.task.Id })
                         .$promise
                             .then(function (result) {
                                 $('#removeTaskDialog').modal('hide');
@@ -543,7 +536,6 @@ define(function (require) {
                             observers.push($scope.task.Staff);
                         }
                         Update4CommentTaskService.save({ 'user': currentUser.username,
-                            'activityId': $routeParams.activityId,
                             'id': $routeParams.id,
                             'content': $scope.comment.content,
                             'observers': observers
@@ -605,7 +597,6 @@ define(function (require) {
                         observers.push($scope.task.Staff);
                     }
                     Update4CommentTaskService.remove({ 'user': currentUser.username,
-                        'activityId': $routeParams.activityId,
                         'id': $routeParams.id,
                         'commentId': $scope.comment.id,
                         'observers': observers
@@ -629,12 +620,34 @@ define(function (require) {
                 }
 
             } ])
-        .controller('TaskNotificationListCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCacheUtil', 'dateUtil', 'BizNotificationService4Resource',
-            function ($scope, $location, $routeParams, $log, currentUser, userCacheUtil, dateUtil, BizNotificationService4Resource) {
+        .controller('TaskNotificationListCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCacheUtil', 'dateUtil',
+                     'BizNotificationService4Resource', 'UntreatedBizNotificationService',
+            function ($scope, $location, $routeParams, $log, currentUser, userCacheUtil, dateUtil,
+                        BizNotificationService4Resource, UntreatedBizNotificationService) {
+
+                function render(notification) {
+                    var user = userCacheUtil.get(notification.Sender);
+                    notification.senderName = (user == null) ? notification.Sender : user.Name;
+                    user = userCacheUtil.get(notification.Receiver);
+                    notification.receiverName = (user == null) ? notification.Receiver : user.Name;
+                    $scope.notificationList.push(notification);
+                    if (notification.Review == null) {
+                        notification.isUntreated = true;
+                        notification.isUntreatedStatus = 'bold';
+                    } else {
+                        notification.isUntreated = false;
+                        notification.isUntreatedStatus = 'normal';
+                    }
+                    if (currentUser.username == notification.Receiver && notification.isUntreated) {
+                        notification.checkButtonVisible = '';
+                    } else {
+                        notification.checkButtonVisible = 'none';
+                    }
+                }
 
                 $scope.init = function () {
+
                     $scope.alertMessageVisible = 'hidden';
-                    $scope.activityId = $routeParams.activityId;
                     $scope.taskId = $routeParams.id;
 
                     BizNotificationService4Resource.query({ 'user': currentUser.username, 'resource': 'task', 'resourceId': $scope.taskId })
@@ -657,23 +670,7 @@ define(function (require) {
                                     if (addLabel) {
                                         $scope.notificationList.push({ 'isLabel': true, 'label': d });
                                     }
-                                    var user = userCacheUtil.get(notification.Sender);
-                                    notification.senderName = (user == null) ? notification.Sender : user.Name;
-                                    user = userCacheUtil.get(notification.Receiver);
-                                    notification.receiverName = (user == null) ? notification.Receiver : user.Name;
-                                    $scope.notificationList.push(notification);
-                                    if (notification.Review == null) {
-                                        notification.isUntreated = true;
-                                        notification.isUntreatedStatus = 'bold';
-                                    } else {
-                                        notification.isUntreated = false;
-                                        notification.isUntreatedStatus = 'normal';
-                                    }
-                                    if (currentUser.username == notification.Receiver && notification.isUntreated) {
-                                        notification.checkButtonVisible = '';
-                                    } else {
-                                        notification.checkButtonVisible = 'none';
-                                    }
+                                    render(notification);
                                 }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
@@ -683,7 +680,20 @@ define(function (require) {
                 }
 
                 $scope.check = function (notification) {
-                    console.log(notification);
+                    UntreatedBizNotificationService.update({ 'user': currentUser.username,
+                        'notificationId': notification.Id
+                    })
+                        .$promise
+                            .then(function (result) {
+                                notification.Review = result.Review;
+                                notification.isUntreated = false;
+                                notification.isUntreatedStatus = 'normal';
+                                notification.checkButtonVisible = 'none';
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：签收通知失败";
+                            });
                 }
 
             } ]);

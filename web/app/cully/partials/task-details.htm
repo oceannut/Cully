@@ -58,10 +58,12 @@
         <ul class="nav navbar-nav navbar-right">
             <li><a data-toggle="modal" data-target="#removeTaskDialog"><i class="fa fa-trash-o">
             </i>&nbsp;删除</a></li>
-            <li style="display: {{navbarLinkVisible}};"><a href="#/task-edit/{{task.ActivityId}}/{{task.Id}}/">
+            <li style="display: {{navbarLinkVisible}};"><a href="#/task-edit/{{task.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
-            <li><a href="#/task-notification-list/{{task.ActivityId}}/{{task.Id}}/"><i class="fa fa-send-o"></i>&nbsp;通知</a></li>
-            <li><a><i class="fa fa-print"></i>&nbsp;打印</a></li>
+            <li><a href="#/task-notification-list/{{task.Id}}/"><i class="fa fa-send-o">
+            </i>&nbsp;通知</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
             <li><a href="#/activity-details/{{task.ActivityId}}/"><i class="fa fa-level-up"></i>
                 &nbsp;活动</a></li>
         </ul>

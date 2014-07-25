@@ -235,6 +235,41 @@ namespace ThinkInBio.Cully.WSL.Impl
             return activity;
         }
 
+        public Activity UpdateActivity(string user, string activityId, string category, string name, string description)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new ArgumentNullException("user");
+            }
+            /*
+             * 验证用户的合法性逻辑暂省略。
+             * */
+
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                throw new ArgumentNullException("category");
+            }
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException("name");
+            }
+            if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
+            {
+                throw new ArgumentOutOfRangeException("description", description.Length, "");
+            }
+            long activityIdLong = Convert.ToInt64(activityId);
+            Activity activity = ProjectService.GetActivity(activityIdLong);
+            if (activity == null)
+            {
+                throw new ObjectNotFoundException(activityIdLong);
+            }
+            activity.Category = category;
+            activity.Name = name;
+            activity.Description = description;
+            ProjectService.UpdateActivity(activity);
+            return activity;
+        }
+
         public Activity GetActivity(string user, string activityId)
         {
             if (string.IsNullOrWhiteSpace(user))

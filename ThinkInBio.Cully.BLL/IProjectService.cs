@@ -76,6 +76,12 @@ namespace ThinkInBio.Cully.BLL
             ICollection<Participant> participants);
 
         /// <summary>
+        /// 更新活动。
+        /// </summary>
+        /// <param name="activity">活动。</param>
+        void UpdateActivity(Activity activity);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="activityId"></param>

@@ -25,39 +25,39 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/{id}/",
+            UriTemplate = "/{user}/task/0/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Task UpdateTask(string user, string activityId, string id, string content, string staff, string appointedDay);
+        Task UpdateTask(string user, string id, string content, string staff, string appointedDay);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/{id}/isUnderway/{isUnderway}/",
+            UriTemplate = "/{user}/task/0/{id}/isUnderway/{isUnderway}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Task UpdateTask4IsUnderway(string user, string activityId, string id, string isUnderway);
+        Task UpdateTask4IsUnderway(string user, string id, string isUnderway);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/{id}/isCompleted/{isCompleted}/",
+            UriTemplate = "/{user}/task/0/{id}/isCompleted/{isCompleted}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Task UpdateTask4IsCompleted(string user, string activityId, string id, string isCompleted);
+        Task UpdateTask4IsCompleted(string user, string id, string isCompleted);
 
         [OperationContract]
         [WebInvoke(Method = "DELETE",
-            UriTemplate = "/{user}/task/{activityId}/{id}/",
+            UriTemplate = "/{user}/task/0/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        void DeleteTask(string user, string activityId, string id);
+        void DeleteTask(string user, string id);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/task/{activityId}/{id}/",
+        [WebGet(UriTemplate = "/{user}/task/0/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Task GetTask(string user, string activityId, string id);
+        Task GetTask(string user, string id);
 
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/task/{activityId}/",
@@ -68,18 +68,18 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/{id}/comment/0/",
+            UriTemplate = "/{user}/task/0/{id}/comment/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Comment SaveComment(string user, string activityId, string id, string content, string[] observers);
+        Comment SaveComment(string user, string id, string content, string[] observers);
 
         [OperationContract]
         [WebInvoke(Method = "DELETE",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/task/{activityId}/{id}/comment/{commentId}/",
+            UriTemplate = "/{user}/task/0/{id}/comment/{commentId}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        void DeleteComment(string user, string activityId, string id, string commentId, string[] observers);
+        void DeleteComment(string user, string id, string commentId, string[] observers);
 
     }
 

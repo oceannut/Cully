@@ -5,7 +5,7 @@
                 <i class="fa fa-send-o"></i>&nbsp;任务通知</h3>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#/task-details/{{activityId}}/{{taskId}}/"><i class="fa fa-level-up"></i>
+            <li><a href="#/task-details/{{taskId}}/"><i class="fa fa-level-up"></i>
                 &nbsp;返回</a></li>
         </ul>
     </div>
@@ -19,10 +19,14 @@
                 <span class="text-green"><i class="fa fa-lemon-o"></i>&nbsp;{{item.label}}</span></p>
             <p ng-switch-when="false" style="font-weight: {{item.isUntreatedStatus}};">
                 <mark>{{item.senderName}}</mark>
-                &nbsp; {{item.Content}}&nbsp;&nbsp;<span class="text-danger">[<i class="fa fa-long-arrow-right"></i>{{item.receiverName}}]</span>
+                &nbsp;<span style="color: #aaa;"><i class="fa fa-long-arrow-right"></i>&nbsp;{{item.receiverName}}</span>
+                &nbsp; &nbsp; {{item.Content}}&nbsp;&nbsp;
                 <button type="button" class="btn btn-xs btn-default" ng-click="check(item)" style="display: {{item.checkButtonVisible}};">
                     <i class="fa fa-check-square-o"></i>&nbsp;签收
                 </button>
+                <a data-container="body" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                    data-content="[发送人]：{{item.senderName}}, [发送时间]：{{item.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}};  [接收人]：{{item.receiverName}}, [签收时间]：{{item.Review | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}"
+                    bspopover><i class="fa fa-ellipsis-h"></i></a>
             </p>
         </li>
     </ol>

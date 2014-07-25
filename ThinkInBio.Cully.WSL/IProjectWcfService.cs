@@ -139,6 +139,23 @@ namespace ThinkInBio.Cully.WSL
         /// </summary>
         /// <param name="user"></param>
         /// <param name="activityId"></param>
+        /// <param name="category"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/project/0/activity/{activityId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Activity UpdateActivity(string user, string activityId, string category, string name, string description);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="activityId"></param>
         /// <returns></returns>
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/project/0/activity/{activityId}/",

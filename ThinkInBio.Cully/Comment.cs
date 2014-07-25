@@ -189,8 +189,8 @@ namespace ThinkInBio.Cully
                     {
                         //只有发送人和接收人不是同一人，才创建通知。
                         BizNotification notification = new BizNotification(this.Creator, observer);
-                        notification.Content = string.Format("{0}: {1}...", contentPrefix, 
-                            this.Content.Length <= 120 ? this.Content : this.Content.Substring(0, 120));
+                        notification.Content = string.Format("[{0}]: {1}", contentPrefix,
+                            this.Content.Length <= 120 ? this.Content : string.Format("{0}...", this.Content.Substring(0, 120)));
                         notification.Resource = this.Target.ToString().ToLower();
                         notification.ResourceId = id.ToString();
                         notification.Creation = timeStamp;
