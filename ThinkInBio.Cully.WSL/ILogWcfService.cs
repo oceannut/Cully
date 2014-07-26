@@ -20,7 +20,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/log/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Log SaveLog(string user, string date, string content, string tag1, string tag2, string tag3);
+        Log SaveLog(string user, string date, string title, string content, string category, string tag1, string tag2, string tag3);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
@@ -28,7 +28,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/log/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Log UpdateLog(string user, string id, string date, string content, string tag1, string tag2, string tag3);
+        Log UpdateLog(string user, string id, string date, string title, string content, string category, string tag1, string tag2, string tag3);
 
         [OperationContract]
         [WebGet(UriTemplate = "/{user}/log/range/{start}/{count}/",

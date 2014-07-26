@@ -11,13 +11,13 @@ define(function (require) {
         .factory('LogService', ['$resource', 'wcfApp', 'logWcfService',
             function ($resource, wcfApp, logWcfService) {
                 return $resource(wcfApp + logWcfService + '/:user/log/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'date': '@date', 'content': '@content', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3' }, isArray: false }
+                    save: { method: 'POST', params: { 'user': '@user', 'date': '@date', 'title': '@title', 'content': '@content', 'category': '@category', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3' }, isArray: false }
                 });
             } ])
         .factory('LogUpdateService', ['$resource', 'wcfApp', 'logWcfService',
             function ($resource, wcfApp, logWcfService) {
                 return $resource(wcfApp + logWcfService + '/:user/log/:id/', {}, {
-                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'date': '@date', 'content': '@content', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3' }, isArray: false }
+                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'date': '@date', 'title': '@title', 'content': '@content', 'category': '@category', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3' }, isArray: false }
                 });
             } ])
         .factory('LogListService4User', ['$resource', 'wcfApp', 'logWcfService',

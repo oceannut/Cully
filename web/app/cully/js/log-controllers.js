@@ -170,12 +170,32 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogAddCtrl', ['$scope', '$location', 'currentUser', 'LogService',
-            function ($scope, $location, currentUser, LogService) {
+        .controller('LogAddCtrl', ['$scope', '$location', 'currentUser', 'LogService', 'dateUtil', 'categoryCacheUtil',
+            function ($scope, $location, currentUser, LogService, dateUtil, categoryCacheUtil) {
+
+                function _selectCategory(code) {
+                    for (var i = 0; i < $scope.categoryList.length; i++) {
+                        var category = $scope.categoryList[i];
+                        if (category.Code == code) {
+                            category.active = "active";
+                            $scope.category = category;
+                        } else {
+                            category.active = "";
+                        }
+                    }
+                }
 
                 $scope.init = function () {
                     $scope.log = {};
-                    //$scope.disabled = false;
+                    $scope.log.startTime = dateUtil.formatDateByYMD(new Date());
+                    categoryCacheUtil.list('log', function (result) {
+                        $scope.categoryList = result;
+                        _selectCategory('diary');
+                    });
+                }
+
+                $scope.selectCategory = function (selectedCategory) {
+                    _selectCategory(selectedCategory.Code);
                 }
 
                 $scope.save = function () {
@@ -183,7 +203,9 @@ define(function (require) {
                                             && $scope.log.content != undefined && $scope.log.content != '') {
                         LogService.save({ 'user': currentUser.username,
                             'date': $scope.log.startTime,
+                            'title': $scope.log.title,
                             'content': $scope.log.content,
+                            'category': $scope.category.Code,
                             'tag1': $scope.log.tag1,
                             'tag2': $scope.log.tag2,
                             'tag3': $scope.log.tag3

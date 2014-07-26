@@ -31,9 +31,11 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                  (command) =>
                  {
-                     command.CommandText = @"insert into cyLog (id,content,startTime,endTime,tags,creator,creation,modification) 
-                                                values (NULL,@content,@startTime,@endTime,@tags,@creator,@creation,@modification)";
+                     command.CommandText = @"insert into cyLog (id,title,content,category,startTime,endTime,tags,creator,creation,modification) 
+                                                values (NULL,@title,@content,@category,@startTime,@endTime,@tags,@creator,@creation,@modification)";
+                     command.Parameters.Add(DbFactory.CreateParameter("title", entity.Title));
                      command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
+                     command.Parameters.Add(DbFactory.CreateParameter("category", entity.Category));
                      command.Parameters.Add(DbFactory.CreateParameter("startTime", entity.StartTime));
                      command.Parameters.Add(DbFactory.CreateParameter("endTime", entity.EndTime));
                      command.Parameters.Add(DbFactory.CreateParameter("tags", entity.Tags));
@@ -53,9 +55,11 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"update cyLog 
-                                                set content=@content,startTime=@startTime,endTime=@endTime,tags=@tags 
+                                                set title=@title,content=@content,category=@category,startTime=@startTime,endTime=@endTime,tags=@tags 
                                                 where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("title", entity.Title));
                     command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
+                    command.Parameters.Add(DbFactory.CreateParameter("category", entity.Category));
                     command.Parameters.Add(DbFactory.CreateParameter("startTime", entity.StartTime));
                     command.Parameters.Add(DbFactory.CreateParameter("endTime", entity.EndTime));
                     command.Parameters.Add(DbFactory.CreateParameter("tags", entity.Tags));
@@ -92,7 +96,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Log>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,content,startTime,endTime,tags,commentCount,creator,creation,modification from cyLog 
+                    command.CommandText = @"select id,title,content,category,startTime,endTime,tags,commentCount,creator,creation,modification from cyLog 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -123,7 +127,7 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select t.id,t.content,t.startTime,t.endTime,t.tags,t.commentCount,t.creator,t.creation,t.modification from cyLog t ");
+                    sql.Append("select t.id,t.title,t.content,t.category,t.startTime,t.endTime,t.tags,t.commentCount,t.creator,t.creation,t.modification from cyLog t ");
                     BuildSql(sql, parameters, user, startTime, endTime);
                     sql.Append(" order by t.startTime desc ");
                     if (maxRowsCount < int.MaxValue)
@@ -163,14 +167,16 @@ namespace ThinkInBio.Cully.MySQL
         {
             Log log = new Log();
             log.Id = reader.GetInt64(0);
-            log.Content = reader.GetString(1);
-            log.StartTime = reader.GetDateTime(2);
-            log.EndTime = reader.IsDBNull(3) ? new DateTime?() : reader.GetDateTime(3);
-            log.Tags = reader.IsDBNull(4) ? null : reader.GetString(4);
-            log.CommentCount = reader.GetInt32(5);
-            log.Creator = reader.GetString(6);
-            log.Creation = reader.GetDateTime(7);
-            log.Modification = reader.GetDateTime(8);
+            log.Title = reader.GetString(1);
+            log.Content = reader.GetString(2);
+            log.Category = reader.GetString(3);
+            log.StartTime = reader.GetDateTime(4);
+            log.EndTime = reader.IsDBNull(5) ? new DateTime?() : reader.GetDateTime(5);
+            log.Tags = reader.IsDBNull(6) ? null : reader.GetString(6);
+            log.CommentCount = reader.GetInt32(7);
+            log.Creator = reader.GetString(8);
+            log.Creation = reader.GetDateTime(9);
+            log.Modification = reader.GetDateTime(10);
 
             return log;
         }

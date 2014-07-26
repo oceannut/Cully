@@ -149,8 +149,6 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
 .bs-glyphicons li
 {
     float: left;
-    width: 25%;
-    height: 64px;
     padding: 6px;
     font-size: 10px;
     line-height: 1.4;
@@ -175,6 +173,11 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
     color: #fff;
     background-color: #563d7c;
 }
+.bs-glyphicons .active
+{
+    color: #fff;
+    background-color: #cc6699;
+}
 @media (min-width:768px)
 {
     .bs-glyphicons
@@ -184,7 +187,7 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
     }
     .bs-glyphicons li
     {
-        width: 25%;
+        width: 12.5%;
         font-size: 12px;
     }
 }

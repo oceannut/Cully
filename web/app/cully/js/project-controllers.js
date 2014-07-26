@@ -224,6 +224,18 @@ define(function (require) {
                     $scope.activity.description = '';
                 }
 
+                function _selectCategory(code) {
+                    for (var i = 0; i < $scope.categoryList.length; i++) {
+                        var category = $scope.categoryList[i];
+                        if (category.Code == code) {
+                            category.active = "active";
+                            $scope.category = category;
+                        } else {
+                            category.active = "";
+                        }
+                    }
+                }
+
                 $scope.gotoProjectEdit = function (projectId) {
                     $location.path("/project-edit/" + projectId + "/");
                 }
@@ -272,8 +284,8 @@ define(function (require) {
 
                     categoryCacheUtil.list('activity', function (result) {
                         $scope.categoryList = result;
+                        _selectCategory('normal');
                     });
-                    $scope.category = categoryCacheUtil.get('activity', 'normal');
                 }
 
                 $scope.gotoActivity = function (activityId) {
@@ -281,7 +293,7 @@ define(function (require) {
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    $scope.category = selectedCategory;
+                    _selectCategory(selectedCategory.Code);
                 }
 
                 $scope.toggleAddActivityPanelVisibible = function () {

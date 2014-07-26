@@ -162,6 +162,18 @@ define(function (require) {
                 $scope.isLoading = false;
                 $scope.alertMessageVisible = 'hidden';
 
+                function _selectCategory(code) {
+                    for (var i = 0; i < $scope.categoryList.length; i++) {
+                        var category = $scope.categoryList[i];
+                        if (category.Code == code) {
+                            category.active = "active";
+                            $scope.category = category;
+                        } else {
+                            category.active = "";
+                        }
+                    }
+                }
+
                 $scope.init = function () {
                     $scope.isParticipantLoading = true;
 
@@ -183,9 +195,8 @@ define(function (require) {
 
                     categoryCacheUtil.list('activity', function (result) {
                         $scope.categoryList = result;
+                        _selectCategory('normal');
                     });
-                    $scope.category = categoryCacheUtil.get('activity', 'normal');
-
                 }
 
                 $scope.gotoback = function () {
@@ -193,7 +204,7 @@ define(function (require) {
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    $scope.category = selectedCategory;
+                    _selectCategory(selectedCategory.Code);
                 }
 
                 $scope.addParticipant = function (user) {
@@ -256,6 +267,18 @@ define(function (require) {
                 $scope.isLoading = false;
                 $scope.alertMessageVisible = 'hidden';
 
+                function _selectCategory(code) {
+                    for (var i = 0; i < $scope.categoryList.length; i++) {
+                        var category = $scope.categoryList[i];
+                        if (category.Code == code) {
+                            category.active = "active";
+                            $scope.category = category;
+                        } else {
+                            category.active = "";
+                        }
+                    }
+                }
+
                 $scope.init = function () {
 
                     categoryCacheUtil.list('activity', function (result) {
@@ -266,10 +289,7 @@ define(function (require) {
                         .$promise
                             .then(function (result) {
                                 $scope.activity = result;
-                                var category = categoryCacheUtil.get('activity', $scope.activity.Category);
-                                if (category != null) {
-                                    $scope.category = category;
-                                }
+                                _selectCategory($scope.activity.Category)
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载活动详细信息失败";
@@ -279,7 +299,7 @@ define(function (require) {
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    $scope.category = selectedCategory;
+                    _selectCategory(selectedCategory.Code);
                 }
 
                 $scope.save = function () {

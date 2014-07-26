@@ -16,7 +16,7 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal ILogService LogService { get; set; }
         internal ICommentService CommentService { get; set; }
 
-        public Log SaveLog(string user, string date, string content, string tag1, string tag2, string tag3)
+        public Log SaveLog(string user, string date, string title, string content, string category, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -26,7 +26,7 @@ namespace ThinkInBio.Cully.WSL.Impl
              * 验证用户的合法性逻辑暂省略。
              * */
 
-            if (string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
             {
                 throw new ArgumentNullException();
             }
@@ -46,6 +46,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
 
             Log log = new Log(d, content, user);
+            log.Title = title;
+            log.Category = category;
             if (tags.Count > 0)
             {
                 log.AddTag(tags);
@@ -59,7 +61,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             return log;
         }
 
-        public Log UpdateLog(string user, string id, string date, string content, string tag1, string tag2, string tag3)
+        public Log UpdateLog(string user, string id, string date, string title, string content, string category, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -73,7 +75,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 throw new ArgumentNullException();
             }
-            if (string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
             {
                 throw new ArgumentNullException();
             }
@@ -97,6 +99,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 tags.Add(tag3);
             }
+            log.Title = title;
+            log.Category = category;
             log.Content = content;
             log.StartTime = d;
             log.AddTag(tags);
