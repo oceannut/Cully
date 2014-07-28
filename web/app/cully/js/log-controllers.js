@@ -14,11 +14,9 @@ define(function (require) {
     angular.module('log.controllers', ['textAngular', 'configs', 'filters', 'utils', 'log.services', 'cache'])
         .value('logCache', { 'logList': [] })
         .controller('LogSummaryCtrl', ['$scope', '$location', 'currentUser', 'dateUtil', 'stringUtil',
-            'LogListService4User', 'LogListService4UserByDate', 'LogListService', 'LogListServiceByDate',
-            'userCache', 'logCache',
+            'LogListService', 'userCache', 'logCache', 'categoryCacheUtil',
             function ($scope, $location, currentUser, dateUtil, stringUtil,
-                LogListService4User, LogListService4UserByDate, LogListService, LogListServiceByDate,
-                userCache, logCache) {
+                LogListService, userCache, logCache, categoryCacheUtil) {
 
                 var pageSize = 20;
 
@@ -62,65 +60,38 @@ define(function (require) {
                     getLogList();
                 }
 
-                $scope.remark = function (id) {
-                    $location.path('/log-details/' + id + '/');
-                }
-
-                $scope.edit = function (id) {
-                    $location.path('/log-edit/' + id + '/');
-                }
-
                 function getLogList() {
                     var startRowIndex = $scope.currentPage * pageSize;
                     var staff = $scope.queryModel.staff;
                     var date = $scope.queryModel.date;
-                    if (staff != '' && date != '') {
-                        LogListService4UserByDate.query({ 'user': staff,
-                            'date': dateUtil.getDate(date),
-                            'span': dateUtil.getSpan(date),
-                            'start': startRowIndex,
-                            'count': pageSize
-                        })
-                            .$promise
-                                .then(function (result) {
-                                    interceptLogList(result);
-                                }, function (error) {
-                                    console.log("error: " + error);
-                                });
-                    } else if (staff == '' && date != '') {
-                        LogListServiceByDate.query({ 'date': dateUtil.getDate(date),
-                            'span': dateUtil.getSpan(date),
-                            'start': startRowIndex,
-                            'count': pageSize
-                        })
-                            .$promise
-                                .then(function (result) {
-                                    interceptLogList(result);
-                                }, function (error) {
-                                    console.log("error: " + error);
-                                });
-                    } else if (staff != '' && date == '') {
-                        LogListService4User.query({ 'user': staff,
-                            'start': startRowIndex,
-                            'count': pageSize
-                        })
-                            .$promise
-                                .then(function (result) {
-                                    interceptLogList(result);
-                                }, function (error) {
-                                    console.log("error: " + error);
-                                });
-                    } else {
-                        LogListService.query({ 'start': startRowIndex,
-                            'count': pageSize
-                        })
-                            .$promise
-                                .then(function (result) {
-                                    interceptLogList(result);
-                                }, function (error) {
-                                    console.log("error: " + error);
-                                });
+                    var dateInput, spanInput;
+                    if (staff == '') {
+                        staff = 'null';
                     }
+                    if (date == '') {
+                        var now = new Date();
+                        var s = new Date(now - (1000 * 3600 * 24 * 365));
+                        dateInput = dateUtil.formatDateByYMD(s);
+                        spanInput = '366';
+                    } else {
+                        dateInput = dateUtil.getDate(date);
+                        spanInput = dateUtil.getSpan(date);
+                    }
+
+                    LogListService.query({ 'user': currentUser.username,
+                        'date': dateInput,
+                        'span': spanInput,
+                        'creator': staff,
+                        'category': 'null',
+                        'start': startRowIndex,
+                        'count': pageSize
+                    })
+                        .$promise
+                            .then(function (result) {
+                                interceptLogList(result);
+                            }, function (error) {
+                                console.log("error: " + error);
+                            });
                 }
 
                 function interceptLogList(result) {
@@ -128,16 +99,16 @@ define(function (require) {
                         $scope.logList = [];
                         for (var i = 0; i < result.length; i++) {
                             var item = result[i];
-                            item.CreatorName = getCreatorName(item.Creator);
+                            var category = categoryCacheUtil.get('log', item.Category);
+                            if (category != null) {
+                                item.icon = category.Icon;
+                                item.categoryName = category.Name;
+                            }
+                            item.creatorName = getCreatorName(item.Creator);
                             var content = stringUtil.removeHTML(item.Content);
                             item.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
                             if (item.Tags != null && item.Tags != '') {
                                 item.TagList = item.Tags.split(',');
-                            }
-                            if (item.Creator == currentUser.username) {
-                                item.EditBtnVisible = '';
-                            } else {
-                                item.EditBtnVisible = 'none';
                             }
                             $scope.logList.push(item);
                         }
@@ -214,58 +185,87 @@ define(function (require) {
                             .then(function (result) {
                                 $location.path('/log-summary/');
                             }, function (error) {
-                                console.log("error: " + error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：保存记录失败";
+                                $log.error(error);
                             });
                     }
                 }
 
-                $scope.cancel = function () {
-                    history.back();
+            } ])
+        .controller('LogEditCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'categoryCacheUtil',
+            function ($scope, $location, $routeParams, currentUser, dateUtil, LogService, logCache, categoryCacheUtil) {
+
+                $scope.isLoading = false;
+                $scope.alertMessageVisible = 'hidden';
+
+                function _selectCategory(code) {
+                    for (var i = 0; i < $scope.categoryList.length; i++) {
+                        var category = $scope.categoryList[i];
+                        if (category.Code == code) {
+                            category.active = "active";
+                            $scope.category = category;
+                        } else {
+                            category.active = "";
+                        }
+                    }
                 }
 
-            } ])
-        .controller('LogEditCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'dateUtil', 'LogUpdateService', 'logCache',
-            function ($scope, $location, $routeParams, currentUser, dateUtil, LogUpdateService, logCache) {
+                function renderLog(editLog) {
+                    _selectCategory(editLog.Category);
+                    $scope.log = { 'id': editLog.Id, 'title': editLog.Title, 'content': editLog.Content };
+                    var d = dateUtil.jsonToDate(editLog.StartTime);
+                    if (d != null) {
+                        $scope.log.startTime = dateUtil.formatDateByYMD(d);
+                    }
+                    var tags = editLog.Tags;
+                    if (tags != undefined && tags != null) {
+                        var tagArray = tags.split(',');
+                        if (tagArray.length > 0) {
+                            $scope.log.tag1 = tagArray[0];
+                        }
+                        if (tagArray.length > 1) {
+                            $scope.log.tag2 = tagArray[1];
+                        }
+                        if (tagArray.length > 2) {
+                            $scope.log.tag3 = tagArray[2];
+                        }
+                    }
+                }
 
                 $scope.init = function () {
-                    var result = null;
-                    if (logCache.logList != null) {
-                        for (var i in logCache.logList) {
-                            if ($routeParams.id == logCache.logList[i].Id) {
-                                result = logCache.logList[i];
-                                break;
+                    categoryCacheUtil.list('log', function (result) {
+                        $scope.categoryList = result;
+
+                        var editLog = null;
+                        if (logCache.logList != null) {
+                            for (var i in logCache.logList) {
+                                if ($routeParams.id == logCache.logList[i].Id) {
+                                    editLog = logCache.logList[i];
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (result != null) {
-                        $scope.log = { 'content': result.Content };
-                        var d = dateUtil.jsonToDate(result.StartTime);
-                        if (d != null) {
-                            $scope.log.startTime = dateUtil.formatDateByYMD(d);
+                        if (editLog != null) {
+                            renderLog(editLog);
                         }
-                        var tags = result.Tags;
-                        if (tags != undefined && tags != null) {
-                            var tagArray = tags.split(',');
-                            if (tagArray.length > 0) {
-                                $scope.log.tag1 = tagArray[0];
-                            }
-                            if (tagArray.length > 1) {
-                                $scope.log.tag2 = tagArray[1];
-                            }
-                            if (tagArray.length > 2) {
-                                $scope.log.tag3 = tagArray[2];
-                            }
-                        }
-                    }
+                    });
+                }
+
+                $scope.selectCategory = function (selectedCategory) {
+                    _selectCategory(selectedCategory.Code);
                 }
 
                 $scope.save = function () {
                     if ($scope.log.startTime != undefined && $scope.log.startTime != ''
                         && $scope.log.content != undefined && $scope.log.content != '') {
-                        LogUpdateService.update({ 'user': currentUser.username,
-                            'id': $routeParams.id,
+                        $scope.isLoading = true;
+                        LogService.update({ 'user': currentUser.username,
+                            'id': $scope.log.id,
                             'date': $scope.log.startTime,
+                            'title': $scope.log.title,
                             'content': $scope.log.content,
+                            'category': $scope.category.Code,
                             'tag1': $scope.log.tag1,
                             'tag2': $scope.log.tag2,
                             'tag3': $scope.log.tag3
@@ -280,20 +280,39 @@ define(function (require) {
                                             }
                                         }
                                     }
-                                    $location.path('/log-details/' + $routeParams.id + '/');
+                                    $scope.isLoading = false;
+                                    renderLog(result);
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessageColor = 'alert-success';
+                                    $scope.alertMessage = "提示：修改记录成功";
                                 }, function (error) {
-                                    console.log("error: " + error);
+                                    $scope.isLoading = false;
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessageColor = 'alert-danger';
+                                    $scope.alertMessage = "提示：修改记录失败";
+                                    $log.error(error);
                                 });
                     }
                 }
 
-                $scope.cancel = function () {
-                    history.back();
-                }
-
             } ])
-        .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'LogService', 'CommentService', 'CommentUpdateService', 'logCache',
-            function ($scope, $location, $routeParams, currentUser, LogService, CommentService, CommentUpdateService, logCache) {
+        .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'LogService', 'CommentService',
+                    'CommentListService', 'Update4CommentLogService', 'logCache', 'userCacheUtil',
+            function ($scope, $location, $routeParams, $log, currentUser, LogService, CommentService,
+                    CommentListService, Update4CommentLogService, logCache, userCacheUtil) {
+
+                $scope.alertMessageVisible = 'hidden';
+
+                function render(comment, i) {
+                    comment.index = (parseInt(i) + 1);
+                    var user = userCacheUtil.get(comment.Creator);
+                    comment.creatorName = (user == null) ? comment.Creator : user.Name;
+                    if (comment.Creator == currentUser.username) {
+                        comment.editCommentButtonVisible = '';
+                    } else {
+                        comment.editCommentButtonVisible = 'none';
+                    }
+                }
 
                 $scope.init = function () {
                     $scope.commentList = [];
@@ -306,21 +325,28 @@ define(function (require) {
                             }
                         }
                     }
-                    CommentService.query({ 'user': currentUser.username,
-                        'logId': $scope.log.Id
+                    CommentListService.query({ 'user': currentUser.username,
+                        'commentTarget': 'log',
+                        'targetId': $scope.log.Id
                     })
                         .$promise
                             .then(function (result) {
                                 $scope.commentList = result;
+                                for (var i in $scope.commentList) {
+                                    var comment = $scope.commentList[i];
+                                    render(comment, i);
+                                }
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载评论列表失败";
                             });
                 }
 
                 $scope.saveComment = function () {
                     if ($scope.comment.content != undefined && $scope.comment.content != '') {
                         if ($scope.comment.id != undefined && $scope.comment.id != null) {
-                            CommentUpdateService.update({ 'user': currentUser.username,
+                            CommentService.update({ 'user': currentUser.username,
                                 'id': $scope.comment.id,
                                 'content': $scope.comment.content
                             })
@@ -328,24 +354,30 @@ define(function (require) {
                                 .then(function (result) {
                                     for (var i in $scope.commentList) {
                                         if ($scope.commentList[i].Id == result.Id) {
-                                            $scope.commentList[i] = result;
+                                            $scope.commentList[i].Content = result.Content;
+                                            break;
                                         }
                                     }
                                     $scope.clearComment();
                                 }, function (error) {
-                                    console.log("error: " + error);
+                                    $log.error(error);
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessage = "提示：修改评论失败";
                                 });
                         } else {
-                            CommentService.save({ 'user': currentUser.username,
-                                'logId': $scope.log.Id,
+                            Update4CommentLogService.save({ 'user': currentUser.username,
+                                'id': $scope.log.Id,
                                 'content': $scope.comment.content
                             })
                             .$promise
                                 .then(function (result) {
                                     $scope.commentList.push(result);
+                                    render(result, $scope.commentList.length - 1);
                                     $scope.clearComment();
                                 }, function (error) {
-                                    console.log("error: " + error);
+                                    $log.error(error);
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessage = "提示：保存评论失败";
                                 });
                         }
                     }
@@ -354,16 +386,40 @@ define(function (require) {
                 $scope.editComment = function (comment) {
                     $scope.comment.id = comment.Id;
                     $scope.comment.content = comment.Content;
-                    console.log($scope.comment);
                     document.getElementsByName('editCommentPanel')[0].scrollIntoView(true);
                 }
 
                 $scope.clearComment = function () {
+                    $scope.comment.id = '';
                     $scope.comment.content = '';
                 }
 
-                $scope.goback = function () {
-                    $location.path('/log-summary/');
+                $scope.removeComment = function (comment) {
+                    $scope.comment.id = comment.Id;
+                    $scope.comment.content = comment.Content;
+                }
+
+                $scope.deleteComment = function () {
+                    Update4CommentLogService.remove({ 'user': currentUser.username,
+                        'id': $scope.log.Id,
+                        'commentId': $scope.comment.id
+                    })
+                        .$promise
+                            .then(function (result) {
+                                $('#removeCommentDialog').modal('hide');
+                                for (var i in $scope.commentList) {
+                                    if ($scope.comment.id == $scope.commentList[i].Id) {
+                                        $scope.commentList.splice(i, 1);
+                                        break;
+                                    }
+                                }
+                                $scope.clearComment();
+                            }, function (error) {
+                                $('#removeCommentDialog').modal('hide');
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：删除评论失败";
+                            });
                 }
 
             } ]);

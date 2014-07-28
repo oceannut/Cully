@@ -15,21 +15,20 @@ namespace ThinkInBio.Cully.BLL
 
         void UpdateLog(Log log);
 
-        void UpdateLog4Comment(Log log, Comment comment, ICollection<BizNotification> notificationList);
-
         Log GetLog(long id);
-
-        IList<Log> GetLogList(int startRowIndex, int maxRowsCount);
 
         IList<Log> GetLogList(DateTime startTime, DateTime endTime, 
             int startRowIndex, int maxRowsCount);
 
-        IList<Log> GetLogList(string user,
+        IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, 
             int startRowIndex, int maxRowsCount);
 
-        IList<Log> GetLogList(string user, 
-            DateTime startTime, DateTime endTime, 
+        IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, string category,
             int startRowIndex, int maxRowsCount);
+
+        void SaveComment(Log log, Comment comment, ICollection<BizNotification> notificationList);
+
+        void DeleteComment(Log log, Comment comment, ICollection<BizNotification> notificationList);
 
     }
 }

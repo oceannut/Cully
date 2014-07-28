@@ -120,6 +120,7 @@ define(function (require) {
 
                     userCacheUtil.init();
                     categoryCacheUtil.init('activity');
+                    categoryCacheUtil.init('log');
 
                     $scope.$watch('notificationCount', function () {
                         if ($scope.notificationCount > 0) {

@@ -146,13 +146,13 @@ namespace ThinkInBio.Cully
         }
 
         /// <summary>
-        /// 评论。
+        /// 添加评论。
         /// </summary>
         /// <param name="user">评论人。</param>
         /// <param name="content">评论内容。</param>
         /// <param name="action">评论操作定义。</param>
         /// <returns>返回评论信息。</returns>
-        public Comment Remark(string user, string content,
+        public Comment AddRemark(string user, string content,
             Action<Log, Comment, ICollection<BizNotification>> action)
         {
             if (string.IsNullOrWhiteSpace(content)
@@ -166,27 +166,11 @@ namespace ThinkInBio.Cully
             }
 
             DateTime now = DateTime.Now;
-
             Comment comment = new Comment(content, user);
             ICollection<BizNotification> notificationList = comment.Save(this, new string[] { this.Creator }, now, null);
-            //comment.Target = CommentTarget.Log;
-            //comment.TargetId = this.Id;
-            //comment.Creation = now;
-            //comment.Modification = now;
 
             this.CommentCount++;
             this.Modification = now;
-
-            //BizNotification notification = null;
-            //if (user != this.Creator)
-            //{
-            //    //只有发送人和接收人不是同一人，才创建通知。
-            //    notification = new BizNotification(user, this.Creator);
-            //    notification.Content = content;
-            //    notification.Resource = "log";
-            //    notification.ResourceId = this.Id.ToString();
-            //    notification.Creation = now;
-            //}
 
             if (action != null)
             {
@@ -194,6 +178,35 @@ namespace ThinkInBio.Cully
             }
 
             return comment;
+        }
+
+        /// <summary>
+        /// 删除评论。
+        /// </summary>
+        /// <param name="comment">要删除的评论。</param>
+        /// <param name="action">删除评论操作定义。</param>
+        public void RemoveRemark(Comment comment,
+            Action<Log, Comment, ICollection<BizNotification>> action)
+        {
+            if (comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (this.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            DateTime now = DateTime.Now;
+            ICollection<BizNotification> notificationList = comment.Delete(new string[] { this.Creator }, now, null);
+
+            this.CommentCount--;
+            this.Modification = now;
+
+            if (action != null)
+            {
+                action(this, comment, notificationList);
+            }
         }
 
         /// <summary>

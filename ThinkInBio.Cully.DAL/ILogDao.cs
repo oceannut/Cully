@@ -14,9 +14,9 @@ namespace ThinkInBio.Cully.DAL
 
         bool Update4CommentCount(long id, int count);
 
-        int GetCount(string user, DateTime? startTime, DateTime? endTime);
+        int GetCount(DateTime? startTime, DateTime? endTime, string creator, string category);
 
-        IList<Log> GetList(string user, DateTime? startTime, DateTime? endTime,
+        IList<Log> GetList(DateTime? startTime, DateTime? endTime, string creator, string category,
             int startRowIndex, int maxRowsCount);
 
     }

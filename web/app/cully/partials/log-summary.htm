@@ -37,21 +37,21 @@
             <ol class="list-unstyled">
                 <li ng-repeat="item in logList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
                     padding-bottom: 2em; margin-bottom: 0.5em;">
-                    <p class="text-justify">
-                        <a ng-click="remark(item.Id)">{{item.filterContent}}</a></p>
-                    <ul style="list-style-type: none; float: left; margin-left: -2em;">
-                        <li style="float: left; margin-right: 1.2em;"><span>{{item.CreatorName}}</span></li>
+                    <h4>
+                        <i class="fa {{item.icon}}"></i>&nbsp;<a href="#/log-details/{{item.Id}}/">{{item.Title}}</a></h4>
+                    <p class="text-justify" style="font-size: 10.5pt; color: #888;">
+                        {{item.filterContent}}</p>
+                    <ul style="list-style-type: none; float: left; margin-left: -2em; font-size: 10.5pt;">
+                        <li style="float: left; margin-right: 1.2em;"><span>{{item.creatorName}}</span></li>
+                        <li style="float: left; margin-right: 1.2em;"><span>{{item.StartTime | jsonDateFormat
+                            | date:'yyyy-MM-dd'}}</span></li>
                         <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in item.TagList"><a
                             href="#"><span class="badge">{{tag}}</span></a></li>
                         <li style="float: left; margin-left: 1.2em;"><span>评论:{{item.CommentCount}}</span></li>
-                        <li style="float: left; margin-left: 1.2em;"><span>{{item.StartTime | jsonDateFormat
-                            | date:'yyyy-MM-dd'}}</span></li>
                     </ul>
                     <ul style="list-style-type: none; float: left; margin-left: -2em;" class="pull-right">
-                        <li style="float: left; margin-left: 0.6em;"><span class="fa fa-comment-o" title="发表评论"
-                            ng-click="remark(item.Id)"></span></li>
-                        <li style="float: left; margin-left: 0.6em; display: {{item.EditBtnVisible}};"><span
-                            class="fa fa-edit" title="编辑信息" ng-click="edit(item.Id)"></span></li>
+                        <li style="float: left; margin-left: 0.6em; display: {{item.EditBtnVisible}};"><a
+                            class="fa fa-edit" title="编辑信息"href="#/log-edit/{{item.Id}}/"></a></li>
                     </ul>
             </ol>
             <ul class="pager">
@@ -66,7 +66,7 @@
                 <p>
                 </p>
             </div>
-            <div class="sidebar-module">
+            <div class="sidebar-module sidebar-module-inset">
                 <h4>
                     我的日志</h4>
                 <p>

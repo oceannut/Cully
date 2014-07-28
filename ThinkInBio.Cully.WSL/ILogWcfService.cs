@@ -17,7 +17,7 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/log/",
+            UriTemplate = "/{user}/log/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Log SaveLog(string user, string date, string title, string content, string category, string tag1, string tag2, string tag3);
@@ -31,36 +31,26 @@ namespace ThinkInBio.Cully.WSL
         Log UpdateLog(string user, string id, string date, string title, string content, string category, string tag1, string tag2, string tag3);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/log/range/{start}/{count}/",
+        [WebGet(UriTemplate = "/{user}/log/time/{date}/{span}/{creator}/{category}/range/{start}/{count}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Log[] GetLogList4User(string user, string start, string count);
-
-        [OperationContract(Name = "GetLogList4UserByDate")]
-        [WebGet(UriTemplate = "/{user}/log/time/{date}/{span}/range/{start}/{count}/",
-            RequestFormat = WebMessageFormat.Json,
-            ResponseFormat = WebMessageFormat.Json)]
-        Log[] GetLogList4User(string user, string date, string span, string start, string count);
-
-        [OperationContract]
-        [WebGet(UriTemplate = "/log/range/{start}/{count}/",
-            RequestFormat = WebMessageFormat.Json,
-            ResponseFormat = WebMessageFormat.Json)]
-        Log[] GetLogList(string start, string count);
-
-        [OperationContract(Name = "GetLogListByDate")]
-        [WebGet(UriTemplate = "/log/time/{date}/{span}/range/{start}/{count}/",
-            RequestFormat = WebMessageFormat.Json,
-            ResponseFormat = WebMessageFormat.Json)]
-        Log[] GetLogList(string date, string span, string start, string count);
+        Log[] GetLogList(string user, string date, string span, string creator, string category, string start, string count);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/log/{logId}/comment/",
+            UriTemplate = "/{user}/log/{logId}/comment/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Comment SaveComment(string user, string logId, string content); 
+        Comment SaveComment(string user, string logId, string content);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/log/{logId}/comment/{commentId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteComment(string user, string logId, string commentId);
 
     }
 }

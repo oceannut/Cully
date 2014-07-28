@@ -260,7 +260,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             Comment comment = CommentService.GetComment(Convert.ToInt64(commentId));
             if (comment == null)
             {
-                throw new ObjectNotFoundException(id);
+                throw new ObjectNotFoundException(commentId);
             }
             task.RemoveRemark(observers, comment,
                 (e1, e2, e3) =>

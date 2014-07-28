@@ -106,7 +106,7 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public int GetCount(string user, DateTime? startTime, DateTime? endTime)
+        public int GetCount(DateTime? startTime, DateTime? endTime, string creator, string category)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetCount(dataSource,
@@ -114,13 +114,13 @@ namespace ThinkInBio.Cully.MySQL
                 {
                     StringBuilder sql = new StringBuilder();
                     sql.Append("select count(t.id) from cyLog t ");
-                    BuildSql(sql, parameters, user, startTime, endTime);
+                    BuildSql(sql, parameters, startTime, endTime, creator, category);
                     command.CommandText = sql.ToString();
                 },
                 parameters);
         }
 
-        public IList<Log> GetList(string user, DateTime? startTime, DateTime? endTime, int startRowIndex, int maxRowsCount)
+        public IList<Log> GetList(DateTime? startTime, DateTime? endTime, string creator, string category, int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetList<Log>(dataSource,
@@ -128,7 +128,7 @@ namespace ThinkInBio.Cully.MySQL
                 {
                     StringBuilder sql = new StringBuilder();
                     sql.Append("select t.id,t.title,t.content,t.category,t.startTime,t.endTime,t.tags,t.commentCount,t.creator,t.creation,t.modification from cyLog t ");
-                    BuildSql(sql, parameters, user, startTime, endTime);
+                    BuildSql(sql, parameters, startTime, endTime, creator, category);
                     sql.Append(" order by t.startTime desc ");
                     if (maxRowsCount < int.MaxValue)
                     {
@@ -144,7 +144,7 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string user, DateTime? startTime, DateTime? endTime)
+            DateTime? startTime, DateTime? endTime, string creator, string category)
         {
             if (startTime.HasValue && startTime.Value != DateTime.MinValue
                     && endTime.HasValue && endTime.Value != DateTime.MinValue
@@ -155,11 +155,17 @@ namespace ThinkInBio.Cully.MySQL
                 parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
                 parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
             }
-            if (!string.IsNullOrWhiteSpace(user))
+            if (!string.IsNullOrWhiteSpace(creator))
             {
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" t.creator=@creator ");
-                parameters.Add(new KeyValuePair<string, object>("creator", user));
+                parameters.Add(new KeyValuePair<string, object>("creator", creator));
+            }
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.category=@category ");
+                parameters.Add(new KeyValuePair<string, object>("category", category));
             }
         }
 

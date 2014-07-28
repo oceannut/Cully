@@ -1,41 +1,70 @@
-﻿<div ng-init="init()">
-    <div class="container">
-        <form class="form-horizontal" role="form">
-        <h2>
-            编辑记录</h2>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">
-                日期</label>
-            <div class="col-sm-3">
-                <input type="date" class="form-control" ng-model="log.startTime" required>
-            </div>
+﻿<div class="container" ng-init="init()">
+    <div class="navbar" role="navigation">
+        <div class="navbar-header">
+            <h3>
+                <i class="fa fa-plus"></i>&nbsp;编辑记录</h3>
         </div>
-        <div class="form-group">
-            <div class="col-sm-12" text-angular="text-angular" name="htmlcontent" ng-model="log.content"
-                ta-disabled='disabled'>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">
-                标签</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" ng-model="log.tag1">
-            </div>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" ng-model="log.tag2">
-            </div>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" ng-model="log.tag3">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-4">
-                <button type="submit" class="btn btn-primary" ng-click="save()">
-                    提交</button>
-                <button type="button" class="btn btn-default" ng-click="cancel()">
-                    取消</button>
-            </div>
-        </div>
-        </form>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/log-details/{{log.id}}/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
     </div>
+    <hr class="header-hr" />
+    <form class="form-horizontal css-form" role="form" name="form">
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            日期</label>
+        <div class="col-sm-3">
+            <input type="date" class="form-control" ng-model="log.startTime" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <input type="text" class="form-control" placeholder="标题" ng-model="log.title" name="title"
+                ng-maxlength="120" required autofocus>
+            <p class="help-block">
+                （<span class="text-info">文本长度限制在120个字符内</span>）</p>
+            <span class="text-danger" ng-show="form.title.$error.maxlength">警告：标题太长</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label" style="margin-top: 24px;">
+            类型</label>
+        <div class="col-sm-11">
+            <div class="bs-glyphicons">
+                <ul class="bs-glyphicons-list">
+                    <li ng-repeat="item in categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)"
+                        class="{{item.active}}"><span class="{{item.Icon}} fa-2x"></span><span class="glyphicon-class">
+                            {{item.Name}}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12" text-angular="text-angular" name="htmlcontent" ng-model="log.content"
+            ta-disabled='disabled'>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-1 control-label">
+            标签</label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" ng-model="log.tag1">
+        </div>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" ng-model="log.tag2">
+        </div>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" ng-model="log.tag3">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
+                ng-switch="isLoading">
+                <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存修改</span></button>
+        </div>
+    </div>
+    <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    </form>
 </div>

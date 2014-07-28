@@ -38,7 +38,40 @@ namespace ThinkInBio.Cully.BLL.Impl
             LogDao.Update(log);
         }
 
-        public void UpdateLog4Comment(Log log, Comment comment, ICollection<BizNotification> notificationList)
+        public Log GetLog(long id)
+        {
+            if (id == 0)
+            {
+                throw new ArgumentException();
+            }
+            return LogDao.Get(id);
+        }
+
+        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        {
+            return GetLogList(startTime, endTime, null, null, startRowIndex, maxRowsCount);
+        }
+
+        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, int startRowIndex, int maxRowsCount)
+        {
+            return GetLogList(startTime, endTime, creator, null, startRowIndex, maxRowsCount);
+        }
+
+        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, string category, int startRowIndex, int maxRowsCount)
+        {
+            if (startTime >= endTime)
+            {
+                throw new ArgumentException();
+            }
+            if (startRowIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return LogDao.GetList(startTime, endTime, creator, category, startRowIndex, maxRowsCount);
+        }
+
+        public void SaveComment(Log log, Comment comment, ICollection<BizNotification> notificationList)
         {
             if (log == null || comment == null)
             {
@@ -53,68 +86,19 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
-        public Log GetLog(long id)
+        public void DeleteComment(Log log, Comment comment, ICollection<BizNotification> notificationList)
         {
-            if (id == 0)
-            {
-                throw new ArgumentException();
-            }
-            return LogDao.Get(id);
-        }
-
-        public IList<Log> GetLogList(int startRowIndex, int maxRowsCount)
-        {
-            if (startRowIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            return LogDao.GetList(null, null, null, startRowIndex, maxRowsCount);
-        }
-
-        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
-        {
-            if (startTime >= endTime)
-            {
-                throw new ArgumentException();
-            }
-            if (startRowIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            return LogDao.GetList(null, startTime, endTime, startRowIndex, maxRowsCount);
-        }
-
-        public IList<Log> GetLogList(string user, int startRowIndex, int maxRowsCount)
-        {
-            if (string.IsNullOrWhiteSpace(user))
+            if (log == null || comment == null)
             {
                 throw new ArgumentNullException();
             }
-            if (startRowIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
 
-            return LogDao.GetList(user, null, null, startRowIndex, maxRowsCount);
-        }
-
-        public IList<Log> GetLogList(string user, DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
-        {
-            if (string.IsNullOrWhiteSpace(user))
+            LogDao.Update4CommentCount(log.Id, log.CommentCount);
+            CommentDao.Delete(comment);
+            if (notificationList != null && notificationList.Count > 0)
             {
-                throw new ArgumentNullException();
+                BizNotificationService.SaveNotification(notificationList);
             }
-            if (startTime >= endTime)
-            {
-                throw new ArgumentException();
-            }
-            if (startRowIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            return LogDao.GetList(user, startTime, endTime, startRowIndex, maxRowsCount);
         }
 
     }
