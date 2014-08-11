@@ -1,0 +1,87 @@
+﻿body
+{
+    font-family: Georgia, "Times New Roman", Times, serif;
+    margin: 0;
+    padding: 0;
+    background: #CFE1ED url(../../static/img/bg.png) repeat;
+}
+
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6
+{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    color: #333;
+}
+
+/*
+ * Override Bootstrap's default container.
+ */
+@media (min-width: 1200px)
+{
+    .container
+    {
+        width: 960px;
+    }
+}
+
+.story
+{
+    background: #fff;
+    padding: 0px 24px 24px 24px;
+}
+@media (min-width: 1200px)
+{
+    .story
+    {
+        width: 960px;
+        margin-right: auto;
+        margin-left: auto;
+        border-right: 1px solid #aaa;
+        border-left: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
+    }
+}
+
+/* Padding for spacing */
+.inner
+{
+    padding: 30px;
+}
+
+/*
+ * Footer
+ */
+.footer
+{
+    color: #222; /* IE8 proofing */
+    color: rgba(32,32,32,.5);
+    text-align: center;
+}
+/*
+ * Affix and center
+ */
+@media (min-width: 768px)
+{
+    .footer
+    {
+        bottom: 0;
+    }
+    .footer
+    {
+        width: 100%; /* Must be percentage or pixels for horizontal alignment */
+    }
+}
+@media (min-width: 992px)
+{
+    .footer
+    {
+        width: 700px;
+    }
+}
+@media (min-width: 1200px)
+{
+    .footer
+    {
+        width: 960px;
+    }
+}

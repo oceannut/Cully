@@ -1,0 +1,19 @@
+﻿[{
+	"name":"基本分类",
+	"scopes":[{
+			"name":"部门",
+			"code":"dept"
+	},{
+			"name":"角色",
+			"code":"role"
+	}]
+},{
+	"name":"业务分类",
+	"scopes":[{
+			"name":"活动",
+			"code":"activity"
+	},{
+			"name":"工作记录",
+			"code":"log"
+	}]
+}]

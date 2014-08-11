@@ -64,6 +64,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.CommonApp.MySQL"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.ThinkInBio.Cully", "Test.ThinkInBio.Cully\Test.ThinkInBio.Cully.csproj", "{9B273F95-9AB4-447A-98BA-86AFEBADA402}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "cully", "cully\", "{7EE21DD8-4BFF-4B04-9FBF-B0337D3CF082}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		ProjectReferences = "{375D399D-647F-4C17-A152-1A8F54EED356}|ThinkInBio.Common.dll;{5F6BF361-0265-433F-990E-351BBFA9EA1D}|ThinkInBio.CommonApp.dll;{21CE46DC-33F9-4C44-8B69-D3A61B3F643B}|ThinkInBio.CommonApp.BLL.dll;{888295FD-FDF2-4571-86A5-96C8CDB4C8C1}|ThinkInBio.CommonApp.DAL.dll;{A6B809D1-3FDF-493D-B445-92C272447C18}|ThinkInBio.CommonApp.MySQL.dll;{9B7A6DFA-ACB1-4CE6-A7D8-02323AFD83E4}|ThinkInBio.MySQL.dll;{45177FFE-52D9-48AB-84D0-15D8D44B6505}|ThinkInBio.CommonApp.WSL.dll;{79D59BCC-0939-41B2-908B-86C31944D1B0}|ThinkInBio.Entlib.dll;{D58874CF-D4A7-4E40-93D7-0C6B30471B73}|ThinkInBio.Spring.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/cully"
+		Debug.AspNetCompiler.PhysicalPath = "cully\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\cully\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/cully"
+		Release.AspNetCompiler.PhysicalPath = "cully\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\cully\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "22350"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkInBio.Entlib", "..\CommonApp\ThinkInBio.Entlib\ThinkInBio.Entlib.csproj", "{79D59BCC-0939-41B2-908B-86C31944D1B0}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Cully.vsmdi
@@ -137,6 +161,14 @@ Global
 		{9B273F95-9AB4-447A-98BA-86AFEBADA402}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B273F95-9AB4-447A-98BA-86AFEBADA402}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B273F95-9AB4-447A-98BA-86AFEBADA402}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EE21DD8-4BFF-4B04-9FBF-B0337D3CF082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EE21DD8-4BFF-4B04-9FBF-B0337D3CF082}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EE21DD8-4BFF-4B04-9FBF-B0337D3CF082}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EE21DD8-4BFF-4B04-9FBF-B0337D3CF082}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{79D59BCC-0939-41B2-908B-86C31944D1B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79D59BCC-0939-41B2-908B-86C31944D1B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79D59BCC-0939-41B2-908B-86C31944D1B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79D59BCC-0939-41B2-908B-86C31944D1B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +182,7 @@ Global
 		{21CE46DC-33F9-4C44-8B69-D3A61B3F643B} = {8BFD42A2-01FD-445F-B89E-B24A55398952}
 		{888295FD-FDF2-4571-86A5-96C8CDB4C8C1} = {8BFD42A2-01FD-445F-B89E-B24A55398952}
 		{A6B809D1-3FDF-493D-B445-92C272447C18} = {8BFD42A2-01FD-445F-B89E-B24A55398952}
+		{79D59BCC-0939-41B2-908B-86C31944D1B0} = {8BFD42A2-01FD-445F-B89E-B24A55398952}
 		{F0CBA661-E147-40C7-B823-1D8D21D669FF} = {EA6743AC-3FE4-413E-A309-ACEE09E6C311}
 		{9B273F95-9AB4-447A-98BA-86AFEBADA402} = {EA6743AC-3FE4-413E-A309-ACEE09E6C311}
 	EndGlobalSection

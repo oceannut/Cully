@@ -1,0 +1,104 @@
+﻿<div class="container">
+    <div class="navbar" role="navigation">
+        <div class="navbar-header">
+            <h3>
+                <i class="fa fa-bookmark-o"></i>&nbsp;活动/项目</h3>
+        </div>
+        <div class="nav navbar-nav navbar-right">
+            <button type="button" class="btn btn-primary" ng-click="createActivity()">
+                <i class="fa fa-share-alt"></i>&nbsp;创建新活动</button>
+            <button type="button" class="btn btn-default" ng-click="createProject()">
+                <i class="fa fa-cube"></i>&nbsp;创建新项目</button>
+        </div>
+    </div>
+    <hr class="header-hr" />
+    <div class="row">
+        <div class="col-sm-9 blog-main" ng-controller="ActivityListCtrl" ng-init="init()">
+            <div style="margin: 0 0 0 64px;">
+                <form class="form-inline" role="form">
+                <label class="control-label">
+                    记录筛选</label>
+                <div class="form-group">
+                    <select class="form-control input-sm" ng-model="queryModel.category" ng-change="query()">
+                        <option value="">所有类型</option>
+                        <option ng-repeat="item in categoryList | orderBy : 'Sequence'" value="{{item.Code}}">
+                            {{item.Name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query()">
+                        <option value="">所有时间</option>
+                        <option value="-30">按月查询</option>
+                        <option value="0">今天</option>
+                        <option value="-1">昨天</option>
+                        <option value="7">本周</option>
+                        <option value="-7">上周</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: {{monthInputVisible}};">
+                    <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
+                </div>
+                <!--<a href="javascript:void(0)" class="btn btn-success btn-sm" role="button" ng-click="">
+                    <i class="fa fa-ellipsis-h"></i></a>-->
+                </form>
+            </div>
+            <br />
+            <ul class="timeline">
+                <li><span class="bg-orange time-label">活动时间轴</span>
+                    <br />
+                    <br />
+                </li>
+                <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
+                    class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="{{item.icon}} bg-blue">
+                    </i>
+                    <div ng-switch-when="false" class="timeline-item">
+                        <span class="time"><i class="fa fa-user"></i>&nbsp;{{item.creator}}&nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.creation
+                            | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                        <h3 class="timeline-header">
+                            <a href="javascript:void(0)" ng-click="gotoDetails(item.id)">{{item.name}}</a></h3>
+                        <div class="timeline-body">
+                            {{item.desc}}
+                        </div>
+                        <div class='timeline-footer'>
+                            <a class="btn btn-primary btn-xs" ng-click="gotoDetails(item.id)">详细信息</a> <a class="btn btn-danger btn-xs"
+                                ng-click="gotoProject(item.projectId)">所属项目</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul class="pager">
+                <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
+                <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-3 blog-sidebar">
+            <!--<div class="sidebar-module sidebar-module-inset">
+                <h4>
+                    统计</h4>
+                <p>
+                </p>
+            </div>-->
+            <div class="sidebar-module sidebar-module-inset" ng-controller="ProjectListCtrl" ng-init="init()">
+                <h4>
+                    最新项目</h4>
+                <form class="css-form" role="form">
+                <div class="form-group">
+                    <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="queryModel.isSoloInclude" ng-change="query()" />
+                        包括单一活动项目
+                    </label>
+                </div>
+                </form>
+                <br />
+                <ol class="list-unstyled">
+                    <li ng-repeat="item in projectList"><a href="javascript:void(0)" ng-click="gotoDetails(item.Id)"
+                        ng-switch="item.IsSolo"><i class="fa fa-cube" ng-switch-when="true"></i><i class="fa fa-cubes"
+                            ng-switch-when="false"></i>&nbsp;{{item.Name}}</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

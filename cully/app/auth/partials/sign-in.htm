@@ -1,0 +1,30 @@
+﻿<div class="container" ng-init="init()">
+    <form class="form-sign form-horizontal css-form" role="form" name="form">
+    <h3 class="form-sign-heading text-center">
+        用户登录</h3>
+    <div class="form-group">
+        <input type="text" class="form-control input-lg" placeholder="用户名" ng-model="login.username"
+            name="username" ng-maxlength="32" ng-pattern="/^([a-zA-Z0-9_\-])+$/" required
+            autofocus>
+        <span class="text-danger" ng-show="form.username.$error.maxlength">警告：用户名太长</span>
+        <span class="text-danger" ng-show="form.username.$error.pattern">警告：用户名只能是由字母和数字，或者是_和-的组合。</span>
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control input-lg" placeholder="密码" ng-model="login.pwd"
+            name="pwd" ng-maxlength="32" ng-pattern="/^([a-zA-Z0-9])+$/" required>
+        <span class="text-danger" ng-show="form.pwd.$error.maxlength">警告：密码太长</span> <span
+            class="text-danger" ng-show="form.pwd.$error.pattern">警告：密码只能是由字母和数字的组合。</span>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="signin()"
+            ng-disabled="form.$invalid || isLoging" ng-switch="isLoging">
+            <span ng-switch-when="true">正在登录中...</span> <span ng-switch-when="false">登录</span></button>
+    </div>
+    <div class="form-group alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <ul class="list-inline">
+        <li><a href="#/sign-up/">注册账号</a></li>
+        <!--<li><a href="#">忘记密码了？</a></li>-->
+    </ul>
+    </form>
+</div>

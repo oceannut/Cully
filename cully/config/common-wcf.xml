@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="DemoWcfService" type="ThinkInBio.CommonApp.WSL.Impl.DemoWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+  </object>
+
+  <object id="SignWcfService" type="ThinkInBio.CommonApp.WSL.Impl.SignWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="UserService" ref="UserService" />
+    <property name="SignService" ref="SignService" />
+    <property name="PasswordProvider" ref="PlainPasswordProvider" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+    <property name="DefaultRoles">
+      <list>
+        <value>user</value>
+      </list>
+    </property>
+  </object>
+
+  <object id="UserWcfService" type="ThinkInBio.CommonApp.WSL.Impl.UserWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="UserService" ref="UserService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
+  <object id="CategoryWcfService" type="ThinkInBio.CommonApp.WSL.Impl.CategoryWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="CategoryService" ref="CategoryService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
+  <object id="BizNotificationWcfService" type="ThinkInBio.CommonApp.WSL.Impl.BizNotificationWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="BizNotificationService" ref="BizNotificationService" />
+  </object>
+
+</objects>
+
