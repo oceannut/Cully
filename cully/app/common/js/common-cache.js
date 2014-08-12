@@ -31,7 +31,7 @@ define(function (require) {
                 function find(key) {
                     if (list != null && list.length > 0) {
                         for (var i in list) {
-                            if (key == list[i].Username) {
+                            if (key === list[i].Username) {
                                 return list[i];
                             }
                         }
@@ -41,9 +41,9 @@ define(function (require) {
 
                 function addOrUpdate(item) {
                     var isExist = false;
-                    if (list != null && list.length > 0) {
+                    if (list.length > 0) {
                         for (var i in list) {
-                            if (item.Username == list[i].Username) {
+                            if (item.Username === list[i].Username) {
                                 list[i] = item;
                                 isExist = true;
                                 break;
@@ -57,7 +57,7 @@ define(function (require) {
 
                 return {
                     add: function (item) {
-                        if (item == undefined || item == null || item.Username == undefined || item.Username == null) {
+                        if (item === undefined || item === null || item.Username === undefined || item.Username === null) {
                             return false;
                         }
                         if (!isSync) {
@@ -70,9 +70,9 @@ define(function (require) {
                         return true;
                     },
                     remove: function (key) {
-                        if (list != null && list.length > 0) {
+                        if (list.length > 0) {
                             for (var i in list) {
-                                if (key == list[i].Username) {
+                                if (key === list[i].Username) {
                                     list.splice(i, 1);
                                     return true;
                                 }
@@ -80,15 +80,31 @@ define(function (require) {
                         }
                         return false;
                     },
-                    getAsync: function (key, callback) {
+                    get: function (key, callback) {
+                        var returnVal;
                         if (!isSync) {
                             fetch(function () {
-                                (callback || angular.noop)(find(key));
+                                (callback || angular.noop)(angular.copy(find(key)));
                             });
                         }
                         else {
-                            (callback || angular.noop)(find(key));
+                            returnVal = angular.copy(find(key));
+                            (callback || angular.noop)(returnVal);
                         }
+                        return returnVal;
+                    },
+                    list: function (callback) {
+                        var returnVal;
+                        if (!isSync) {
+                            fetch(function () {
+                                (callback || angular.noop)(angular.copy(list));
+                            });
+                        }
+                        else {
+                            returnVal = angular.copy(list);
+                            (callback || angular.noop)(returnVal);
+                        }
+                        return returnVal;
                     },
                     clear: function () {
                         list.length = 0;
@@ -104,7 +120,7 @@ define(function (require) {
                 function getScope(scope) {
                     for (var i in map) {
                         var entry = map[i];
-                        if (scope == entry.scope) {
+                        if (scope === entry.scope) {
                             return entry;
                         }
                     }
@@ -115,14 +131,18 @@ define(function (require) {
                     CategoryListService.query({ 'scope': scope })
                         .$promise
                             .then(function (result) {
-                                var list = [];
+                                var scopeEntry = getScope(scope);
+                                if (scopeEntry === null) {
+                                    scopeEntry = { 'scope': scope, 'list': [] };
+                                    map.push(scopeEntry);
+                                } else {
+                                    scopeEntry.list.length = 0;
+                                }
                                 if (result != null && result.length > 0) {
                                     for (var i = 0; i < result.length; i++) {
-                                        list.push(result[i]);
+                                        scopeEntry.list.push(result[i]);
                                     }
                                 }
-                                var scopeEntry = { 'scope': scope, 'list': list };
-                                map.push(scopeEntry);
                                 (callback || angular.noop)(scopeEntry);
                             }, function (error) {
                                 $log.error("同步缓存范围为" + scope + "的类型集合失败：");
@@ -132,9 +152,9 @@ define(function (require) {
 
                 function find(key, scopeEntry) {
                     var list = scopeEntry.list;
-                    if (list != null && list.length > 0) {
+                    if (list.length > 0) {
                         for (var i in list) {
-                            if (key == list[i].Code) {
+                            if (key === list[i].Code) {
                                 return list[i];
                             }
                         }
@@ -145,9 +165,9 @@ define(function (require) {
                 function addOrUpdate(item, scopeEntry) {
                     var isExist = false;
                     var list = scopeEntry.list;
-                    if (list != null && list.length > 0) {
+                    if (list.length > 0) {
                         for (var i in list) {
-                            if (item.Code == list[i].Code) {
+                            if (item.Code === list[i].Code) {
                                 list[i] = item;
                                 isExist = true;
                                 break;
@@ -161,13 +181,13 @@ define(function (require) {
 
                 return {
                     add: function (item) {
-                        if (item == undefined || item == null
-                            || item.Code == undefined || item.Code == null
-                            || item.Scope == undefined || item.Scope == null) {
+                        if (item === undefined || item === null
+                            || item.Code === undefined || item.Code === null
+                            || item.Scope === undefined || item.Scope === null) {
                             return false;
                         }
                         var scopeEntry = getScope(item.Scope);
-                        if (scopeEntry == null) {
+                        if (scopeEntry === null || scopeEntry.list === 0) {
                             fetch(function (e) {
                                 addOrUpdate(item, e);
                             });
@@ -178,11 +198,11 @@ define(function (require) {
                     },
                     remove: function (scope, key) {
                         var scopeEntry = getScope(scope);
-                        if (scopeEntry != null) {
+                        if (scopeEntry !== null) {
                             var list = scopeEntry.list;
-                            if (list != null && list.length > 0) {
+                            if (list !== null && list.length > 0) {
                                 for (var i in list) {
-                                    if (key == list[i].Code) {
+                                    if (key === list[i].Code) {
                                         list.splice(i, 1);
                                         return true;
                                     }
@@ -191,16 +211,46 @@ define(function (require) {
                         }
                         return false;
                     },
-                    getAsync: function (scope, key, callback) {
+                    get: function (scope, key, callback) {
+                        var returnVal;
                         var scopeEntry = getScope(scope);
-                        if (scopeEntry == null) {
-                            fetch(function (e) {
-                                (callback || angular.noop)(find(key, e));
+                        if (scopeEntry === null || scopeEntry.list === 0) {
+                            fetch(scope, function (e) {
+                                (callback || angular.noop)(angular.copy(find(key, e)));
                             });
                         }
                         else {
-                            (callback || angular.noop)(find(key, scopeEntry));
+                            returnVal = angular.copy(find(key, scopeEntry));
+                            (callback || angular.noop)(returnVal);
                         }
+                        return returnVal;
+                    },
+                    list: function (scope, callback) {
+                        var returnVal;
+                        var scopeEntry = getScope(scope);
+                        if (scopeEntry === null || scopeEntry.list === 0) {
+                            fetch(scope, function (e) {
+                                (callback || angular.noop)(angular.copy(getScope(scope).list));
+                            });
+                        }
+                        else {
+                            returnVal = angular.copy(scopeEntry.list);
+                            (callback || angular.noop)(returnVal);
+                        }
+                        return returnVal;
+                    },
+                    listUsed: function (scope) {
+                        var filter = [];
+                        list(scope, function (e) {
+                            if (e !== null && e.length > 0) {
+                                for (var i = 0; i < e.length; i++) {
+                                    if (e[i].Disused === false) {
+                                        filter.push(e[i]);
+                                    }
+                                }
+                            }
+                        });
+                        return filter;
                     },
                     clear: function (scope) {
                         for (var i in map) {

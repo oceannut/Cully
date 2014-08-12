@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="ProjectDao" type="ThinkInBio.Cully.MySQL.ProjectDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
+  <object id="ParticipantDao" type="ThinkInBio.Cully.MySQL.ParticipantDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
+  <object id="ActivityDao" type="ThinkInBio.Cully.MySQL.ActivityDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
+  <object id="TaskDao" type="ThinkInBio.Cully.MySQL.TaskDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
+  <object id="LogDao" type="ThinkInBio.Cully.MySQL.LogDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
+  <object id="CommentDao" type="ThinkInBio.Cully.MySQL.CommentDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+  
+</objects>
+

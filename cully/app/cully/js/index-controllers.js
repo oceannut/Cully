@@ -7,7 +7,7 @@ define(function (require) {
     require('../../../static/js/events');
     require('../../auth/js/auth-models');
 
-    angular.module('index.controllers', ['configs', 'events'])
+    angular.module('index.controllers', ['configs', 'events', 'auth.models'])
         .controller('IndexCtrl', ['$scope', '$location', 'currentUser', 'eventbus', 'appName',
             function ($scope, $location, currentUser, eventbus, appName) {
 
@@ -29,10 +29,7 @@ define(function (require) {
 
                 $scope.init = function () {
 
-                    $scope.appName = appName;
-                    $scope.makeNavbarVisible();
-                    $scope.navList = [homeNav, categoryNav, userRoleNav];
-
+                    //订阅事件。
                     eventbus.subscribe("userSignIn", function (e, data) {
                         $scope.makeNavbarVisible();
                         $scope.loginUser = {};
@@ -46,6 +43,12 @@ define(function (require) {
                     eventbus.subscribe("userModified", function (e, data) {
                         $scope.loginUser.name = currentUser.getName();
                     });
+
+                    //初始化导航条。
+                    $scope.appName = appName;
+                    $scope.makeNavbarVisible();
+                    $scope.navList = [homeNav, categoryNav, userRoleNav];
+
                 }
 
                 $scope.changeUrl = function (nav) {

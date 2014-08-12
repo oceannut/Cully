@@ -7,11 +7,15 @@ define(function (require) {
     require('../../app/auth/js/auth-controllers');
     require('../../app/common/js/user-controllers');
     require('../../app/cully/js/index-controllers');
+    require('../../app/cully/js/project-controllers');
+    require('../../app/cully/js/activity-controllers');
 
     angular.module('Cully', ['ngRoute',
             'auth.controllers',
             'user.controllers',
-            'index.controllers'
+            'index.controllers',
+            'project.controllers',
+            'activity.controllers'
         ])
         .config(['$routeProvider', '$httpProvider',
             function ($routeProvider, $httpProvider) {
@@ -72,7 +76,6 @@ define(function (require) {
                 $httpProvider.interceptors.push(['$q', '$location', function ($q, $location) {
                     return {
                         'responseError': function (rejection) {
-                            console.log(rejection);
                             if (405 === rejection.status) {
                                 $location.path("/not-authenticated/").replace();
                             } else if (401 === rejection.status) {

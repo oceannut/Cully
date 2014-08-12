@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+  
+  <object id="ProjectServiceTarget" type="ThinkInBio.Cully.BLL.Impl.ProjectService, ThinkInBio.Cully.BLL">
+    <property name="ProjectDao" ref="ProjectDao" />
+    <property name="ParticipantDao" ref="ParticipantDao" />
+    <property name="ActivityDao" ref="ActivityDao" />
+  </object>
+  <object id="ProjectService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="ProjectServiceTarget"/>
+  </object>
+
+  <object id="TaskServiceTarget" type="ThinkInBio.Cully.BLL.Impl.TaskService, ThinkInBio.Cully.BLL">
+    <property name="TaskDao" ref="TaskDao" />
+    <property name="BizNotificationService" ref="BizNotificationService" />
+    <property name="ActivityDao" ref="ActivityDao" />
+    <property name="CommentDao" ref="CommentDao" />
+  </object>
+  <object id="TaskService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="TaskServiceTarget"/>
+  </object>
+
+  <object id="LogServiceTarget" type="ThinkInBio.Cully.BLL.Impl.LogService, ThinkInBio.Cully.BLL">
+    <property name="LogDao" ref="LogDao" />
+    <property name="CommentDao" ref="CommentDao" />
+    <property name="BizNotificationService" ref="BizNotificationService" />
+  </object>
+  <object id="LogService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="LogServiceTarget"/>
+  </object>
+
+  <object id="CommentServiceTarget" type="ThinkInBio.Cully.BLL.Impl.CommentService, ThinkInBio.Cully.BLL">
+    <property name="CommentDao" ref="CommentDao" />
+  </object>
+  <object id="CommentService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="CommentServiceTarget"/>
+  </object>
+  
+</objects>
+
