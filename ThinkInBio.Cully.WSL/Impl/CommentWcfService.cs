@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.ServiceModel.Web;
 
 using ThinkInBio.Common.Exceptions;
+using ThinkInBio.Common.ExceptionHandling;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -14,71 +17,100 @@ namespace ThinkInBio.Cully.WSL.Impl
     {
 
         internal ICommentService CommentService { get; set; }
+        internal IExceptionHandler ExceptionHandler { get; set; }
 
         public Comment UpdateComment(string user, string id, string content)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(content))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
             }
 
-            Comment comment = CommentService.GetComment(Convert.ToInt64(id));
-            if (comment == null)
+            try
             {
-                throw new ObjectNotFoundException(id);
-            }
-            comment.Content = content;
-            comment.Update(null,
-                (e1, e2) =>
+                Comment comment = CommentService.GetComment(idLong);
+                if (comment == null)
                 {
-                    CommentService.UpdateComment(e1);
-                });
-            return comment;
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                comment.Content = content;
+                comment.Update(null,
+                    (e1, e2) =>
+                    {
+                        CommentService.UpdateComment(e1);
+                    });
+                return comment;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Comment[] GetCommentList(string user, string commentTarget, string targetId)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(commentTarget) || string.IsNullOrWhiteSpace(targetId))
+            if (string.IsNullOrWhiteSpace(commentTarget))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("commentTarget", HttpStatusCode.BadRequest);
             }
             CommentTarget target = CommentTarget.Log;
             switch (commentTarget.ToLower())
             {
-                case"log":
+                case "log":
                     target = CommentTarget.Log;
                     break;
-                case"task":
+                case "task":
                     target = CommentTarget.Task;
                     break;
                 default:
-                    break;
+                    throw new WebFaultException<string>("commentTarget", HttpStatusCode.BadRequest);
             }
-            IList<Comment> list = CommentService.GetCommentList(target, Convert.ToInt64(targetId));
-            if (list != null)
+            long targetIdLong = 0;
+            try
             {
-                return list.ToArray();
+                targetIdLong = Convert.ToInt64(targetId);
             }
-            else
+            catch
             {
-                return null;
+                throw new WebFaultException<string>("targetId", HttpStatusCode.BadRequest);
             }
+
+            try
+            {
+                IList<Comment> list = CommentService.GetCommentList(target, targetIdLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+
         }
 
     }

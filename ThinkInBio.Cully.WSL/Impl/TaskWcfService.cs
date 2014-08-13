@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.ServiceModel.Web;
 
 using ThinkInBio.Common.Exceptions;
+using ThinkInBio.Common.ExceptionHandling;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -15,199 +18,310 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal ITaskService TaskService { get; set; }
         internal IProjectService ProjectService { get; set; }
         internal ICommentService CommentService { get; set; }
+        internal IExceptionHandler ExceptionHandler { get; set; }
 
         public Task SaveTask(string user, string activityId, string content, string staff, string appointedDay)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(activityId)
-                || string.IsNullOrWhiteSpace(staff)
-                || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(staff))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("staff", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            long activityIdLong = 0;
+            try
+            {
+                activityIdLong = Convert.ToInt64(activityId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
             }
 
-            Task task = new Task(Convert.ToInt64(activityId));
-            task.Content = content;
-            DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
-            task.Save(user, staff, d,
-                (e1, e2) =>
-                {
-                    TaskService.SaveTask(e1, e2);
-                });
+            try
+            {
+                Task task = new Task(activityIdLong);
+                task.Content = content;
+                DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
+                task.Save(user, staff, d,
+                    (e1, e2) =>
+                    {
+                        TaskService.SaveTask(e1, e2);
+                    });
 
-            return task;
+                return task;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Task UpdateTask(string user, string id, string content, string staff, string appointedDay)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id)
-                || string.IsNullOrWhiteSpace(staff)
-                || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(staff))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("staff", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
             }
 
-            Task task = TaskService.GetTask(Convert.ToInt64(id));
-            task.Content = content;
-            DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
-            task.Appoint(user, staff, d,
-                (e1, e2) =>
+            try
+            {
+                Task task = TaskService.GetTask(idLong);
+                if (task == null)
                 {
-                    TaskService.UpdateTask(e1, e2);
-                });
-
-            return task;
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                task.Content = content;
+                DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
+                task.Appoint(user, staff, d,
+                    (e1, e2) =>
+                    {
+                        TaskService.UpdateTask(e1, e2);
+                    });
+                return task;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Task UpdateTask4IsUnderway(string user, string id, string isUnderway)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id))
+            long idLong = 0;
+            try
             {
-                throw new ArgumentNullException();
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
+            }
+            bool isUnderwayBool = false;
+            try
+            {
+                isUnderwayBool = Convert.ToBoolean(isUnderway);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("isUnderway", HttpStatusCode.BadRequest);
             }
 
-            Task task = TaskService.GetTask(Convert.ToInt64(id));
-            bool isUnderwayBool = Convert.ToBoolean(isUnderway);
-            if (isUnderwayBool)
+            try
             {
-                task.Activate((e) =>
+                Task task = TaskService.GetTask(idLong);
+                if (task == null)
                 {
-                    TaskService.UpdateTask(e);
-                });
-            }
-            else
-            {
-                task.Inactivate((e) =>
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                if (isUnderwayBool)
                 {
-                    TaskService.UpdateTask(e);
-                });
+                    task.Activate((e) =>
+                    {
+                        TaskService.UpdateTask(e);
+                    });
+                }
+                else
+                {
+                    task.Inactivate((e) =>
+                    {
+                        TaskService.UpdateTask(e);
+                    });
+                }
+                return task;
             }
-
-            return task;
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Task UpdateTask4IsCompleted(string user, string id, string isCompleted)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id))
+            long idLong = 0;
+            try
             {
-                throw new ArgumentNullException();
+                idLong = Convert.ToInt64(id);
             }
-
-            Task task = TaskService.GetTask(Convert.ToInt64(id));
-            Activity activity = ProjectService.GetActivity(task.ActivityId);
-            IList<Task> taskList = TaskService.GetTaskList(task.ActivityId);
-            bool isCompletedBool = Convert.ToBoolean(isCompleted);
-            if (isCompletedBool)
+            catch
             {
-                task.Complete(activity, taskList, 
-                    (e1, e2) =>
-                    {
-                        TaskService.UpdateTask(e2, e1);
-                    });
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
             }
-            else
+            bool isCompletedBool = false;
+            try
             {
-                task.Resume(activity,
-                    (e1, e2) =>
-                    {
-                        TaskService.UpdateTask(e2, e1);
-                    });
+                isCompletedBool = Convert.ToBoolean(isCompleted);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("isCompleted", HttpStatusCode.BadRequest);
             }
 
-            return task;
+            try
+            {
+                Task task = TaskService.GetTask(idLong);
+                if (task == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                Activity activity = ProjectService.GetActivity(task.ActivityId);
+                IList<Task> taskList = TaskService.GetTaskList(task.ActivityId);
+                if (isCompletedBool)
+                {
+                    task.Complete(activity, taskList,
+                        (e1, e2) =>
+                        {
+                            TaskService.UpdateTask(e2, e1);
+                        });
+                }
+                else
+                {
+                    task.Resume(activity,
+                        (e1, e2) =>
+                        {
+                            TaskService.UpdateTask(e2, e1);
+                        });
+                }
+                return task;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public void DeleteTask(string user, string id)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id))
+            long idLong = 0;
+            try
             {
-                throw new ArgumentNullException();
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
             }
 
-            Task task = TaskService.GetTask(Convert.ToInt64(id));
-            Activity activity = ProjectService.GetActivity(task.ActivityId);
-            IList<Task> taskList = TaskService.GetTaskList(task.ActivityId);
-            task.Delete(activity, taskList,
-                (e1, e2, e3) =>
+            try
+            {
+                Task task = TaskService.GetTask(idLong);
+                if (task == null)
                 {
-                    TaskService.DeleteTask(e1, e2, e3);
-                });
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                Activity activity = ProjectService.GetActivity(task.ActivityId);
+                IList<Task> taskList = TaskService.GetTaskList(task.ActivityId);
+                task.Delete(activity, taskList,
+                    (e1, e2, e3) =>
+                    {
+                        TaskService.DeleteTask(e1, e2, e3);
+                    });
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Task GetTask(string user, string id)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
+            }
 
-            return TaskService.GetTask(Convert.ToInt64(id));
+            try
+            {
+                return TaskService.GetTask(idLong);
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Task[] GetTaskList(string user, string activityId)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long activityIdLong = 0;
+            try
+            {
+                activityIdLong = Convert.ToInt64(activityId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
+            }
 
-            if (string.IsNullOrWhiteSpace(activityId))
+            try
             {
-                throw new ArgumentNullException();
+                IList<Task> list = TaskService.GetTaskList(activityIdLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            IList<Task> list = TaskService.GetTaskList(Convert.ToInt64(activityId));
-            if (list != null)
+            catch (BusinessLayerException ex)
             {
-                return list.ToArray();
-            }
-            else
-            {
-                return null;
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -215,58 +329,90 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(content))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
             }
 
-            Task task = TaskService.GetTask(Convert.ToInt64(id));
-            if (task == null)
+            try
             {
-                throw new ObjectNotFoundException(id);
-            }
-            return task.AddRemark(observers, user, content,
-                (e1, e2, e3) =>
+                Task task = TaskService.GetTask(idLong);
+                if (task == null)
                 {
-                    TaskService.SaveComment(e1, e2, e3);
-                });
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                return task.AddRemark(observers, user, content,
+                    (e1, e2, e3) =>
+                    {
+                        TaskService.SaveComment(e1, e2, e3);
+                    });
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public void DeleteComment(string user, string id, string commentId, string[] observers)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
+            }
+            long commentIdLong = 0;
+            try
+            {
+                commentIdLong = Convert.ToInt64(commentId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("commentId", HttpStatusCode.BadRequest);
+            }
 
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(commentId))
+            try
             {
-                throw new ArgumentNullException();
-            }
-            Task task = TaskService.GetTask(Convert.ToInt64(id));
-            if (task == null)
-            {
-                throw new ObjectNotFoundException(id);
-            }
-            Comment comment = CommentService.GetComment(Convert.ToInt64(commentId));
-            if (comment == null)
-            {
-                throw new ObjectNotFoundException(commentId);
-            }
-            task.RemoveRemark(observers, comment,
-                (e1, e2, e3) =>
+                Task task = TaskService.GetTask(idLong);
+                if (task == null)
                 {
-                    TaskService.DeleteComment(e1, e2, e3);
-                });
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                Comment comment = CommentService.GetComment(commentIdLong);
+                if (comment == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                task.RemoveRemark(observers, comment,
+                    (e1, e2, e3) =>
+                    {
+                        TaskService.DeleteComment(e1, e2, e3);
+                    });
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
     }

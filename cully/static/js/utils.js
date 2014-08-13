@@ -33,6 +33,41 @@ define(function (require) {
             }
 
         } ])
+        .factory('listUtil', [function () {
+
+            return {
+                add: function (list, item) {
+                    if (list !== undefined && list !== null) {
+                        if (list.indexOf(item) === -1) {
+                            list.push(item);
+                        }
+                    }
+                },
+                remove: function (list, item) {
+                    if (list !== undefined && list !== null) {
+                        var i = list.indexOf(item);
+                        if (i > -1) {
+                            list.splice(i, 1);
+                        }
+                    }
+                },
+                shallowCopyList: function (target, srouce, append, predicate) {
+                    target = target || [];
+                    if (append === undefined || append === null || !append) {
+                        target.length = 0;
+                    }
+                    if (srouce !== undefined && srouce !== null) {
+                        for (var i = 0; i < srouce.length; i++) {
+                            var item = srouce[i];
+                            if (predicate === undefined || predicate === null || typeof (predicate) !== 'function' || predicate(item)) {
+                                target.push(item);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } ])
         .factory('dateUtil', [function () {
 
             return {

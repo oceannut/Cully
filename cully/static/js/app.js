@@ -7,6 +7,7 @@ define(function (require) {
     require('../../app/auth/js/auth-controllers');
     require('../../app/common/js/user-controllers');
     require('../../app/cully/js/index-controllers');
+    require('../../app/cully/js/home-controllers');
     require('../../app/cully/js/project-controllers');
     require('../../app/cully/js/activity-controllers');
 
@@ -14,62 +15,115 @@ define(function (require) {
             'auth.controllers',
             'user.controllers',
             'index.controllers',
+            'home.controllers',
             'project.controllers',
             'activity.controllers'
         ])
         .config(['$routeProvider', '$httpProvider',
             function ($routeProvider, $httpProvider) {
 
-                $routeProvider.
-                    when('/sign-in/', {
+                $routeProvider
+                    .when('/sign-in/', {
                         templateUrl: 'app/auth/partials/sign-in.htm',
                         controller: 'SignInCtrl'
-                    }).
-                    when('/sign-up/', {
+                    })
+                    .when('/sign-up/', {
                         templateUrl: 'app/auth/partials/sign-up.htm',
                         controller: 'SignUpCtrl'
-                    }).
-                    when('/sign-out/', {
+                    })
+                    .when('/sign-out/', {
                         templateUrl: 'app/auth/partials/sign-out.htm',
                         controller: 'SignOutCtrl'
-                    }).
-                    when('/not-authorised/', {
+                    })
+                    .when('/not-authorised/', {
                         templateUrl: 'app/auth/partials/not-authorised.htm'
-                    }).
-                    when('/not-authenticated/', {
+                    })
+                    .when('/not-authenticated/', {
                         templateUrl: 'app/auth/partials/not-authenticated.htm',
                         controller: 'NotAuthenticatedCtrl'
-                    }).
-                    when('/session-out/', {
+                    })
+                    .when('/session-out/', {
                         templateUrl: 'app/auth/partials/session-out.htm',
                         controller: 'SessionOutCtrl'
-                    }).
-                    when('/user-setting/:username/', {
+                    })
+                    .when('/user-setting/:username/', {
                         templateUrl: 'app/common/partials/user-setting.htm',
                         controller: 'UserSettingCtrl',
                         access: {
                             loginRequired: true
                         }
-                    }).
-                    when('/home/', {
+                    })
+                    .when('/home/', {
                         templateUrl: 'app/cully/partials/home.htm',
+                        controller: 'HomeCtrl',
                         access: {
                             loginRequired: true
                         }
-                    }).
-                    when('/project-summary/', {
+                    })
+                    .when('/project-summary/', {
                         templateUrl: 'app/cully/partials/project-summary.htm',
+                        controller: 'ProjectSummaryCtrl',
                         access: {
-                            loginRequired: true
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
                         }
-                    }).
-                    when('/log-summary/', {
+                    })
+                    .when('/project-add/', {
+                        templateUrl: 'app/cully/partials/project-add.htm',
+                        controller: 'ProjectAddCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['supvisor']
+                        }
+                    })
+                    .when('/project-details/:id/', {
+                        templateUrl: 'app/cully/partials/project-details.htm',
+                        controller: 'ProjectDetailsCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/project-edit/:id/', {
+                        templateUrl: 'app/cully/partials/project-edit.htm',
+                        controller: 'ProjectEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['supvisor']
+                        }
+                    })
+                    .when('/activity-add/', {
+                        templateUrl: 'app/cully/partials/activity-add.htm',
+                        controller: 'ActivityAddCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['supvisor']
+                        }
+                    })
+                    .when('/activity-details/:id/', {
+                        templateUrl: 'app/cully/partials/activity-details.htm',
+                        controller: 'ActivityDetailsCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/activity-edit/:id/', {
+                        templateUrl: 'app/cully/partials/activity-edit.htm',
+                        controller: 'ActivityEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['supvisor']
+                        }
+                    })
+                    .when('/log-summary/', {
                         templateUrl: 'app/cully/partials/log-summary.htm',
                         access: {
-                            loginRequired: true
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
                         }
-                    }).
-                    otherwise({
+                    })
+                    .otherwise({
                         redirectTo: '/sign-in/'
                     });
 

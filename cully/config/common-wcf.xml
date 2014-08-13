@@ -28,6 +28,7 @@
 
   <object id="BizNotificationWcfService" type="ThinkInBio.CommonApp.WSL.Impl.BizNotificationWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
     <property name="BizNotificationService" ref="BizNotificationService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
   </object>
 
 </objects>

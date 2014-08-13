@@ -3,16 +3,24 @@
 define(function (require) {
 
     require('ng');
-    require('../../../static/js/configs');
     require('../../../static/js/filters');
+    require('../../../static/js/utils');
     require('./project-services');
     require('../../auth/js/auth-models');
-    require('../../common/js/user-services');
-    require('../../common/js/category-services');
+    require('../../auth/js/auth-directives');
+    require('../../common/js/common-cache');
+    require('../../common/js/common-utils');
 
-    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'auth.models', 'user.services', 'category.services'])
-        .controller('ProjectListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TopProjectListService', 'ProjectListService', 'dateUtil',
-            function ($scope, $location, $log, currentUser, TopProjectListService, ProjectListService, dateUtil) {
+    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'auth.models', 'auth.directives', 'common.cache', 'common.utils'])
+        .controller('ProjectSummaryCtrl', ['$scope', function ($scope) {
+
+            $scope.init = function () {
+
+            }
+
+        } ])
+        .controller('ProjectListCtrl', ['$scope', '$log', 'currentUser', 'TopProjectListService', 'ProjectListService', 'dateUtil',
+            function ($scope, $log, currentUser, TopProjectListService, ProjectListService, dateUtil) {
 
                 $scope.init = function () {
                     $scope.queryModel = {
@@ -28,10 +36,6 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：项目列表加载失败";
                             });
-                }
-
-                $scope.gotoDetails = function (id) {
-                    $location.path('/project-details/' + id + "/");
                 }
 
                 $scope.query = function () {
@@ -59,59 +63,38 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'userCacheUtil',
-            function ($scope, $location, $log, currentUser, ProjectService, userCacheUtil) {
-
-                $scope.project = {};
-                $scope.participants = [];
-                $scope.isParticipantLoading = false;
-                $scope.isLoading = false;
-                $scope.alertMessageVisible = 'hidden';
+        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'userCache', 'listUtil',
+            function ($scope, $location, $log, currentUser, ProjectService, userCache, listUtil) {
 
                 $scope.init = function () {
-                    $scope.isParticipantLoading = true;
 
+                    $scope.project = {};
                     $scope.users = [];
-                    userCacheUtil.list(function (result) {
-                        if (result != null) {
-                            for (var i = 0; i < result.length; i++) {
-                                if (result[i].Username != currentUser.username) {
-                                    $scope.users.push(result[i]);
-                                }
-                            }
-                        }
-                    }, function (error) {
-                        $log.error(error);
-                        $scope.alertMessageVisible = 'show';
-                        $scope.alertMessage = "提示：成员列表加载失败";
-                    }, function () {
-                        $scope.isParticipantLoading = false;
-                    });
-                }
+                    $scope.participants = [];
+                    $scope.isLoading = false;
+                    $scope.alertMessageVisible = 'hidden';
 
-                $scope.gotoback = function () {
-                    history.back();
+                    userCache.list(function (result) {
+                        listUtil.shallowCopyList($scope.users, result, false, function (e) {
+                            return (e.Username !== currentUser.getUsername() & e.Roles.indexOf('user') > -1);
+                        });
+                    });
+
                 }
 
                 $scope.addParticipant = function (user) {
-                    if ($scope.participants.indexOf(user) == -1) {
-                        $scope.participants.push(user);
-                    }
-                }
-
-                $scope.addAllParticipant = function () {
-                    $scope.participants = [];
-                    if ($scope.allParticipantChecked) {
-                        for (var i = 0; i < $scope.users.length; i++) {
-                            $scope.participants.push($scope.users[i]);
-                        }
-                    }
+                    listUtil.add($scope.participants, user);
                 }
 
                 $scope.removeParticipant = function (user) {
-                    var i = $scope.participants.indexOf(user);
-                    if (i > -1) {
-                        $scope.participants.splice(i, 1);
+                    listUtil.remove($scope.participants, user);
+                }
+
+                $scope.checkOrNotAllParticipant = function () {
+                    if ($scope.allParticipantChecked) {
+                        listUtil.shallowCopyList($scope.participants, $scope.users);
+                    } else {
+                        $scope.participants.length = 0;
                     }
                 }
 
@@ -121,9 +104,10 @@ define(function (require) {
                         for (var i = 0; i < $scope.participants.length; i++) {
                             usernameArray.push($scope.participants[i].Username);
                         }
+                        $scope.alertMessageVisible = 'hidden';
                         $scope.isLoading = true;
                         ProjectService.save({
-                            'user': currentUser.username,
+                            'user': currentUser.getUsername(),
                             'name': $scope.project.name,
                             'description': $scope.project.description,
                             'participants': usernameArray
@@ -132,16 +116,14 @@ define(function (require) {
                             .then(function (result) {
                                 $location.path('/project-details/' + result.Id + "/");
                             }, function (error) {
-                                $scope.isLoading = false;
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：添加项目失败";
                                 $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
                             });
                     }
-                }
-
-                $scope.cancel = function () {
-                    history.back();
                 }
 
             } ])
@@ -196,74 +178,57 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ProjectService',
-                                            'ActivityService', 'ActivityOfProjectService', 'categoryCacheUtil', 'userCacheUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ProjectService,
-                        ActivityService, ActivityOfProjectService, categoryCacheUtil, userCacheUtil) {
-
-                $scope.navbarLinkVisible = 'none';
-                $scope.addActivityPanelDisplay = 'none';
-                $scope.project = {};
-                $scope.activity = {};
-                $scope.isLoading = false;
-                $scope.alertMessageVisible = 'hidden';
+        .controller('ProjectDetailsCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ProjectService',
+                                            'ActivityService', 'ActivityOfProjectService', 'categoryCache', 'userCache', 'CategoryHelper',
+            function ($scope, $log, $routeParams, currentUser, ProjectService,
+                        ActivityService, ActivityOfProjectService, categoryCache, userCache, CategoryHelper) {
 
                 function clear() {
                     $scope.activity.name = '';
                     $scope.activity.description = '';
                 }
 
-                function _selectCategory(code) {
-                    for (var i = 0; i < $scope.categoryList.length; i++) {
-                        var category = $scope.categoryList[i];
-                        if (category.Code == code) {
-                            category.active = "active";
-                            $scope.category = category;
-                        } else {
-                            category.active = "";
-                        }
-                    }
-                }
-
-                $scope.gotoProjectEdit = function (projectId) {
-                    $location.path("/project-edit/" + projectId + "/");
-                }
-
-                $scope.gotoPariticipantList = function (projectId) {
-                    $location.path("/participant-list/" + projectId + "/");
-                }
-
                 $scope.init = function () {
-                    ProjectService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
+
+                    $scope.addActivityPanelDisplay = 'none';
+                    $scope.project = {};
+                    $scope.activity = {};
+                    $scope.isLoading = false;
+                    $scope.alertMessageVisible = 'hidden';
+
+                    ProjectService.get({ 'user': currentUser.getUsername(), 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.project = result;
-                                if (currentUser.username == $scope.project.Creator) {
-                                    $scope.navbarLinkVisible = '';
+                                if (currentUser.getUsername() === $scope.project.Creator) {
+                                    $scope.isEditable = true;
                                 } else {
-                                    $scope.navbarLinkVisible = 'none';
+                                    $scope.isEditable = false;
                                 }
-                                var user = userCacheUtil.get($scope.project.Creator);
-                                $scope.project.creatorName = (user == null) ? $scope.project.Creator : user.Name;
+                                userCache.get($scope.project.Creator, function (e) {
+                                    $scope.project.creatorName = (e == null) ? $scope.project.Creator : e.Name;
+                                });
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：加载项目详细信息失败";
                                 $log.error(error);
                             });
-                    ActivityOfProjectService.query({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                    ActivityOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.activityList = result;
                                 for (var i = 0; i < $scope.activityList.length; i++) {
                                     var activity = $scope.activityList[i];
                                     activity.index = (i + 1);
-                                    var category = categoryCacheUtil.get('activity', activity.Category);
-                                    var icon = 'fa fa-tasks';
-                                    if (category != null) {
-                                        activity.icon = category.Icon;
-                                    }
-                                    var user = userCacheUtil.get(activity.Creator);
-                                    activity.creatorName = (user == null) ? activity.Creator : user.Name;
+                                    categoryCache.get('activity', activity.Category, function (e) {
+                                        var icon = 'fa fa-tasks';
+                                        if (e != null) {
+                                            activity.icon = e.Icon;
+                                        }
+                                    });
+                                    userCache.get(activity.Creator, function (e) {
+                                        activity.creatorName = (e == null) ? activity.Creator : e.Name;
+                                    });
                                 }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
@@ -271,18 +236,18 @@ define(function (require) {
                                 $log.error(error);
                             });
 
-                    categoryCacheUtil.list('activity', function (result) {
+                    categoryCache.list('activity', function (result) {
                         $scope.categoryList = result;
-                        _selectCategory('normal');
+                        CategoryHelper.selectCategory($scope.categoryList, 'normal', function (e) {
+                            $scope.category = e;
+                        });
                     });
                 }
 
-                $scope.gotoActivity = function (activityId) {
-                    $location.path('/activity-details/' + activityId + "/");
-                }
-
                 $scope.selectCategory = function (selectedCategory) {
-                    _selectCategory(selectedCategory.Code);
+                    CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
+                        $scope.category = e;
+                    });
                 }
 
                 $scope.toggleAddActivityPanelVisibible = function () {
@@ -298,7 +263,7 @@ define(function (require) {
                     if ($scope.activity.name != undefined && $scope.activity.name != null) {
                         $scope.isLoading = true;
                         ActivityService.save({
-                            'user': currentUser.username,
+                            'user': currentUser.getUsername(),
                             'projectId': $routeParams.id,
                             'category': $scope.category.Code,
                             'name': $scope.activity.name,
@@ -310,10 +275,12 @@ define(function (require) {
                                 $scope.toggleAddActivityPanelVisibible();
                                 $scope.activityList.unshift(result);
                             }, function (error) {
-                                $scope.isLoading = false;
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：添加活动失败";
                                 $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
                             });
                     }
                 }

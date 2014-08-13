@@ -1,0 +1,24 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="{{activity.icon}}"></i>&nbsp;{{activity.Name}}</span>
+        <ul class="list-inline pull-right">
+            <!--<li><a href="javascript:void(0)" data-toggle="modal" data-target="#removeActivityDialog">
+                <i class="fa fa-trash-o"></i>&nbsp;删除</a></li>-->
+            <li access="supvisor" ng-show="isEditable"><a href="#/activity-edit/{{activity.Id}}/">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+            <li><a href="#/project-details/{{activity.ProjectId}}/"><i class="fa fa-level-up"></i>
+                &nbsp;项目</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <blockquote>
+        <p>
+            {{activity.Description}}</p>
+        <footer> &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{activity.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+    </blockquote>
+    <div ng-include="taskListPage">
+    </div>
+</div>

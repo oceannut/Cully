@@ -2,7 +2,7 @@
 
 define(function (require) {
 
-    angular.module('ng-directives', [])
+    angular.module('ng.directives', [])
         .directive('bspopover', function () {
             return function (scope, element, attrs) {
                 scope.$watch('$viewContentLoaded', function () {

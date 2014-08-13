@@ -4,11 +4,8 @@ define(function (require) {
 
     require('./auth-models');
 
-    angular.module('auth-directives', [])
-        .directive('access', ['authorizationType', 'authorization', function (authorizationType, authorization) {
-            return function (scope, element, attrs) {
-
-                // reference https://github.com/jonsamwell/blog_examples/blob/master/angular-route-authorisation/js/modules/auth/directives/access.js
+    angular.module('auth.directives', [])
+            .directive('access', ['authorizationType', 'authorization', function (authorizationType, authorization) {
                 return {
                     restrict: 'A',
                     link: function (scope, element, attrs) {
@@ -39,8 +36,7 @@ define(function (require) {
 
                     }
                 };
-            }
 
-        } ]);
+            } ]);
 
 });

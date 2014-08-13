@@ -1,0 +1,99 @@
+﻿<div class="container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="removeCommentDialog" tabindex="-1" role="dialog" aria-labelledby="removeCommentDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeCommentDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除评论对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个评论吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="deleteComment()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar" role="navigation">
+        <div class="navbar-header">
+            <h3>
+                <i class="{{log.icon}}"></i>&nbsp;{{log.Title}}</h3>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li style="display: {{navbarLinkVisible}};"><a href="#/log-edit/{{log.Id}}/">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+            <li><a href="#/log-summary/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
+    </div>
+    <hr class="header-hr" />
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <div class="row" style="margin: 2em 2em 0 2em;">
+        <p>
+            分类：{{log.categoryName}}&nbsp;&nbsp;&nbsp;&nbsp;日期：{{log.StartTime | jsonDateFormat
+            | date:'yyyy-MM-dd'}}&nbsp;&nbsp;&nbsp;&nbsp;评论：{{log.CommentCount}}</p>
+        <p>
+            <ul style="list-style-type: none; float: left; margin-left: -2em; font-size: 10.5pt;">
+                <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in log.TagList"><a href="#">
+                    <span class="badge">{{tag}}</span></a></li>
+            </ul>
+        </p>
+        <p class="text-right">
+            {{log.creatorName}}&nbsp;发表于&nbsp;{{log.Creation | jsonDateFormat | date:'yyyy-MM-dd
+            HH:mm:ss'}}</p>
+        <p ng-bind-html="log.Content" style="clear: both; margin-top: 16px;">
+        </p>
+    </div>
+    <div class="row" style="margin: 2em 2em 0 2em;">
+        <div class="page-header">
+            <h3>
+                评论列表 <small>共{{log.CommentCount}}个评论</small></h3>
+        </div>
+        <br />
+        <ol class="list-unstyled">
+            <li ng-repeat="item in commentList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
+                <p>
+                    <a>{{item.creatorName}}</a><span class="pull-right">{{item.Creation | jsonDateFormat
+                        | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;&nbsp;<mark>[{{item.index}}楼]</mark></span></p>
+                <p>
+                    {{item.Content}}</p>
+                <p class="text-right">
+                    <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
+                        data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
+                        </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
+                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑</a></p>
+            </li>
+        </ol>
+    </div>
+    <div class="row" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
+        <form class="form-horizontal" role="form">
+        <h3>
+            发表评论</h3>
+        <div class="form-group">
+            <div class="col-sm-7">
+                <textarea class="form-control" placeholder="内容" ng-model="comment.content" rows="6"
+                    required></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary" ng-click="saveComment()">
+                    保存</button>
+                <button type="button" class="btn btn-default" ng-click="clearComment()">
+                    清空</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>

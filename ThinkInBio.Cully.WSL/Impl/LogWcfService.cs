@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.ServiceModel.Web;
 
 using ThinkInBio.Common.Exceptions;
+using ThinkInBio.Common.ExceptionHandling;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -15,123 +18,197 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         internal ILogService LogService { get; set; }
         internal ICommentService CommentService { get; set; }
+        internal IExceptionHandler ExceptionHandler { get; set; }
 
         public Log SaveLog(string user, string date, string title, string content, string category, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(title))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("title", HttpStatusCode.BadRequest);
             }
-            DateTime d = DateTime.Parse(date);
-            List<string> tags = new List<string>();
-            if (!string.IsNullOrWhiteSpace(tag1))
+            if (string.IsNullOrWhiteSpace(content))
             {
-                tags.Add(tag1);
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
             }
-            if (!string.IsNullOrWhiteSpace(tag2))
+            DateTime d = DateTime.MinValue;
+            try
             {
-                tags.Add(tag2);
+                d = DateTime.Parse(date);
             }
-            if (!string.IsNullOrWhiteSpace(tag3))
+            catch
             {
-                tags.Add(tag3);
+                throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
             }
 
-            Log log = new Log(d, content, user);
-            log.Title = title;
-            log.Category = category;
-            if (tags.Count > 0)
+            try
             {
-                log.AddTag(tags);
-            }
-            log.Save(
-                (e) =>
+                List<string> tags = new List<string>();
+                if (!string.IsNullOrWhiteSpace(tag1))
                 {
-                    LogService.SaveLog(e);
-                });
+                    tags.Add(tag1);
+                }
+                if (!string.IsNullOrWhiteSpace(tag2))
+                {
+                    tags.Add(tag2);
+                }
+                if (!string.IsNullOrWhiteSpace(tag3))
+                {
+                    tags.Add(tag3);
+                }
 
-            return log;
+                Log log = new Log(d, content, user);
+                log.Title = title;
+                log.Category = category;
+                if (tags.Count > 0)
+                {
+                    log.AddTag(tags);
+                }
+                log.Save(
+                    (e) =>
+                    {
+                        LogService.SaveLog(e);
+                    });
+                return log;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Log UpdateLog(string user, string id, string date, string title, string content, string category, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                throw new WebFaultException<string>("title", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            DateTime d = DateTime.MinValue;
+            try
+            {
+                d = DateTime.Parse(date);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
+            }
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
+            }
 
-            if (string.IsNullOrWhiteSpace(id))
+            try
             {
-                throw new ArgumentNullException();
-            }
-            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(content))
-            {
-                throw new ArgumentNullException();
-            }
-
-            Log log = LogService.GetLog(Convert.ToInt64(id));
-            if (log == null)
-            {
-                throw new ObjectNotFoundException(id);
-            }
-            DateTime d = DateTime.Parse(date);
-            List<string> tags = new List<string>();
-            if (!string.IsNullOrWhiteSpace(tag1))
-            {
-                tags.Add(tag1);
-            }
-            if (!string.IsNullOrWhiteSpace(tag2))
-            {
-                tags.Add(tag2);
-            }
-            if (!string.IsNullOrWhiteSpace(tag3))
-            {
-                tags.Add(tag3);
-            }
-            log.Title = title;
-            log.Category = category;
-            log.Content = content;
-            log.StartTime = d;
-            log.AddTag(tags);
-            log.Update(
-                (e) =>
+                Log log = LogService.GetLog(idLong);
+                if (log == null)
                 {
-                    LogService.UpdateLog(e);
-                });
-
-            return log;
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                List<string> tags = new List<string>();
+                if (!string.IsNullOrWhiteSpace(tag1))
+                {
+                    tags.Add(tag1);
+                }
+                if (!string.IsNullOrWhiteSpace(tag2))
+                {
+                    tags.Add(tag2);
+                }
+                if (!string.IsNullOrWhiteSpace(tag3))
+                {
+                    tags.Add(tag3);
+                }
+                log.Title = title;
+                log.Category = category;
+                log.Content = content;
+                log.StartTime = d;
+                log.AddTag(tags);
+                log.Update(
+                    (e) =>
+                    {
+                        LogService.UpdateLog(e);
+                    });
+                return log;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Log[] GetLogList(string user, string date, string span, string creator, string category, string start, string count)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(date) || string.IsNullOrWhiteSpace(span)
-                || string.IsNullOrWhiteSpace(creator) || string.IsNullOrWhiteSpace(category))
+            if (string.IsNullOrWhiteSpace(creator))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("creator", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                throw new WebFaultException<string>("category", HttpStatusCode.BadRequest);
+            }
+            DateTime d = DateTime.MinValue;
+            int spanInt = 0;
+            if ("null" != date && "null" != span)
+            {
+                try
+                {
+                    d = DateTime.Parse(date);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
+                }
+                try
+                {
+                    spanInt = Convert.ToInt32(span);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("span", HttpStatusCode.BadRequest);
+                }
+            }
+
+            int startInt = 0;
+            try
+            {
+                startInt = Convert.ToInt32(start);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("start", HttpStatusCode.BadRequest);
+            }
+            int countInt = 0;
+            try
+            {
+                countInt = Convert.ToInt32(count);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("count", HttpStatusCode.BadRequest);
             }
 
             DateTime startTime, endTime;
-            DateTime d = DateTime.Parse(date);
-            int spanInt = Convert.ToInt32(span);
             if (spanInt < 0)
             {
                 startTime = d.AddDays(spanInt + 1);
@@ -144,16 +221,23 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
             string creatorInput = "null" == creator ? null : creator;
             string categoryInput = "null" == category ? null : category;
-            int startInt = Convert.ToInt32(start);
-            int countInt = Convert.ToInt32(count);
-            IList<Log> list = LogService.GetLogList(startTime, endTime, creatorInput, categoryInput, startInt, countInt);
-            if (list != null)
+
+            try
             {
-                return list.ToArray();
+                IList<Log> list = LogService.GetLogList(startTime, endTime, creatorInput, categoryInput, startInt, countInt);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (BusinessLayerException ex)
             {
-                return null;
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -161,58 +245,90 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            if (string.IsNullOrWhiteSpace(logId) || string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrWhiteSpace(content))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            long logIdLong = 0;
+            try
+            {
+                logIdLong = Convert.ToInt64(logId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("logId", HttpStatusCode.BadRequest);
             }
 
-            Log log = LogService.GetLog(Convert.ToInt64(logId));
-            if (log == null)
+            try
             {
-                throw new ObjectNotFoundException(logId);
-            }
-            return log.AddRemark(user, content,
-                (e1, e2, e3) =>
+                Log log = LogService.GetLog(logIdLong);
+                if (log == null)
                 {
-                    LogService.SaveComment(e1, e2, e3);
-                });
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                return log.AddRemark(user, content,
+                    (e1, e2, e3) =>
+                    {
+                        LogService.SaveComment(e1, e2, e3);
+                    });
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public void DeleteComment(string user, string logId, string commentId)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long logIdLong = 0;
+            try
+            {
+                logIdLong = Convert.ToInt64(logId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("logId", HttpStatusCode.BadRequest);
+            }
+            long commentIdLong = 0;
+            try
+            {
+                commentIdLong = Convert.ToInt64(commentId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("commentId", HttpStatusCode.BadRequest);
+            }
 
-            if (string.IsNullOrWhiteSpace(logId) || string.IsNullOrWhiteSpace(commentId))
+            try
             {
-                throw new ArgumentNullException();
-            }
-            Log log = LogService.GetLog(Convert.ToInt64(logId));
-            if (log == null)
-            {
-                throw new ObjectNotFoundException(logId);
-            }
-            Comment comment = CommentService.GetComment(Convert.ToInt64(commentId));
-            if (comment == null)
-            {
-                throw new ObjectNotFoundException(commentId);
-            }
-            log.RemoveRemark(comment,
-                (e1, e2, e3) =>
+                Log log = LogService.GetLog(logIdLong);
+                if (log == null)
                 {
-                    LogService.DeleteComment(e1, e2, e3);
-                });
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                Comment comment = CommentService.GetComment(commentIdLong);
+                if (comment == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                log.RemoveRemark(comment,
+                    (e1, e2, e3) =>
+                    {
+                        LogService.DeleteComment(e1, e2, e3);
+                    });
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
     }

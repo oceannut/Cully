@@ -1,0 +1,124 @@
+﻿<div class="container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="removeTaskDialog" tabindex="-1" role="dialog" aria-labelledby="removeTaskDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeTaskDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除任务对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个任务吗？</p>
+                    <p class="alert alert-warning">
+                        注意：删除任务的同时，对其的评论也全部将被删除。
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="deleteTask()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="removeCommentDialog" tabindex="-1" role="dialog" aria-labelledby="removeCommentDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeCommentDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除评论对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个评论吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="deleteComment()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar" role="navigation">
+        <div class="navbar-header">
+            <h3>
+                <i class="fa fa-leaf"></i>&nbsp;任务</h3>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a data-toggle="modal" data-target="#removeTaskDialog"><i class="fa fa-trash-o">
+            </i>&nbsp;删除</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a href="#/task-edit/{{task.Id}}/">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li><a href="#/task-notification-list/{{task.Id}}/"><i class="fa fa-send-o">
+            </i>&nbsp;通知</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+            <li><a href="#/activity-details/{{task.ActivityId}}/"><i class="fa fa-level-up"></i>
+                &nbsp;活动</a></li>
+        </ul>
+    </div>
+    <hr class="header-hr" />
+    <blockquote>
+        <p>
+            {{task.Content}}</p>
+        <footer> &nbsp; 指派方向：<a>{{activity.CreatorName}}</a>&nbsp;<i class="fa fa-long-arrow-right"></i>&nbsp;<a>{{task.staffName}}</a>&nbsp;&nbsp;&nbsp;&nbsp;截止时间：{{task.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</footer>
+    </blockquote>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <div class="row" style="margin: 2em 2em 0 2em;">
+        <ol class="list-unstyled">
+            <li ng-repeat="item in commentList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
+                <p>
+                    <a>{{item.creatorName}}</a><span class="pull-right">{{item.Creation | jsonDateFormat
+                        | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;&nbsp;<mark>[{{item.index}}楼]</mark></span></p>
+                <p>
+                    {{item.Content}}</p>
+                <p class="text-right">
+                    <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
+                        data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
+                        </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
+                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;|&nbsp;&nbsp;</a><small>
+                                <abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
+                                    其它通知：</abbr></small> &nbsp;&nbsp;<a href="mailto:#" class="btn btn-default btn-xs"><i
+                                        class="fa fa-envelope"></i>&nbsp;邮件</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
+                                            class="fa fa-qq"></i>&nbsp;QQ</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
+                                                class="fa fa-phone"></i>&nbsp;电话</a></p>
+            </li>
+        </ol>
+    </div>
+    <div class="row" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
+        <form class="form-horizontal css-form" role="form" name="form">
+        <h3>
+            发表评论</h3>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <textarea class="form-control" placeholder="内容" name="content" ng-model="comment.content"
+                    rows="6" ng-maxlength="1024" required autofocus></textarea>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在1024个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.content.$error.maxlength">警告：内容太长</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary" ng-click="saveComment()" ng-disabled="form.$invalid || isLoading"
+                    ng-switch="isLoading">
+                    <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存</span></button>
+                <button type="button" class="btn btn-default" ng-click="clearComment()">
+                    清空</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>

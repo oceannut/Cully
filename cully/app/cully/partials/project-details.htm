@@ -1,0 +1,88 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead" ng-switch="project.IsSolo"><i ng-switch-when="true" class="fa fa-cube">
+        </i><i ng-switch-when="false" class="fa fa-cubes"></i>&nbsp;{{project.Name}}</span>
+        <ul class="list-inline pull-right">
+            <li access="supvisor" ng-show="isEditable"><a href="#/project-edit/{{project.Id}}/">
+                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li access="supvisor" ng-show="isEditable"><a href="#/participant-list/{{project.Id}}/">
+                <i class="fa fa-users"></i>&nbsp;成员</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <blockquote>
+        <p>
+            {{project.Description}}</p>
+        <footer> &nbsp; <a>{{project.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+    </blockquote>
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <span class="navbar-brand list-title" style="color: #5277a9;"><i class="fa fa-th-list">
+            </i>&nbsp;活动列表</span>
+        </div>
+        <div class="navbar-text">
+            <i class="fa fa-plus"></i><a href="javascript:void(0)" class="navbar-link" ng-click="toggleAddActivityPanelVisibible()">
+                添加活动</a></div>
+    </div>
+    <div style="display: {{addActivityPanelDisplay}};">
+        <form class="form-horizontal css-form" role="form" name="form">
+        <div class="form-group">
+            <label class="col-sm-1 control-label" style="margin-top: 24px;">
+                类型:</label>
+            <div class="col-sm-5">
+                <div class="bs-glyphicons">
+                    <ul class="bs-glyphicons-list">
+                        <li ng-repeat="item in categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)"
+                            class="{{item.active}}"><span class="{{item.Icon}} fa-2x"></span><span class="glyphicon-class">
+                                {{item.Name}}</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="activity.name"
+                    ng-maxlength="32" required autofocus>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.name.$error.maxlength">警告：活动名太长</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="activity.description"
+                    ng-maxlength="255" rows="3"></textarea>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.desc.$error.maxlength">警告：概要介绍太长</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                <button class="btn btn-primary" ng-click="saveActivity()" ng-disabled="form.$invalid || isLoading"
+                    ng-switch="isLoading">
+                    <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建活动</span></button>&nbsp;&nbsp;
+                <a href="javascript:void(0)" ng-click="cancel()">取消</a>
+            </div>
+        </div>
+        </form>
+    </div>
+    <ol class="list-group">
+        <li class="list-group-item" ng-repeat="activity in activityList">
+            <h4 class="list-group-item-heading">
+                <mark>[活动{{activity.index}}]</mark>
+                &nbsp;<i class="{{activity.icon}}"></i>&nbsp; <a href="#/activity-details/{{activity.Id}}/">
+                    {{activity.Name}}</a></h4>
+            <blockquote>
+                <p>
+                    {{activity.Description}}</p>
+                <footer> &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+            </blockquote>
+            <div ng-include="'partials/task-list.htm'">
+            </div>
+        </li>
+    </ol>
+</div>

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.ServiceModel.Web;
 
 using ThinkInBio.Common.Exceptions;
+using ThinkInBio.Common.ExceptionHandling;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -14,68 +17,87 @@ namespace ThinkInBio.Cully.WSL.Impl
     {
 
         internal IProjectService ProjectService { get; set; }
+        internal IExceptionHandler ExceptionHandler { get; set; }
 
         public Project SaveProject(string user, string name, string description, string[] participants)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("name");
+                throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
             if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
             {
-                throw new ArgumentOutOfRangeException("description", description.Length, "");
+                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
             }
+
             Project project = new Project();
             project.Name = name;
             project.Description = description;
             project.Creator = user;
-            project.Save(participants,
-                (e1, e2) =>
-                {
-                    ProjectService.SaveProject(e1, e2);
-                });
-
-            return project;
+            try
+            {
+                project.Save(participants,
+                    (e1, e2) =>
+                    {
+                        ProjectService.SaveProject(e1, e2);
+                    });
+                return project;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Project UpdateProject(string user, string projectId, string name, string description)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("name");
+                throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
             if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
             {
-                throw new ArgumentOutOfRangeException("description", description.Length, "");
+                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
             }
-            Project project = ProjectService.GetProject(Convert.ToInt64(projectId));
-            if (project == null)
+            long idLong = 0;
+            try
             {
-                throw new ObjectNotFoundException(projectId);
+                idLong = Convert.ToInt64(projectId);
             }
-            project.Name = name;
-            project.Description = description;
-            project.Update((e) =>
+            catch
             {
-                ProjectService.UpdateProject(e);
-            });
-            return project;
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                Project project = ProjectService.GetProject(idLong);
+                if (project == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                project.Name = name;
+                project.Description = description;
+                project.Update((e) =>
+                {
+                    ProjectService.UpdateProject(e);
+                });
+                return project;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public void DeleteProject(string user, string projectId)
@@ -87,37 +109,71 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
 
-            Project project = ProjectService.GetProject(Convert.ToInt64(projectId));
-            return project;
+            try
+            {
+                return ProjectService.GetProject(idLong);
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Project[] GetTopProjectList(string user, string isSoloInclude, string count)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            bool isSoloIncludeBool= Convert.ToBoolean(isSoloInclude);
+            bool isSoloIncludeBool = false;
+            try
+            {
+                isSoloIncludeBool = Convert.ToBoolean(isSoloInclude);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("isSoloInclude", HttpStatusCode.BadRequest);
+            }
             bool? isSolo = isSoloIncludeBool ? null : new bool?(false);
-            int countInt = Convert.ToInt32(count);
-            IList<Project> list = ProjectService.GetTopProjectList(user, isSolo, countInt);
-            if (list != null)
+            int countInt = 0;
+            try
             {
-                return list.ToArray();
+                countInt = Convert.ToInt32(count);
             }
-            else
+            catch
             {
-                return null;
+                throw new WebFaultException<string>("count", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                IList<Project> list = ProjectService.GetTopProjectList(user, isSolo, countInt);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -125,18 +181,65 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+
+            bool isSoloIncludeBool = false;
+            try
+            {
+                isSoloIncludeBool = Convert.ToBoolean(isSoloInclude);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("isSoloInclude", HttpStatusCode.BadRequest);
+            }
+            bool? isSolo = isSoloIncludeBool ? null : new bool?(false);
+
+            DateTime d = DateTime.MinValue;
+            int spanInt = 0;
+            if ("null" != date && "null" != span)
+            {
+                try
+                {
+                    d = DateTime.Parse(date);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
+                }
+                try
+                {
+                    spanInt = Convert.ToInt32(span);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("span", HttpStatusCode.BadRequest);
+                }
+            }
+
+            int startInt = 0;
+            try
+            {
+                startInt = Convert.ToInt32(start);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("start", HttpStatusCode.BadRequest);
+            }
+            int countInt = 0;
+            try
+            {
+                countInt = Convert.ToInt32(count);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("count", HttpStatusCode.BadRequest);
+            }
 
             DateTime? startTime = null;
             DateTime? endTime = null;
             if ("null" != date && "null" != span)
             {
-                DateTime d = DateTime.Parse(date);
-                int spanInt = Convert.ToInt32(span);
                 if (spanInt < 0)
                 {
                     startTime = d.AddDays(spanInt + 1);
@@ -148,18 +251,22 @@ namespace ThinkInBio.Cully.WSL.Impl
                     endTime = d.AddDays(spanInt).AddSeconds(-1);
                 }
             }
-            bool isSoloIncludeBool = Convert.ToBoolean(isSoloInclude);
-            bool? isSolo = isSoloIncludeBool ? null : new bool?(false);
-            int startInt = Convert.ToInt32(start);
-            int countInt = Convert.ToInt32(count);
-            IList<Project> list = ProjectService.GetProjectList(user, startTime, endTime, isSolo, startInt, countInt);
-            if (list != null)
+            try
             {
-                return list.ToArray();
+                IList<Project> list = ProjectService.GetProjectList(user, startTime, endTime, isSolo, startInt, countInt);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (BusinessLayerException ex)
             {
-                return null;
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -167,121 +274,163 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
             if (string.IsNullOrWhiteSpace(category))
             {
-                throw new ArgumentNullException("category");
+                throw new WebFaultException<string>("category", HttpStatusCode.BadRequest);
             }
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("name");
+                throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
             if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
             {
-                throw new ArgumentOutOfRangeException("description", description.Length, "");
+                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
             }
-            Activity activity = new Activity();
-            activity.Category = category;
-            activity.Name = name;
-            activity.Description = description;
-            activity.Creator = user;
-            activity.Save(user, participants, (e1, e2, e3) =>
-            {
-                ProjectService.SaveActivity(e1, e2, e3);
-            });
 
-            return activity;
+            try
+            {
+                Activity activity = new Activity();
+                activity.Category = category;
+                activity.Name = name;
+                activity.Description = description;
+                activity.Creator = user;
+                activity.Save(user, participants, (e1, e2, e3) =>
+                {
+                    ProjectService.SaveActivity(e1, e2, e3);
+                });
+                return activity;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Activity SaveActivity(string user, string projectId, string category, string name, string description)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
-            long projectIdLong = Convert.ToInt64(projectId);
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
             if (string.IsNullOrWhiteSpace(category))
             {
-                throw new ArgumentNullException("category");
+                throw new WebFaultException<string>("category", HttpStatusCode.BadRequest);
             }
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("name");
+                throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
             if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
             {
-                throw new ArgumentOutOfRangeException("description", description.Length, "");
+                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
             }
-            Activity activity = new Activity();
-            activity.Category = category;
-            activity.Name = name;
-            activity.Description = description;
-            activity.ProjectId = projectIdLong;
-            activity.Creator = user;
-            activity.Save((e) =>
-            {
-                ProjectService.SaveActivity(e);
-            });
 
-            return activity;
+            try
+            {
+                Activity activity = new Activity();
+                activity.Category = category;
+                activity.Name = name;
+                activity.Description = description;
+                activity.ProjectId = idLong;
+                activity.Creator = user;
+                activity.Save((e) =>
+                {
+                    ProjectService.SaveActivity(e);
+                });
+                return activity;
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Activity UpdateActivity(string user, string activityId, string category, string name, string description)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(activityId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
+            }
             if (string.IsNullOrWhiteSpace(category))
             {
-                throw new ArgumentNullException("category");
+                throw new WebFaultException<string>("category", HttpStatusCode.BadRequest);
             }
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentNullException("name");
+                throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
             if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
             {
-                throw new ArgumentOutOfRangeException("description", description.Length, "");
+                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
             }
-            long activityIdLong = Convert.ToInt64(activityId);
-            Activity activity = ProjectService.GetActivity(activityIdLong);
-            if (activity == null)
+
+            try
             {
-                throw new ObjectNotFoundException(activityIdLong);
+                Activity activity = ProjectService.GetActivity(idLong);
+                if (activity == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                activity.Category = category;
+                activity.Name = name;
+                activity.Description = description;
+                ProjectService.UpdateActivity(activity);
+                return activity;
             }
-            activity.Category = category;
-            activity.Name = name;
-            activity.Description = description;
-            ProjectService.UpdateActivity(activity);
-            return activity;
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Activity GetActivity(string user, string activityId)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(activityId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
+            }
 
-            long activityIdLong = Convert.ToInt64(activityId);
-            return ProjectService.GetActivity(activityIdLong);
+            try
+            {
+                return ProjectService.GetActivity(idLong);
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Activity[] GetActivityList(string user, string start, string count)
@@ -298,21 +447,62 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                throw new WebFaultException<string>("category", HttpStatusCode.BadRequest);
+            }
             if ("null" == category)
             {
                 category = null;
             }
+
+            DateTime d = DateTime.MinValue;
+            int spanInt = 0;
+            if ("null" != date && "null" != span)
+            {
+                try
+                {
+                    d = DateTime.Parse(date);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
+                }
+                try
+                {
+                    spanInt = Convert.ToInt32(span);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("span", HttpStatusCode.BadRequest);
+                }
+            }
+
+            int startInt = 0;
+            try
+            {
+                startInt = Convert.ToInt32(start);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("start", HttpStatusCode.BadRequest);
+            }
+            int countInt = 0;
+            try
+            {
+                countInt = Convert.ToInt32(count);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("count", HttpStatusCode.BadRequest);
+            }
+
             DateTime? startTime = null;
             DateTime? endTime = null;
             if ("null" != date && "null" != span)
             {
-                DateTime d = DateTime.Parse(date);
-                int spanInt = Convert.ToInt32(span);
                 if (spanInt < 0)
                 {
                     startTime = d.AddDays(spanInt + 1);
@@ -324,16 +514,23 @@ namespace ThinkInBio.Cully.WSL.Impl
                     endTime = d.AddDays(spanInt).AddSeconds(-1);
                 }
             }
-            int startInt = Convert.ToInt32(start);
-            int countInt = Convert.ToInt32(count);
-            IList<Activity> list = ProjectService.GetActivityList(user, startTime, endTime, category, startInt, countInt);
-            if (list != null)
+
+            try
             {
-                return list.ToArray();
+                IList<Activity> list = ProjectService.GetActivityList(user, startTime, endTime, category, startInt, countInt);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (BusinessLayerException ex)
             {
-                return null;
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -341,21 +538,34 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
 
-            long projectIdLong = Convert.ToInt64(projectId);
-            IList<Activity> list = ProjectService.GetActivityList(projectIdLong);
-            if (list != null)
+            try
             {
-                return list.ToArray();
+                IList<Activity> list = ProjectService.GetActivityList(idLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (BusinessLayerException ex)
             {
-                return null;
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -363,77 +573,117 @@ namespace ThinkInBio.Cully.WSL.Impl
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
             if (string.IsNullOrWhiteSpace(participant))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("participant", HttpStatusCode.BadRequest);
             }
-            Project project = ProjectService.GetProject(Convert.ToInt64(projectId));
-            if (project == null)
+
+            try
             {
-                throw new ObjectNotFoundException(projectId);
+                Project project = ProjectService.GetProject(idLong);
+                if (project == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                return project.AddParticipant(participant, null, (e) =>
+                {
+                    ProjectService.SaveParticipant(e);
+                });
             }
-            return project.AddParticipant(participant, null, (e) =>
+            catch (BusinessLayerException ex)
             {
-                ProjectService.SaveParticipant(e);
-            });
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public void DeleteParticipant(string user, string projectId, string participant)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
-
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
             if (string.IsNullOrWhiteSpace(participant))
             {
-                throw new ArgumentNullException();
+                throw new WebFaultException<string>("participant", HttpStatusCode.BadRequest);
             }
-            long projectIdLong = Convert.ToInt64(projectId);
-            Project project = ProjectService.GetProject(projectIdLong);
-            if (project == null)
+
+            try
             {
-                throw new ObjectNotFoundException(projectId);
+                Project project = ProjectService.GetProject(idLong);
+                if (project == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                project.RemoveParticipant(participant,
+                    (e) =>
+                    {
+                        return ProjectService.GetParticipantList(e);
+                    },
+                    (e) =>
+                    {
+                        ProjectService.DeleteParticipant(e);
+                    });
             }
-            project.RemoveParticipant(participant,
-                (e) =>
-                {
-                    return ProjectService.GetParticipantList(e);
-                },
-                (e) =>
-                {
-                    ProjectService.DeleteParticipant(e);
-                });
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Participant[] GetParticipantList(string user, string projectId)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
-                throw new ArgumentNullException("user");
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
             }
-            /*
-             * 验证用户的合法性逻辑暂省略。
-             * */
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
 
-            long projectIdLong = Convert.ToInt64(projectId);
-            IList<Participant> list = ProjectService.GetParticipantList(projectIdLong);
-            if (list != null)
+            try
             {
-                return list.ToArray();
+                IList<Participant> list = ProjectService.GetParticipantList(idLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (BusinessLayerException ex)
             {
-                return null;
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
 

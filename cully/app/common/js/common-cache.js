@@ -2,7 +2,12 @@
 
 define(function (require) {
 
-    angular.module('common.cache', [])
+    require('ng');
+
+    require('./user-services');
+    require('./category-services');
+
+    angular.module('common.cache', ['user.services', 'category.services'])
         .factory('userCache', ['$log', 'UserListService',
             function ($log, UserListService) {
 
@@ -20,11 +25,13 @@ define(function (require) {
                                     }
                                 }
                                 isSync = true;
-                                (callback || angular.noop)();
                             }, function (error) {
                                 isSync = false;
                                 $log.error("同步缓存用户集合失败：");
                                 $log.error(error);
+                            })
+                            .then(function () {
+                                (callback || angular.noop)();
                             });
                 }
 
@@ -128,10 +135,11 @@ define(function (require) {
                 }
 
                 function fetch(scope, callback) {
+                    var scopeEntry;
                     CategoryListService.query({ 'scope': scope })
                         .$promise
                             .then(function (result) {
-                                var scopeEntry = getScope(scope);
+                                scopeEntry = getScope(scope);
                                 if (scopeEntry === null) {
                                     scopeEntry = { 'scope': scope, 'list': [] };
                                     map.push(scopeEntry);
@@ -143,19 +151,23 @@ define(function (require) {
                                         scopeEntry.list.push(result[i]);
                                     }
                                 }
-                                (callback || angular.noop)(scopeEntry);
                             }, function (error) {
                                 $log.error("同步缓存范围为" + scope + "的类型集合失败：");
                                 $log.error(error);
+                            })
+                            .then(function () {
+                                (callback || angular.noop)(scopeEntry);
                             });
                 }
 
                 function find(key, scopeEntry) {
-                    var list = scopeEntry.list;
-                    if (list.length > 0) {
-                        for (var i in list) {
-                            if (key === list[i].Code) {
-                                return list[i];
+                    if (scopeEntry !== undefined && scopeEntry !== null) {
+                        var list = scopeEntry.list;
+                        if (list.length > 0) {
+                            for (var i in list) {
+                                if (key === list[i].Code) {
+                                    return list[i];
+                                }
                             }
                         }
                     }
@@ -164,18 +176,20 @@ define(function (require) {
 
                 function addOrUpdate(item, scopeEntry) {
                     var isExist = false;
-                    var list = scopeEntry.list;
-                    if (list.length > 0) {
-                        for (var i in list) {
-                            if (item.Code === list[i].Code) {
-                                list[i] = item;
-                                isExist = true;
-                                break;
+                    if (scopeEntry !== undefined && scopeEntry !== null) {
+                        var list = scopeEntry.list;
+                        if (list.length > 0) {
+                            for (var i in list) {
+                                if (item.Code === list[i].Code) {
+                                    list[i] = item;
+                                    isExist = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (!isExist) {
-                        list.push(item);
+                        if (!isExist) {
+                            list.push(item);
+                        }
                     }
                 }
 
