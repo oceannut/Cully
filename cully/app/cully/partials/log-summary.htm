@@ -1,15 +1,10 @@
-﻿<div class="container" ng-init="init()">
-    <div class="navbar" role="navigation">
-        <div class="navbar-header">
-            <h3>
-                <i class="fa fa-bookmark-o"></i>&nbsp;工作记录</h3>
-        </div>
-        <div class="nav navbar-nav navbar-right">
-            <button type="button" class="btn btn-primary" ng-click="createLog()">
-                <i class="fa fa-leaf"></i>&nbsp;创建新记录</button>
-        </div>
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;工作记录</span>
+        <ul class="list-inline pull-right">
+            <li access="supvisor"><a href="#/log-add/"><i class="fa fa-share-alt"></i>&nbsp;创建新记录</a></li>
+        </ul>
     </div>
-    <hr class="header-hr" />
     <div class="row" style="margin-top: 20px;">
         <div class="col-sm-9 blog-main">
             <div style="margin: 0 0 0 64px;">
@@ -51,7 +46,7 @@
                     </ul>
                     <ul style="list-style-type: none; float: left; margin-left: -2em;" class="pull-right">
                         <li style="float: left; margin-left: 0.6em; display: {{item.EditBtnVisible}};"><a
-                            class="fa fa-edit" title="编辑信息"href="#/log-edit/{{item.Id}}/"></a></li>
+                            class="fa fa-edit" title="编辑信息" href="#/log-edit/{{item.Id}}/"></a></li>
                     </ul>
             </ol>
             <ul class="pager">

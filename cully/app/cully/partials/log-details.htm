@@ -1,4 +1,4 @@
-﻿<div class="container" ng-init="init()">
+﻿<div class="story container" ng-init="init()">
     <!-- Modal -->
     <div class="modal fade" id="removeCommentDialog" tabindex="-1" role="dialog" aria-labelledby="removeCommentDialogLabel"
         aria-hidden="true">
@@ -23,20 +23,16 @@
             </div>
         </div>
     </div>
-    <div class="navbar" role="navigation">
-        <div class="navbar-header">
-            <h3>
-                <i class="{{log.icon}}"></i>&nbsp;{{log.Title}}</h3>
-        </div>
-        <ul class="nav navbar-nav navbar-right">
-            <li style="display: {{navbarLinkVisible}};"><a href="#/log-edit/{{log.Id}}/">
-                <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+    <div class="page-header">
+        <span class="lead"><i class="{{log.icon}}"></i>&nbsp;{{log.Title}}</span>
+        <ul class="list-inline pull-right">
+            <li style="display: {{navbarLinkVisible}};"><a href="#/log-edit/{{log.Id}}/"><i class="fa fa-edit">
+            </i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
             <li><a href="#/log-summary/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
         </ul>
     </div>
-    <hr class="header-hr" />
     <div class="alert alert-danger {{alertMessageVisible}}">
         {{alertMessage}}</div>
     <div class="row" style="margin: 2em 2em 0 2em;">

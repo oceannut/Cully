@@ -2,7 +2,7 @@
 
 define(function (require) {
 
-    require('angular');
+    require('ng');
     require('../../../static/js/configs');
     require('../../../static/js/filters');
     require('./project-services');

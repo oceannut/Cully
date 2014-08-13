@@ -2,21 +2,22 @@
 
 define(function (require) {
 
-    require('angular');
+    require('ng');
     require('textAngular-sanitize');
     require('textAngular');
-    require('../../../static/js/configs');
     require('../../../static/js/filters');
     require('../../../static/js/utils');
     require('./log-services');
-    require('./cache');
+    require('../../auth/js/auth-models');
+    require('../../auth/js/auth-directives');
+    require('../../common/js/common-cache');
 
-    angular.module('log.controllers', ['textAngular', 'configs', 'filters', 'utils', 'log.services', 'cache'])
+    angular.module('log.controllers', ['textAngular', 'filters', 'utils', 'log.services', 'auth.models', 'auth.directives', 'common.cache'])
         .value('logCache', { 'logList': [] })
         .controller('LogSummaryCtrl', ['$scope', '$location', 'currentUser', 'dateUtil', 'stringUtil',
-            'LogListService', 'userCache', 'logCache', 'categoryCacheUtil',
+            'LogListService', 'userCache', 'logCache', 'categoryCache',
             function ($scope, $location, currentUser, dateUtil, stringUtil,
-                LogListService, userCache, logCache, categoryCacheUtil) {
+                LogListService, userCache, logCache, categoryCache) {
 
                 var pageSize = 20;
 
@@ -31,10 +32,6 @@ define(function (require) {
 
                     $scope.users = userCache.userList;
                     $scope.query();
-                }
-
-                $scope.createLog = function () {
-                    $location.path('/log-add/');
                 }
 
                 $scope.query = function () {
@@ -78,7 +75,7 @@ define(function (require) {
                         spanInput = dateUtil.getSpan(date);
                     }
 
-                    LogListService.query({ 'user': currentUser.username,
+                    LogListService.query({ 'user': currentUser.getUsername(),
                         'date': dateInput,
                         'span': spanInput,
                         'creator': staff,
@@ -99,11 +96,12 @@ define(function (require) {
                         $scope.logList = [];
                         for (var i = 0; i < result.length; i++) {
                             var item = result[i];
-                            var category = categoryCacheUtil.get('log', item.Category);
-                            if (category != null) {
-                                item.icon = category.Icon;
-                                item.categoryName = category.Name;
-                            }
+                            categoryCache.get('log', item.Category, function (e) {
+                                if (e != null) {
+                                    item.icon = e.Icon;
+                                    item.categoryName = e.Name;
+                                }
+                            });
                             item.creatorName = getCreatorName(item.Creator);
                             var content = stringUtil.removeHTML(item.Content);
                             item.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
@@ -141,38 +139,30 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogAddCtrl', ['$scope', '$location', 'currentUser', 'LogService', 'dateUtil', 'categoryCacheUtil',
-            function ($scope, $location, currentUser, LogService, dateUtil, categoryCacheUtil) {
-
-                function _selectCategory(code) {
-                    for (var i = 0; i < $scope.categoryList.length; i++) {
-                        var category = $scope.categoryList[i];
-                        if (category.Code == code) {
-                            category.active = "active";
-                            $scope.category = category;
-                        } else {
-                            category.active = "";
-                        }
-                    }
-                }
+        .controller('LogAddCtrl', ['$scope', '$location', 'currentUser', 'LogService', 'dateUtil', 'categoryCache', 'CategoryHelper',
+            function ($scope, $location, currentUser, LogService, dateUtil, categoryCache, CategoryHelper) {
 
                 $scope.init = function () {
                     $scope.log = {};
                     $scope.log.startTime = dateUtil.formatDateByYMD(new Date());
-                    categoryCacheUtil.list('log', function (result) {
+                    categoryCache.list('log', function (result) {
                         $scope.categoryList = result;
-                        _selectCategory('diary');
+                        CategoryHelper.selectCategory($scope.categoryList, 'diary', function (e) {
+                            $scope.category = e;
+                        });
                     });
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    _selectCategory(selectedCategory.Code);
+                    CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
+                        $scope.category = e;
+                    });
                 }
 
                 $scope.save = function () {
                     if ($scope.log.startTime != undefined && $scope.log.startTime != ''
                                             && $scope.log.content != undefined && $scope.log.content != '') {
-                        LogService.save({ 'user': currentUser.username,
+                        LogService.save({ 'user': currentUser.getUsername(),
                             'date': $scope.log.startTime,
                             'title': $scope.log.title,
                             'content': $scope.log.content,
@@ -193,26 +183,16 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogEditCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'categoryCacheUtil',
-            function ($scope, $location, $routeParams, currentUser, dateUtil, LogService, logCache, categoryCacheUtil) {
+        .controller('LogEditCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'categoryCache', 'CategoryHelper',
+            function ($scope, $location, $routeParams, currentUser, dateUtil, LogService, logCache, categoryCache, CategoryHelper) {
 
                 $scope.isLoading = false;
                 $scope.alertMessageVisible = 'hidden';
 
-                function _selectCategory(code) {
-                    for (var i = 0; i < $scope.categoryList.length; i++) {
-                        var category = $scope.categoryList[i];
-                        if (category.Code == code) {
-                            category.active = "active";
-                            $scope.category = category;
-                        } else {
-                            category.active = "";
-                        }
-                    }
-                }
-
                 function renderLog(editLog) {
-                    _selectCategory(editLog.Category);
+                    CategoryHelper.selectCategory($scope.categoryList, editLog.Category, function (e) {
+                        $scope.category = e;
+                    });
                     $scope.log = { 'id': editLog.Id, 'title': editLog.Title, 'content': editLog.Content };
                     var d = dateUtil.jsonToDate(editLog.StartTime);
                     if (d != null) {
@@ -234,7 +214,7 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    categoryCacheUtil.list('log', function (result) {
+                    categoryCache.list('log', function (result) {
                         $scope.categoryList = result;
 
                         var editLog = null;
@@ -253,14 +233,16 @@ define(function (require) {
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    _selectCategory(selectedCategory.Code);
+                    CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
+                        $scope.category = e;
+                    });
                 }
 
                 $scope.save = function () {
                     if ($scope.log.startTime != undefined && $scope.log.startTime != ''
                         && $scope.log.content != undefined && $scope.log.content != '') {
                         $scope.isLoading = true;
-                        LogService.update({ 'user': currentUser.username,
+                        LogService.update({ 'user': currentUser.getUsername(),
                             'id': $scope.log.id,
                             'date': $scope.log.startTime,
                             'title': $scope.log.title,
@@ -297,17 +279,18 @@ define(function (require) {
 
             } ])
         .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'LogService', 'CommentService',
-                    'CommentListService', 'Update4CommentLogService', 'logCache', 'userCacheUtil',
+                    'CommentListService', 'Update4CommentLogService', 'logCache', 'userCache',
             function ($scope, $location, $routeParams, $log, currentUser, LogService, CommentService,
-                    CommentListService, Update4CommentLogService, logCache, userCacheUtil) {
+                    CommentListService, Update4CommentLogService, logCache, userCache) {
 
                 $scope.alertMessageVisible = 'hidden';
 
                 function render(comment, i) {
                     comment.index = (parseInt(i) + 1);
-                    var user = userCacheUtil.get(comment.Creator);
-                    comment.creatorName = (user == null) ? comment.Creator : user.Name;
-                    if (comment.Creator == currentUser.username) {
+                    userCacheUtil.get(comment.Creator, function (e) {
+                        comment.creatorName = (e == null) ? comment.Creator : e.Name;
+                    });
+                    if (comment.Creator == currentUser.getUsername()) {
                         comment.editCommentButtonVisible = '';
                     } else {
                         comment.editCommentButtonVisible = 'none';
@@ -325,7 +308,7 @@ define(function (require) {
                             }
                         }
                     }
-                    CommentListService.query({ 'user': currentUser.username,
+                    CommentListService.query({ 'user': currentUser.getUsername(),
                         'commentTarget': 'log',
                         'targetId': $scope.log.Id
                     })
@@ -346,7 +329,7 @@ define(function (require) {
                 $scope.saveComment = function () {
                     if ($scope.comment.content != undefined && $scope.comment.content != '') {
                         if ($scope.comment.id != undefined && $scope.comment.id != null) {
-                            CommentService.update({ 'user': currentUser.username,
+                            CommentService.update({ 'user': currentUser.getUsername(),
                                 'id': $scope.comment.id,
                                 'content': $scope.comment.content
                             })
@@ -365,7 +348,7 @@ define(function (require) {
                                     $scope.alertMessage = "提示：修改评论失败";
                                 });
                         } else {
-                            Update4CommentLogService.save({ 'user': currentUser.username,
+                            Update4CommentLogService.save({ 'user': currentUser.getUsername(),
                                 'id': $scope.log.Id,
                                 'content': $scope.comment.content
                             })
@@ -400,7 +383,7 @@ define(function (require) {
                 }
 
                 $scope.deleteComment = function () {
-                    Update4CommentLogService.remove({ 'user': currentUser.username,
+                    Update4CommentLogService.remove({ 'user': currentUser.getUsername(),
                         'id': $scope.log.Id,
                         'commentId': $scope.comment.id
                     })

@@ -6,18 +6,26 @@ define(function (require) {
 
     require('../../app/auth/js/auth-controllers');
     require('../../app/common/js/user-controllers');
+    require('../../app/cully/js/biz-notification-controllers');
     require('../../app/cully/js/index-controllers');
     require('../../app/cully/js/home-controllers');
     require('../../app/cully/js/project-controllers');
     require('../../app/cully/js/activity-controllers');
+    require('../../app/cully/js/task-controllers');
+    require('../../app/cully/js/participant-controllers');
+    require('../../app/cully/js/log-controllers');
 
     angular.module('Cully', ['ngRoute',
             'auth.controllers',
             'user.controllers',
+            'bizNotification.controllers',
             'index.controllers',
             'home.controllers',
             'project.controllers',
-            'activity.controllers'
+            'activity.controllers',
+            'task.controllers',
+            'participant.controllers',
+            'log.controllers'
         ])
         .config(['$routeProvider', '$httpProvider',
             function ($routeProvider, $httpProvider) {
@@ -116,12 +124,64 @@ define(function (require) {
                             roles: ['supvisor']
                         }
                     })
+                    .when('/task-edit/:id/', {
+                        templateUrl: 'app/cully/partials/task-edit.htm',
+                        controller: 'TaskEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['supvisor']
+                        }
+                    })
+                    .when('/task-details/:id/', {
+                        templateUrl: 'app/cully/partials/task-details.htm',
+                        controller: 'TaskDetailsCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/task-notification-list/:id/', {
+                        templateUrl: 'app/cully/partials/task-notification-list.htm',
+                        controller: 'TaskNotificationListCtrl'
+                    })
+                    .when('/participant-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/participant-list.htm',
+                        controller: 'ParticipantListCtrl'
+                    })
                     .when('/log-summary/', {
                         templateUrl: 'app/cully/partials/log-summary.htm',
                         access: {
                             loginRequired: true,
                             roles: ['user', 'supvisor']
                         }
+                    })
+                    .when('/log-add/', {
+                        templateUrl: 'app/cully/partials/log-add.htm',
+                        controller: 'LogAddCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user']
+                        }
+                    })
+                    .when('/log-edit/:id/', {
+                        templateUrl: 'app/cully/partials/log-edit.htm',
+                        controller: 'LogEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user']
+                        }
+                    })
+                    .when('/log-details/:id/', {
+                        templateUrl: 'app/cully/partials/log-details.htm',
+                        controller: 'LogDetailsCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user']
+                        }
+                    })
+                    .when('/notification-list/', {
+                        templateUrl: 'app/cully/partials/notification-list.htm',
+                        controller: 'BizNotificationListCtrl'
                     })
                     .otherwise({
                         redirectTo: '/sign-in/'

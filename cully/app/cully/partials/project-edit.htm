@@ -1,15 +1,10 @@
-﻿<div class="container" ng-init="init()">
-    <div class="navbar" role="navigation">
-        <div class="navbar-header">
-            <h3>
-                <i class="fa fa-edit"></i>&nbsp;编辑项目</h3>
-        </div>
-        <ul class="nav navbar-nav navbar-right">
-            <!--<li><a ng-click="remove()"><i class="fa fa-trash-o"></i>&nbsp;删除</a></li>-->
-            <li><a ng-click="gotoback()"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑项目</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/project-details/{{project.Id}}/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
         </ul>
     </div>
-    <hr class="header-hr" />
     <form class="form-horizontal css-form" role="form" name="form">
     <div class="form-group">
         <div class="col-sm-6">

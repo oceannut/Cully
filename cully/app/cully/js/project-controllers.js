@@ -127,18 +127,16 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'ProjectService', 'userCacheUtil',
-            function ($scope, $location, $routeParams, $log, currentUser, ProjectService, userCacheUtil) {
-
-                $scope.isLoading = false;
-                $scope.alertMessageVisible = 'hidden';
+        .controller('ProjectEditCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'ProjectService',
+            function ($scope, $routeParams, $log, currentUser, ProjectService) {
 
                 $scope.init = function () {
-                    ProjectService.get({ 'user': currentUser.username, 'projectId': $routeParams.id })
+                    $scope.isLoading = false;
+                    $scope.alertMessageVisible = 'hidden';
+                    ProjectService.get({ 'user': currentUser.getUsername(), 'projectId': $routeParams.id })
                         .$promise
                             .then(function (result) {
                                 $scope.project = result;
-                                $scope.alertMessageVisible = 'hidden';
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessageColor = 'alert-danger';
@@ -147,32 +145,30 @@ define(function (require) {
                             });
                 }
 
-                $scope.gotoback = function () {
-                    $location.path("/project-details/" + $scope.project.Id + "/");
-                }
-
                 $scope.save = function () {
                     if ($scope.project.Name != null) {
                         $scope.isLoading = true;
+                        $scope.alertMessageVisible = 'hidden';
                         ProjectService.update({
-                            'user': currentUser.username,
+                            'user': currentUser.getUsername(),
                             'projectId': $scope.project.Id,
                             'name': $scope.project.Name,
                             'description': $scope.project.Description
                         })
                         .$promise
                             .then(function (result) {
-                                $scope.isLoading = false;
                                 $scope.project = result;
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessageColor = 'alert-success';
                                 $scope.alertMessage = "提示：修改项目成功";
                             }, function (error) {
-                                $scope.isLoading = false;
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessageColor = 'alert-danger';
                                 $scope.alertMessage = "提示：修改项目失败";
                                 $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
                             });
                     }
                 }

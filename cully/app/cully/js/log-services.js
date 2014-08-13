@@ -2,8 +2,8 @@
 
 define(function (require) {
 
-    require('angular');
-    require('resource');
+    require('ng');
+    require('ng-resource');
     require('../../../static/js/configs');
 
     angular.module('log.services', ['ngResource', 'configs'])
