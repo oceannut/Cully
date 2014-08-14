@@ -15,7 +15,7 @@ define(function (require) {
     require('../../common/js/common-cache');
     require('../../common/js/biz-notification-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'ng.directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
+    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
         .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService', 'Update4IsUnderwayTaskService',
                                  'Update4IsCompletedTaskService', 'ParticipantOfProjectService', 'userCache', 'dateUtil',
             function ($scope, $location, $log, currentUser, TaskService, TaskListService, Update4IsUnderwayTaskService,

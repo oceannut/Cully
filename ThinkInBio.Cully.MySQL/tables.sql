@@ -4,6 +4,7 @@ delete from cyParticipant;
 delete from cyActivity;
 delete from cyTask;
 delete from cyLog;
+delete from cyLogVisibleUser;
 delete from cyComment;
 
 
@@ -12,6 +13,7 @@ drop table cyParticipant;
 drop table cyActivity;
 drop table cyTask;
 drop table cyLog;
+drop table cyLogVisibleUser;
 drop table cyComment;
 
 
@@ -75,10 +77,18 @@ create table cyLog
 	endTime					DATETIME,
 	tags					VARCHAR(128),
 	commentCount			INT				NOT NULL default 0,
+	visibility				TINYINT			NOT NULL default 0,
 	creator					VARCHAR(32)		NOT NULL,
 	creation				DATETIME		NOT NULL,
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
+);
+
+create table cyLogVisibleUser
+(
+	logId					BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	username				VARCHAR(32)		NOT NULL,
+	PRIMARY KEY (logId,username)
 );
 
 create table cyComment

@@ -1,5 +1,5 @@
 ﻿<div class="container" ng-init="init()">
-    <form class="form-sign form-horizontal css-form" role="form" name="form">
+    <form class="form-sign form-horizontal css-form" role="form" name="form" ng-submit="signin()">
     <h3 class="form-sign-heading text-center">
         用户登录</h3>
     <div class="form-group">
@@ -15,9 +15,15 @@
         <span class="text-danger" ng-show="form.pwd.$error.maxlength">警告：密码太长</span> <span
             class="text-danger" ng-show="form.pwd.$error.pattern">警告：密码只能是由字母和数字的组合。</span>
     </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="rememberMe">
+            请记住我
+        </label>
+    </div>
     <div class="form-group">
-        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="signin()"
-            ng-disabled="form.$invalid || isLoging" ng-switch="isLoging">
+        <button class="btn btn-lg btn-primary btn-block" type="submit" ng-disabled="form.$invalid || isLoging"
+            ng-switch="isLoging">
             <span ng-switch-when="true">正在登录中...</span> <span ng-switch-when="false">登录</span></button>
     </div>
     <div class="form-group alert alert-danger {{alertMessageVisible}}">

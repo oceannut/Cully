@@ -3,24 +3,48 @@
 define(function (require) {
 
     require('ng');
+    require('ng-cookies');
     require('../../../static/js/configs');
     require('../../../static/js/events');
+    require('../../../static/js/directives');
     require('./auth-models');
     require('./auth-services');
 
     require('../../../static/css/sign.css');
 
-    angular.module('auth.controllers', ['configs', 'events', 'auth.models', 'auth.services'])
-        .controller('SignInCtrl', ['$scope', '$location', '$log', 'currentUser', 'eventbus', 'SignInService',
-            function ($scope, $location, $log, currentUser, eventbus, SignInService) {
+    angular.module('auth.controllers', ['ngCookies', 'configs', 'events', 'directives', 'auth.models', 'auth.services'])
+        .controller('SignInCtrl', ['$scope', '$location', '$log', '$cookieStore', 'currentUser', 'eventbus', 'SignInService',
+            function ($scope, $location, $log, $cookieStore, currentUser, eventbus, SignInService) {
 
                 $scope.init = function () {
                     $scope.alertMessageVisible = 'hidden';
                     $scope.isLoging = false;
                     $scope.login = {};
+
+                    var usernameStored = $cookieStore.get('username');
+                    if (usernameStored !== undefined) {
+                        $scope.rememberMe = true;
+                        $scope.login.username = usernameStored;
+                        $scope.login.pwd = $cookieStore.get('pwd');
+                    } else {
+                        $scope.rememberMe = false;
+                    }
+
                 }
 
                 $scope.signin = function () {
+
+                    if ($scope.rememberMe) {
+                        var usernameStored = $cookieStore.get('username');
+                        if (usernameStored === undefined || usernameStored === null) {
+                            $cookieStore.put('username', $scope.login.username);
+                            $cookieStore.put('pwd', $scope.login.pwd);
+                        }
+                    } else {
+                        $cookieStore.remove('username');
+                        $cookieStore.remove('pwd')
+                    }
+
                     $scope.alertMessageVisible = 'hidden';
                     $scope.isLoging = true;
 
@@ -74,6 +98,10 @@ define(function (require) {
                     $scope.isBusy = false;
                 }
 
+                $scope.refreshCheckCode = function () {
+                    $scope.$emit('refreshCheckCode');
+                }
+
                 $scope.usernameChanged = function () {
                     if (lastUsername != $scope.user.username && $scope.user.username != undefined && $scope.user.username != '') {
                         lastUsername = $scope.user.username;
@@ -111,13 +139,15 @@ define(function (require) {
                 }
 
                 $scope.signup = function () {
-                    $scope.alertMessageVisible = 'hidden';
-                    $scope.isBusy = true;
-                    SignUpService.save({
-                        'username': $scope.user.username,
-                        'pwd': $scope.user.pwd,
-                        'name': $scope.user.name
-                    })
+
+                    if ($scope.inputCheckcode === $scope.checkcode) {
+                        $scope.alertMessageVisible = 'hidden';
+                        $scope.isBusy = true;
+                        SignUpService.save({
+                            'username': $scope.user.username,
+                            'pwd': $scope.user.pwd,
+                            'name': $scope.user.name
+                        })
                     .$promise
                         .then(function (result) {
                             $scope.isSuccess = true;
@@ -132,6 +162,13 @@ define(function (require) {
                         .then(function () {
                             $scope.isBusy = false;
                         });
+                    }
+                    else {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：验证码输入错误";
+                        $scope.$emit('refreshCheckCode');
+                    }
+
                 }
 
             } ])

@@ -38,7 +38,14 @@
         <span class="text-danger" ng-show="form.name.$error.maxlength">警告：显示名称太长</span>
     </div>
     <div class="form-group">
-        <button class="btn btn-primary btn-block" type="submit" ng-click="signup()">
+        <input type="text" placeholder="验证码" ng-model="inputCheckcode" required>&nbsp;
+        <label>
+            <s class="well well-sm" checkcode></s>&nbsp; <i class="fa fa-refresh" ng-click="refreshCheckCode()">
+            </i>
+        </label>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-block" type="submit" ng-disabled="form.$invalid || isBusy" ng-click="signup()">
             <i class="fa" ng-class="{'fa-cog fa-spin': isBusy, 'fa-sign-in': !isBusy}"></i>&nbsp;注册</button>
     </div>
     <div class="form-group {{alertMessageVisible}} alert" ng-class="{'alert-success':isSuccess,'alert-danger':!isSuccess}">

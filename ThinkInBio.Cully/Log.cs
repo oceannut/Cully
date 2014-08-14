@@ -8,6 +8,30 @@ using ThinkInBio.CommonApp;
 namespace ThinkInBio.Cully
 {
 
+
+    /// <summary>
+    /// 工作记录的可见范围。
+    /// </summary>
+    public enum LogVisibility
+    {
+        /// <summary>
+        /// 公开的。
+        /// </summary>
+        Public = 0,
+        /// <summary>
+        /// 仅自己可见。
+        /// </summary>
+        Private = 1,
+        /// <summary>
+        /// 组内可见。
+        /// </summary>
+        Group = 2,
+        /// <summary>
+        /// 自定义。
+        /// </summary>
+        Custom = 9
+    }
+
     /// <summary>
     /// 工作记录。
     /// </summary>
@@ -60,6 +84,11 @@ namespace ThinkInBio.Cully
         /// 附件。
         /// </summary>
         public IList<string> Attachments { get; set; }
+
+        /// <summary>
+        /// 可见范围。
+        /// </summary>
+        public LogVisibility Visibility { get; set; }
 
         /// <summary>
         /// 创建人。
