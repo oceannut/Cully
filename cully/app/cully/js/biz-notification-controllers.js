@@ -3,25 +3,25 @@
 define(function (require) {
 
     require('ng');
-    require('../../../static/js/configs');
-    require('../../../static/js/filters');
     require('../../common/js/biz-notification-services');
+    require('../../auth/js/auth-models');
 
-    angular.module('bizNotification.controllers', ['configs', 'filters', 'bizNotification.services'])
-        .controller('BizNotificationCtrl', ['$scope', '$location', '$log', 'currentUser', 'UntreatedBizNotificationService', 'userCacheUtil',
-            function ($scope, $location, $log, currentUser, UntreatedBizNotificationService, userCacheUtil) {
+    angular.module('bizNotification.controllers', ['bizNotification.services'])
+        .controller('BizNotificationCtrl', ['$scope', '$log', 'currentUser', 'UntreatedBizNotificationService', 'userCache',
+            function ($scope, $log, currentUser, UntreatedBizNotificationService, userCache) {
 
                 $scope.init = function () {
                     $scope.alertMessageVisible = 'hidden';
-                    UntreatedBizNotificationService.query({ 'user': currentUser.username })
+                    UntreatedBizNotificationService.query({ 'user': currentUser.getUsername() })
                         .$promise
                             .then(function (result) {
                                 $scope.notificationList = result;
                                 $scope.$parent.$parent.notificationCount = $scope.notificationList.length;
                                 for (var i = 0; i < $scope.notificationList.length; i++) {
                                     var notification = $scope.notificationList[i];
-                                    var user = userCacheUtil.get(notification.Sender);
-                                    notification.senderName = (user == null) ? notification.Sender : user.Name;
+                                    userCache.get(notification.Sender, function (e) {
+                                        notification.senderName = (e == null) ? notification.Sender : e.Name;
+                                    });
                                 }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
@@ -31,8 +31,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('BizNotificationListCtrl', ['$scope', '$location', '$log', 'currentUser', 'userCacheUtil',
-            function ($scope, $location, $log, currentUser, userCacheUtil) {
+        .controller('BizNotificationListCtrl', ['$scope', '$location', '$log', 'currentUser',
+            function ($scope, $location, $log, currentUser) {
 
                 $scope.init = function () {
                     $scope.alertMessageVisible = 'hidden';

@@ -3,32 +3,25 @@
 define(function (require) {
 
     require('ng');
-    require('../../../static/js/configs');
-    require('../../../static/js/filters');
     require('./project-services');
-    require('../../common/js/user-services');
+    require('../../auth/js/auth-models');
+    require('../../common/js/common-cache');
 
-    angular.module('participant.controllers', ['configs', 'filters', 'project.services', 'user.services'])
-        .controller('ParticipantListCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ParticipantService',
-                    'ParticipantOfProjectService', 'dateUtil', 'userCacheUtil',
-            function ($scope, $location, $log, $routeParams, currentUser, ParticipantService,
-                     ParticipantOfProjectService, dateUtil, userCacheUtil) {
-
-                $scope.isParticipantLoading = false;
-                $scope.alertMessageVisible = 'hidden';
+    angular.module('participant.controllers', ['project.services', 'auth.models', 'common.cache'])
+        .controller('ParticipantListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ParticipantService', 'ParticipantOfProjectService', 'userCache',
+            function ($scope, $log, $routeParams, currentUser, ParticipantService, ParticipantOfProjectService, userCache) {
 
                 function render(participant) {
-                    var user = userCacheUtil.get(participant.Staff);
-                    participant.staffName = (user == null) ? participant.Staff : user.Name;
-                }
-
-                $scope.gotoback = function () {
-                    history.back();
+                    userCache.get(participant.Staff, function (e) {
+                        participant.staffName = (e == null) ? participant.Staff : e.Name;
+                    });
                 }
 
                 $scope.init = function () {
+                    $scope.projectId = $routeParams.projectId;
                     $scope.isParticipantLoading = true;
-                    ParticipantOfProjectService.query({ 'user': currentUser.username, 'projectId': $routeParams.projectId })
+                    $scope.alertMessageVisible = 'hidden';
+                    ParticipantOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': $routeParams.projectId })
                         .$promise
                             .then(function (result) {
                                 $scope.participantList = result;
@@ -42,7 +35,7 @@ define(function (require) {
                             })
                             .then(function () {
                                 $scope.users = [];
-                                userCacheUtil.list(function (result) {
+                                userCache.list(function (result) {
                                     $scope.rawUsers = result;
                                     if (result != null) {
                                         for (var i = 0; i < result.length; i++) {
@@ -61,18 +54,15 @@ define(function (require) {
                                             }
                                         }
                                     }
-                                }, function (error) {
-                                    $log.error(error);
-                                    $scope.alertMessageVisible = 'show';
-                                    $scope.alertMessage = "提示：成员列表加载失败";
-                                }, function () {
-                                    $scope.isParticipantLoading = false;
                                 });
+                            })
+                            .then(function () {
+                                $scope.isParticipantLoading = false;
                             });
                 }
 
                 $scope.addParticipant = function (user) {
-                    ParticipantService.save({ 'user': currentUser.username, 'projectId': $routeParams.projectId, 'participant': user.Username })
+                    ParticipantService.save({ 'user': currentUser.getUsername(), 'projectId': $routeParams.projectId, 'participant': user.Username })
                         .$promise
                             .then(function (result) {
                                 for (var i in $scope.users) {
@@ -91,7 +81,7 @@ define(function (require) {
                 }
 
                 $scope.removeParticipant = function (participant) {
-                    ParticipantService.remove({ 'user': currentUser.username, 'projectId': $routeParams.projectId, 'participant': participant.Staff })
+                    ParticipantService.remove({ 'user': currentUser.getUsername(), 'projectId': $routeParams.projectId, 'participant': participant.Staff })
                         .$promise
                             .then(function () {
                                 for (var i in $scope.participantList) {

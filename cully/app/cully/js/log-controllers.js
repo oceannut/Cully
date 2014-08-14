@@ -14,14 +14,15 @@ define(function (require) {
 
     angular.module('log.controllers', ['textAngular', 'filters', 'utils', 'log.services', 'auth.models', 'auth.directives', 'common.cache'])
         .value('logCache', { 'logList': [] })
-        .controller('LogSummaryCtrl', ['$scope', '$location', 'currentUser', 'dateUtil', 'stringUtil',
-            'LogListService', 'userCache', 'logCache', 'categoryCache',
-            function ($scope, $location, currentUser, dateUtil, stringUtil,
-                LogListService, userCache, logCache, categoryCache) {
+        .controller('LogSummaryCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'stringUtil',
+            'LogListService', 'userCache', 'categoryCache', 'logCache',
+            function ($scope, $location, $log, currentUser, dateUtil, stringUtil,
+                LogListService, userCache, categoryCache, logCache) {
 
                 var pageSize = 20;
 
                 $scope.init = function () {
+                    $scope.alertMessageVisible = 'hidden';
                     $scope.queryModel = {
                         'staff': '',
                         'date': ''
@@ -30,7 +31,9 @@ define(function (require) {
                     $scope.nextBtnClass = '';
                     $scope.currentPage = -1;
 
-                    $scope.users = userCache.userList;
+                    userCache.list(function (e) {
+                        $scope.users = e;
+                    });
                     $scope.query();
                 }
 
@@ -75,6 +78,7 @@ define(function (require) {
                         spanInput = dateUtil.getSpan(date);
                     }
 
+                    $scope.alertMessageVisible = 'hidden';
                     LogListService.query({ 'user': currentUser.getUsername(),
                         'date': dateInput,
                         'span': spanInput,
@@ -87,7 +91,9 @@ define(function (require) {
                             .then(function (result) {
                                 interceptLogList(result);
                             }, function (error) {
-                                console.log("error: " + error);
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：项目列表加载失败";
                             });
                 }
 
@@ -139,18 +145,18 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogAddCtrl', ['$scope', '$location', 'currentUser', 'LogService', 'dateUtil', 'categoryCache', 'CategoryHelper',
-            function ($scope, $location, currentUser, LogService, dateUtil, categoryCache, CategoryHelper) {
+        .controller('LogAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'LogService', 'dateUtil', 'categoryCache', 'CategoryHelper',
+            function ($scope, $location, $log, currentUser, LogService, dateUtil, categoryCache, CategoryHelper) {
 
                 $scope.init = function () {
-                    $scope.log = {};
-                    $scope.log.startTime = dateUtil.formatDateByYMD(new Date());
-                    categoryCache.list('log', function (result) {
-                        $scope.categoryList = result;
-                        CategoryHelper.selectCategory($scope.categoryList, 'diary', function (e) {
-                            $scope.category = e;
+                    $scope.log = { 'startTime': dateUtil.formatDateByYMD(new Date()) };
+                    categoryCache.list('log', function (e) {
+                        $scope.categoryList = e;
+                        CategoryHelper.selectCategory($scope.categoryList, 'dairy', function (ee) {
+                            $scope.category = ee;
                         });
                     });
+                    $scope.alertMessageVisible = 'hidden';
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
@@ -160,6 +166,7 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
+                    $scope.alertMessageVisible = 'hidden';
                     if ($scope.log.startTime != undefined && $scope.log.startTime != ''
                                             && $scope.log.content != undefined && $scope.log.content != '') {
                         LogService.save({ 'user': currentUser.getUsername(),
@@ -183,11 +190,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogEditCtrl', ['$scope', '$location', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'categoryCache', 'CategoryHelper',
-            function ($scope, $location, $routeParams, currentUser, dateUtil, LogService, logCache, categoryCache, CategoryHelper) {
-
-                $scope.isLoading = false;
-                $scope.alertMessageVisible = 'hidden';
+        .controller('LogEditCtrl', ['$scope', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'categoryCache', 'CategoryHelper',
+            function ($scope, $routeParams, currentUser, dateUtil, LogService, logCache, categoryCache, CategoryHelper) {
 
                 function renderLog(editLog) {
                     CategoryHelper.selectCategory($scope.categoryList, editLog.Category, function (e) {
@@ -214,8 +218,10 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    categoryCache.list('log', function (result) {
-                        $scope.categoryList = result;
+                    $scope.isLoading = false;
+                    $scope.alertMessageVisible = 'hidden';
+                    categoryCache.list('log', function (e) {
+                        $scope.categoryList = e;
 
                         var editLog = null;
                         if (logCache.logList != null) {
@@ -242,6 +248,7 @@ define(function (require) {
                     if ($scope.log.startTime != undefined && $scope.log.startTime != ''
                         && $scope.log.content != undefined && $scope.log.content != '') {
                         $scope.isLoading = true;
+                        $scope.alertMessageVisible = 'hidden';
                         LogService.update({ 'user': currentUser.getUsername(),
                             'id': $scope.log.id,
                             'date': $scope.log.startTime,
@@ -262,32 +269,31 @@ define(function (require) {
                                             }
                                         }
                                     }
-                                    $scope.isLoading = false;
                                     renderLog(result);
                                     $scope.alertMessageVisible = 'show';
                                     $scope.alertMessageColor = 'alert-success';
                                     $scope.alertMessage = "提示：修改记录成功";
                                 }, function (error) {
-                                    $scope.isLoading = false;
                                     $scope.alertMessageVisible = 'show';
                                     $scope.alertMessageColor = 'alert-danger';
                                     $scope.alertMessage = "提示：修改记录失败";
                                     $log.error(error);
+                                })
+                                .then(function () {
+                                    $scope.isLoading = false;
                                 });
                     }
                 }
 
             } ])
         .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'LogService', 'CommentService',
-                    'CommentListService', 'Update4CommentLogService', 'logCache', 'userCache',
+                    'CommentListService', 'Update4CommentLogService', 'userCache', 'logCache',
             function ($scope, $location, $routeParams, $log, currentUser, LogService, CommentService,
-                    CommentListService, Update4CommentLogService, logCache, userCache) {
-
-                $scope.alertMessageVisible = 'hidden';
+                    CommentListService, Update4CommentLogService, userCache, logCache) {
 
                 function render(comment, i) {
                     comment.index = (parseInt(i) + 1);
-                    userCacheUtil.get(comment.Creator, function (e) {
+                    userCache.get(comment.Creator, function (e) {
                         comment.creatorName = (e == null) ? comment.Creator : e.Name;
                     });
                     if (comment.Creator == currentUser.getUsername()) {
@@ -298,6 +304,7 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
+                    $scope.alertMessageVisible = 'hidden';
                     $scope.commentList = [];
                     $scope.comment = {};
                     if (logCache.logList != null) {

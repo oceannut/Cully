@@ -23,6 +23,7 @@ define(function (require) {
             function ($scope, $log, currentUser, TopProjectListService, ProjectListService, dateUtil) {
 
                 $scope.init = function () {
+                    $scope.alertMessageVisible = 'hidden';
                     $scope.queryModel = {
                         'month': '',
                         'isSoloInclude': false
@@ -39,6 +40,7 @@ define(function (require) {
                 }
 
                 $scope.query = function () {
+                    $scope.alertMessageVisible = 'hidden';
                     var startDay, span, d;
                     if ($scope.queryModel.month != '') {
                         var array = $scope.queryModel.month.split('-');

@@ -100,6 +100,14 @@ define(function (require) {
                             roles: ['supvisor']
                         }
                     })
+                    .when('/participant-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/participant-list.htm',
+                        controller: 'ParticipantListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['supvisor']
+                        }
+                    })
                     .when('/activity-add/', {
                         templateUrl: 'app/cully/partials/activity-add.htm',
                         controller: 'ActivityAddCtrl',
@@ -144,12 +152,9 @@ define(function (require) {
                         templateUrl: 'app/cully/partials/task-notification-list.htm',
                         controller: 'TaskNotificationListCtrl'
                     })
-                    .when('/participant-list/:projectId/', {
-                        templateUrl: 'app/cully/partials/participant-list.htm',
-                        controller: 'ParticipantListCtrl'
-                    })
                     .when('/log-summary/', {
                         templateUrl: 'app/cully/partials/log-summary.htm',
+                        controller: 'LogSummaryCtrl',
                         access: {
                             loginRequired: true,
                             roles: ['user', 'supvisor']

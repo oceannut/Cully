@@ -268,7 +268,7 @@ define(function (require) {
                     if ($scope.activity.Name != undefined && $scope.activity.Name != null) {
                         $scope.isLoading = true;
                         ActivityService.update({
-                            'user': currentUser.username,
+                            'user': currentUser.getUsername(),
                             'activityId': $scope.activity.Id,
                             'category': $scope.category.Code,
                             'name': $scope.activity.Name,
