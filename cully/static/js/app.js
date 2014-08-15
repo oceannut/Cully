@@ -5,6 +5,7 @@ define(function (require) {
     require('ng-route');
 
     require('../../app/auth/js/auth-controllers');
+    require('../../app/common/js/category-controllers');
     require('../../app/common/js/user-controllers');
     require('../../app/cully/js/biz-notification-controllers');
     require('../../app/cully/js/index-controllers');
@@ -17,6 +18,7 @@ define(function (require) {
 
     angular.module('Cully', ['ngRoute',
             'auth.controllers',
+            'category.controllers',
             'user.controllers',
             'bizNotification.controllers',
             'index.controllers',
@@ -53,6 +55,54 @@ define(function (require) {
                     .when('/session-out/', {
                         templateUrl: 'app/auth/partials/session-out.htm',
                         controller: 'SessionOutCtrl'
+                    })
+                    .when('/category-overview/', {
+                        templateUrl: 'app/common/partials/category-overview.htm',
+                        controller: 'CategoryOverviewCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
+                    .when('/category-list/:scope/', {
+                        templateUrl: 'app/common/partials/category-list.htm',
+                        controller: 'CategoryListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
+                    .when('/category-edit/:scope/:id/', {
+                        templateUrl: 'app/common/partials/category-edit.htm',
+                        controller: 'CategoryEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
+                    .when('/user-role-overview/:which/', {
+                        templateUrl: 'app/common/partials/user-role-overview.htm',
+                        controller: 'UserRoleOverviewCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
+                    .when('/user-role-assign/:username/', {
+                        templateUrl: 'app/common/partials/user-role-assign.htm',
+                        controller: 'UserRoleAssignCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
+                    .when('/role-user-assign/:role/', {
+                        templateUrl: 'app/common/partials/role-user-assign.htm',
+                        controller: 'RoleUserAssignCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
                     })
                     .when('/user-setting/:username/', {
                         templateUrl: 'app/common/partials/user-setting.htm',

@@ -63,38 +63,48 @@ define(function (require) {
                 function interceptActivityList(result) {
                     if (result != null && result.length > 0) {
                         $scope.activityList = [];
+                        var temp = new Date();
+                        temp.setFullYear(1970, 0, 1);
+                        var d = dateUtil.formatDateByYMD(temp);
+                        var now = new Date();
                         for (var i = 0; i < result.length; i++) {
-                            var temp = new Date();
-                            temp.setFullYear(1970, 0, 1);
-                            var d = dateUtil.formatDateByYMD(temp);
-                            for (var i = 0; i < result.length; i++) {
-                                var item = result[i];
-                                var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(item.Creation));
-                                if (d != creation) {
-                                    d = creation;
-                                    $scope.activityList.push({ 'isDate': true, 'date': d });
+                            var item = result[i];
+                            var creationDate = dateUtil.jsonToDate(item.Creation);
+                            var creation = dateUtil.formatDateByYMD(creationDate);
+                            if (d != creation) {
+                                d = creation;
+                                if (now.getFullYear() === creationDate.getFullYear()
+                                        && now.getMonth() === creationDate.getMonth()
+                                        && now.getDate() === creationDate.getDate()) {
+                                    $scope.activityList.push({ 'isDate': true, 'date': '今日（' + creationDate.getDate() + '日）', 'labelColor': 'bg-red' });
+                                } else if (now.getFullYear() === creationDate.getFullYear()
+                                        && now.getMonth() === creationDate.getMonth()
+                                        && (now.getDate() - 1) === creationDate.getDate()) {
+                                    $scope.activityList.push({ 'isDate': true, 'date': '昨日（' + creationDate.getDate() + '日）', 'labelColor': 'bg-green' });
+                                } else {
+                                    $scope.activityList.push({ 'isDate': true, 'date': d, 'labelColor': 'bg-maroon' });
                                 }
-
-                                var icon = 'fa fa-tasks';
-                                categoryCache.get('activity', item.Category, function (e) {
-                                    icon = e.Icon;
-                                });
-
-                                userCache.get(item.Creator, function (e) {
-                                    item.creatorName = (e == null) ? item.Creator : e.Name;
-                                });
-
-                                $scope.activityList.push({
-                                    'id': item.Id,
-                                    'icon': icon,
-                                    'isDate': false,
-                                    'name': item.Name,
-                                    'desc': item.Description,
-                                    'projectId': item.ProjectId,
-                                    'creator': item.creatorName,
-                                    'creation': item.Creation
-                                });
                             }
+
+                            var icon = 'fa fa-tasks';
+                            categoryCache.get('activity', item.Category, function (e) {
+                                icon = e.Icon;
+                            });
+
+                            userCache.get(item.Creator, function (e) {
+                                item.creatorName = (e == null) ? item.Creator : e.Name;
+                            });
+
+                            $scope.activityList.push({
+                                'id': item.Id,
+                                'icon': icon,
+                                'isDate': false,
+                                'name': item.Name,
+                                'desc': item.Description,
+                                'projectId': item.ProjectId,
+                                'creator': item.creatorName,
+                                'creation': item.Creation
+                            });
                         }
                         $scope.nextBtnClass = '';
                     } else {

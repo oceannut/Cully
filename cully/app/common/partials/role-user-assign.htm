@@ -1,0 +1,38 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-users"></i>&nbsp;分配用户</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/user-role-overview/role/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
+    </div>
+    <p class="lead">
+        当前角色：<mark>{{role.name}}</mark></p>
+    <form class="form-horizontal css-form" role="form" name="form">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    未分配用户</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="item in unassignUserList">{{item.Name}}&nbsp;<i class="fa fa-arrow-right"
+                            ng-click="assign(item)"></i></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    已分配用户</div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                        <li ng-repeat="item in assignUserList">{{item.Name}}&nbsp;<i class="fa fa-times"
+                            ng-click="unassign(item)"></i></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>

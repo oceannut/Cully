@@ -35,6 +35,11 @@ define(function (require) {
                         $scope.loginUser = {};
                         $scope.loginUser.username = data;
                         $scope.loginUser.name = currentUser.getName();
+                        $scope.loginUser.isAdmin = false;
+                        var roles = currentUser.getRoles();
+                        if (roles !== undefined && roles !== null && roles.indexOf('admin') > -1) {
+                            $scope.loginUser.isAdmin = true;
+                        }
                     });
                     eventbus.subscribe("userSignOut", function (e, data) {
                         $scope.makeNavbarVisible();

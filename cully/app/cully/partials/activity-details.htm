@@ -17,7 +17,11 @@
     <blockquote>
         <p>
             {{activity.Description}}</p>
-        <footer> &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{activity.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+        <footer> 
+            &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{activity.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建
+            &nbsp; <span ng-if="!activity.IsCompleted" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;活动未结束。</span>
+            &nbsp; <span ng-if="activity.IsCompleted" class="text-success"><i class="fa fa-check-square-o"></i>&nbsp;活动已结束。</span>
+        </footer>
     </blockquote>
     <div ng-include="taskListPage">
     </div>

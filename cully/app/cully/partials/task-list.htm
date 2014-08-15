@@ -62,14 +62,16 @@
                 <i class="fa fa-leaf"></i>&nbsp;
                 <input type="checkbox" title="标记为是否正在进行" ng-model="item.IsUnderway" ng-change="markIsUnderway(item)"
                     style="display: {{item.changeIsUnderwayButtonVisible}};" />
-                <a href="#/task-details/{{item.Id}}/">{{item.Content}}&nbsp;&nbsp;<i ng-if="item.CommentCount>0">(有{{item.CommentCount}}个评论)</i></a>&nbsp;
+                <a href="#/task-details/{{item.Id}}/">{{item.Content}}&nbsp;&nbsp;<span ng-if="item.CommentCount>0">(有{{item.CommentCount}}条评论)</span></a>&nbsp;
                 <button type="button" class="btn btn-xs {{item.isTimeAssigned}}" ng-click="editTask(item)"
-                    ng-disabled="item.editButtonDisabled">
+                    ng-disabled="item.editButtonDisabled" data-toggle="tooltip" data-placement="bottom"
+                    title="点击重新指派">
                     <i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>
                     {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}
                 </button>
                 <button type="button" class="btn btn-xs {{item.isOverdueColor}}" ng-click="completeTask(item)"
-                    ng-disabled="item.completeButtonDisabled">
+                    ng-disabled="item.completeButtonDisabled" data-toggle="tooltip" data-placement="bottom"
+                    title="点击完成任务">
                     <i class="fa fa-check-square-o"></i>&nbsp;{{item.completeButtonContent}}
                 </button>
             </p>
@@ -77,24 +79,23 @@
     </ol>
     <br />
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-12">
             <ul class="timeline">
-                <li><span class="bg-orange time-label">已完成的任务</span>
-                    <br />
+                <li><span class="bg-navy time-label">已完成的任务</span>
                     <br />
                 </li>
                 <li ng-repeat="item in completedTaskList" ng-switch="item.isLabel"><span ng-switch-when="true"
-                    class="bg-light-blue time-label">{{item.label}}</span> <i ng-switch-when="false"
-                        class="fa fa-leaf bg-blue"></i>
+                    class="bg-maroon time-label">{{item.label}}</span> <i ng-switch-when="false" class="fa fa-leaf bg-blue">
+                    </i>
                     <div ng-switch-when="false" class="timeline-item">
-                        <span class="time"><i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.AppointedDay
-                            | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                        <span class="time"><i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;</span>
                         <div class="timeline-body">
-                            <a ng-click="gotoTask(item)">{{item.Content}}</a>
+                            <a href="#/task-details/{{item.Id}}/">{{item.Content}}</a>
                         </div>
-                        <div class='timeline-footer'>
-                            <a class="btn btn-xs btn-default" style="display: {{resumeButtonVisible}};" ng-click="resumeTask(item)">
-                                <i class="fa fa-play"></i>&nbsp;重启任务</a>
+                        <div class='timeline-footer' style="display: {{resumeButtonVisible}};">
+                            <span ng-show="item.CommentCount>0">有{{item.CommentCount}}条评论&nbsp;&nbsp;</span>
+                            <a class="btn btn-xs btn-default" ng-click="resumeTask(item)"><i class="fa fa-play">
+                            </i>&nbsp;重启任务</a>
                         </div>
                     </div>
                 </li>

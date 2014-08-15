@@ -16,7 +16,7 @@
     <blockquote>
         <p>
             {{project.Description}}</p>
-        <footer> &nbsp; <a>{{project.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+        <footer> &nbsp; <a>{{project.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建</footer>
     </blockquote>
     <div class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
@@ -27,7 +27,7 @@
             <i class="fa fa-plus"></i><a href="javascript:void(0)" class="navbar-link" ng-click="toggleAddActivityPanelVisibible()">
                 添加活动</a></div>
     </div>
-    <div style="display: {{addActivityPanelDisplay}};">
+    <div class="well well-sm" style="display: {{addActivityPanelDisplay}};">
         <form class="form-horizontal css-form" role="form" name="form">
         <div class="form-group">
             <label class="col-sm-1 control-label" style="margin-top: 24px;">
@@ -79,7 +79,11 @@
             <blockquote>
                 <p>
                     {{activity.Description}}</p>
-                <footer> &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;创建</footer>
+                <footer> 
+                    &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建
+                    &nbsp; <span ng-if="!activity.IsCompleted" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;活动未结束。</span>
+                    &nbsp; <span ng-if="activity.IsCompleted" class="text-success"><i class="fa fa-check-square-o"></i>&nbsp;活动已结束。</span>
+                </footer>
             </blockquote>
             <div ng-include="'app/cully/partials/task-list.htm'">
             </div>

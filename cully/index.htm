@@ -30,10 +30,20 @@
                                         ng-click="changeUrl(item)">{{item.name}}</a></li>
                                 </ul>
                                 <ul class="nav navbar-nav navbar-right">
-                                    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{{loginUser.name}}&nbsp;<span
-                                        class="caret"></span></a>
+                                    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <img class="media-object pull-left" data-src="holder.js/32x32" src="static/img/duke.png"
+                                            style="margin: -6px 0 6px 0; width: 32px; height: 32px; border: 0px" alt="{{loginUser.name}}"
+                                            title="{{loginUser.name}}">&nbsp; {{loginUser.name}}&nbsp;<span class="caret"></span></a>
                                         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                             <li><a href="#/user-setting/{{loginUser.username}}/">个人设置</a></li>
+                                            <li class="divider"></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown" ng-show="loginUser.isAdmin"><a class="dropdown-toggle" data-toggle="dropdown"
+                                        href="#"><i class="fa fa-gear"></i>&nbsp;系统管理&nbsp;<span class="caret"></span></a>
+                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                            <li><a href="#/category-overview/">分类</a></li>
+                                            <li><a href="#/user-role-overview/user/">用户/角色</a></li>
                                             <li class="divider"></li>
                                         </ul>
                                     </li>

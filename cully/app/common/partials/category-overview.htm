@@ -1,0 +1,14 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;信息分类</span>
+    </div>
+    <div class="container">
+        <div class="row">
+            <dl class="col-sm-3" ng-repeat="catalog in scopeCatalog">
+                <dt>{{catalog.name}}</dt>
+                <dd ng-repeat="scope in catalog.scopes">
+                    <a href="#/category-list/{{scope.code}}/">{{scope.name}}</a></dd>
+            </dl>
+        </div>
+    </div>
+</div>

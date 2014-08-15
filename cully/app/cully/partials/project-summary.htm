@@ -36,24 +36,20 @@
             </div>
             <br />
             <ul class="timeline">
-                <li><span class="bg-orange time-label">活动时间轴</span>
-                    <br />
-                    <br />
-                </li>
                 <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
-                    class="bg-light-blue time-label">{{item.date}}</span> <i ng-switch-when="false" class="{{item.icon}} bg-blue">
-                    </i>
+                    class="{{item.labelColor}} time-label">{{item.date}}</span> <i ng-switch-when="false"
+                        class="{{item.icon}} bg-blue"></i>
                     <div ng-switch-when="false" class="timeline-item">
                         <span class="time"><i class="fa fa-user"></i>&nbsp;{{item.creator}}&nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.creation
-                            | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                            | jsonDateFormat | date:'HH:mm:ss'}}</span>
                         <h3 class="timeline-header">
                             <a href="#/activity-details/{{item.id}}/">{{item.name}}</a></h3>
                         <div class="timeline-body">
                             {{item.desc}}
                         </div>
                         <div class='timeline-footer'>
-                            <a class="btn btn-primary btn-xs" href="#/activity-details/{{item.id}}/">详细信息</a>
-                            <a class="btn btn-danger btn-xs" href="#/project-details/{{item.projectId}}/">所属项目</a>
+                            <a class="btn btn-default btn-xs" href="#/activity-details/{{item.id}}/">详细信息</a>
+                            <a class="btn btn-default btn-xs" href="#/project-details/{{item.projectId}}/">所属项目</a>
                         </div>
                     </div>
                 </li>

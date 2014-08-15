@@ -76,6 +76,11 @@ namespace ThinkInBio.Cully
         public DateTime? AppointedDay { get; set; }
 
         /// <summary>
+        /// 任务实际完成时间。
+        /// </summary>
+        public DateTime? Completion { get; set; }
+
+        /// <summary>
         /// 评论次数。
         /// </summary>
         public int CommentCount { get; set; }
@@ -90,11 +95,17 @@ namespace ThinkInBio.Cully
         /// </summary>
         public DateTime Modification { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long TargetId
         {
             get { return this.Id; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public CommentTarget Target
         {
             get { return CommentTarget.Task; }
@@ -136,7 +147,7 @@ namespace ThinkInBio.Cully
         /// <param name="modification"></param>
         public Task(long id, string content, long activityId,
             bool isUnderway, bool isCompleted, string staff,
-            DateTime? appointedDay, int commentCount,
+            DateTime? appointedDay, DateTime? completion, int commentCount,
             DateTime creation, DateTime modification)
         {
             if (id == 0
@@ -156,6 +167,7 @@ namespace ThinkInBio.Cully
             this.IsCompleted = isCompleted;
             this.Staff = staff;
             this.AppointedDay = appointedDay;
+            this.Completion = completion;
             this.CommentCount = commentCount;
             this.Creation = creation;
             this.Modification = modification;
@@ -316,6 +328,7 @@ namespace ThinkInBio.Cully
                 throw new ArgumentException("activity");
             }
             this.IsCompleted = true;
+            this.Completion = DateTime.Now;
             if (this.IsUnderway)
             {
                 this.IsUnderway = false;
@@ -395,6 +408,7 @@ namespace ThinkInBio.Cully
                 throw new ArgumentException("activity");
             }
             this.IsCompleted = false;
+            this.Completion = null;
             if (this.IsUnderway)
             {
                 this.IsUnderway = false;

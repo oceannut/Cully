@@ -55,12 +55,13 @@ define(function (require) {
 
                 function renderTask(task) {
                     var parentScope = $scope.$parent.$parent;
-                    if (currentUser.username == parentScope.activity.Creator) {
+                    var currentUsername = currentUser.getUsername();
+                    if (currentUsername === parentScope.activity.Creator) {
                         task.editButtonDisabled = false;
                     } else {
                         task.editButtonDisabled = true;
                     }
-                    if (currentUser.username == task.Staff) {
+                    if (currentUsername === task.Staff) {
                         task.changeIsUnderwayButtonVisible = '';
                         task.completeButtonDisabled = false;
                     } else {
@@ -110,10 +111,15 @@ define(function (require) {
                     var d = dateUtil.formatDateByYMD(temp);
                     for (var i = 0; i < rawList.length; i++) {
                         var task = rawList[i];
-                        var creation = dateUtil.formatDateByYMD(dateUtil.jsonToDate(task.Creation));
+                        var timeStamp;
+                        if (task.IsCompleted) {
+                            timeStamp = dateUtil.formatDateByYMD(dateUtil.jsonToDate(task.Completion));
+                        } else {
+                            timeStamp = dateUtil.formatDateByYMD(dateUtil.jsonToDate(task.Creation));
+                        }
                         var addLabel = false;
-                        if (d != creation) {
-                            d = creation;
+                        if (d != timeStamp) {
+                            d = timeStamp;
                             addLabel = true;
                         }
                         task.isLabel = false;
@@ -480,6 +486,17 @@ define(function (require) {
                                 userCache.get($scope.task.Staff, function (e) {
                                     $scope.task.staffName = (e == null) ? $scope.task.Staff : e.Name;
                                 });
+                                $scope.task.isOverdue = false;
+                                if (!$scope.task.IsCompleted && $scope.task.AppointedDay !== null) {
+                                    var d = new Date();
+                                    var appointedDay = dateUtil.jsonToDate($scope.task.AppointedDay);
+                                    appointedDay.setHours(23);
+                                    appointedDay.setMinutes(59);
+                                    appointedDay.setSeconds(59);
+                                    if (d > appointedDay) {
+                                        $scope.task.isOverdue = true;
+                                    }
+                                }
                             }, function (error) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';
@@ -636,7 +653,7 @@ define(function (require) {
                     userCache.get(notification.Sender, function (e) {
                         notification.senderName = (e == null) ? notification.Sender : e.Name;
                     });
-                    userCacheUtil.get(notification.Receiver, function (e) {
+                    userCache.get(notification.Receiver, function (e) {
                         notification.receiverName = (e == null) ? notification.Receiver : e.Name;
                     });
                     $scope.notificationList.push(notification);
@@ -647,7 +664,7 @@ define(function (require) {
                         notification.isUntreated = false;
                         notification.isUntreatedStatus = 'normal';
                     }
-                    if (currentUser.username == notification.Receiver && notification.isUntreated) {
+                    if (currentUser.getUsername() == notification.Receiver && notification.isUntreated) {
                         notification.checkButtonVisible = '';
                     } else {
                         notification.checkButtonVisible = 'none';
