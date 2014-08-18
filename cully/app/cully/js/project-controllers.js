@@ -65,14 +65,17 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'userCache', 'listUtil',
-            function ($scope, $location, $log, currentUser, ProjectService, userCache, listUtil) {
+        .controller('ProjectAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ProjectService', 'userCache', 'categoryCache', 'listUtil', 'CategoryHelper',
+            function ($scope, $location, $log, currentUser, ProjectService, userCache, categoryCache, listUtil, CategoryHelper) {
+
+                var defaultCategory = null;
 
                 $scope.init = function () {
 
                     $scope.project = {};
                     $scope.users = [];
                     $scope.participants = [];
+                    $scope.createSameNameActivity = false;
                     $scope.isLoading = false;
                     $scope.alertMessageVisible = 'hidden';
 
@@ -81,7 +84,11 @@ define(function (require) {
                             return (e.Username !== currentUser.getUsername() & e.Roles.indexOf('user') > -1);
                         });
                     });
-
+                    categoryCache.list('activity', function (result) {
+                        CategoryHelper.selectCategory(result, 'normal', function (e) {
+                            defaultCategory = e;
+                        });
+                    });
                 }
 
                 $scope.addParticipant = function (user) {
@@ -108,11 +115,18 @@ define(function (require) {
                         }
                         $scope.alertMessageVisible = 'hidden';
                         $scope.isLoading = true;
+
+                        var category = null;
+                        if ($scope.createSameNameActivity) {
+                            category = defaultCategory.Code;
+                        }
                         ProjectService.save({
                             'user': currentUser.getUsername(),
                             'name': $scope.project.name,
                             'description': $scope.project.description,
-                            'participants': usernameArray
+                            'participants': usernameArray,
+                            'createSameNameActivity': $scope.createSameNameActivity,
+                            'category': category
                         })
                         .$promise
                             .then(function (result) {

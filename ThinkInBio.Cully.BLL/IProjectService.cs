@@ -23,6 +23,16 @@ namespace ThinkInBio.Cully.BLL
             ICollection<Participant> participants);
 
         /// <summary>
+        /// 保存项目。
+        /// </summary>
+        /// <param name="project">项目。</param>
+        /// <param name="participants">参与人。</param>
+        /// <param name="firstActivity">项目的第一个活动。</param>
+        void SaveProject(Project project,
+            ICollection<Participant> participants,
+            Activity firstActivity);
+
+        /// <summary>
         /// 更新项目。
         /// </summary>
         /// <param name="project"></param>

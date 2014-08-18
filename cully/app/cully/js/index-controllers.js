@@ -5,11 +5,12 @@ define(function (require) {
     require('ng');
     require('../../../static/js/configs');
     require('../../../static/js/events');
+    require('../../common/js/biz-notification-services');
     require('../../auth/js/auth-models');
 
-    angular.module('index.controllers', ['configs', 'events', 'auth.models'])
-        .controller('IndexCtrl', ['$scope', '$location', 'currentUser', 'eventbus', 'appName',
-            function ($scope, $location, currentUser, eventbus, appName) {
+    angular.module('index.controllers', ['configs', 'events', 'auth.models', 'bizNotification.services'])
+        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName', 'UntreatedBizNotificationListService',
+            function ($scope, $location, $log, $interval, currentUser, eventbus, appName, UntreatedBizNotificationListService) {
 
                 var homeNav = {
                     "name": "首页",
@@ -27,7 +28,18 @@ define(function (require) {
                     "active": ""
                 };
 
+                function loadUntreatedNotificationCount() {
+                    UntreatedBizNotificationListService.count(currentUser.getUsername())
+                                .then(function (response) {
+                                    $scope.untreatedNotificationCount = response.data;
+                                }, function (response) {
+                                    $log.error(response);
+                                });
+                }
+
                 $scope.init = function () {
+
+                    var untreatedBizNotificationCountTimer; //刷新通知个数的时间定义。
 
                     //订阅事件。
                     eventbus.subscribe("userSignIn", function (e, data) {
@@ -40,10 +52,21 @@ define(function (require) {
                         if (roles !== undefined && roles !== null && roles.indexOf('admin') > -1) {
                             $scope.loginUser.isAdmin = true;
                         }
+
+                        loadUntreatedNotificationCount();
+                        untreatedBizNotificationCountTimer = $interval(function () {
+                            loadUntreatedNotificationCount();
+                        }, 60000);
+
                     });
                     eventbus.subscribe("userSignOut", function (e, data) {
                         $scope.makeNavbarVisible();
                         $scope.loginUser = undefined;
+
+                        if (untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {
+                            $interval.cancel(untreatedBizNotificationCountTimer);
+                        }
+
                     });
                     eventbus.subscribe("userModified", function (e, data) {
                         $scope.loginUser.name = currentUser.getName();
@@ -53,6 +76,12 @@ define(function (require) {
                     $scope.appName = appName;
                     $scope.makeNavbarVisible();
                     $scope.navList = [homeNav, categoryNav, userRoleNav];
+
+                    $scope.$on("$destroy", function (event) {
+                        if (untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {
+                            $interval.cancel(untreatedBizNotificationCountTimer);
+                        }
+                    });
 
                 }
 

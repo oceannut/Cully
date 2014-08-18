@@ -46,8 +46,8 @@
             </ul>
         </p>
         <p class="text-right">
-            {{log.creatorName}}&nbsp;发表于&nbsp;{{log.Creation | jsonDateFormat | date:'yyyy-MM-dd
-            HH:mm:ss'}}</p>
+            {{log.creatorName}}&nbsp;发表于&nbsp;{{log.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}
+        </p>
         <p ng-bind-html="log.Content" style="clear: both; margin-top: 16px;">
         </p>
     </div>
@@ -68,7 +68,8 @@
                     <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
                         data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
                         </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
-                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑</a></p>
+                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;|&nbsp;&nbsp;</a><a
+                                ng-click="replyComment(item)"> <i class="fa fa-reply"></i>&nbsp;回复</a></p>
             </li>
         </ol>
     </div>

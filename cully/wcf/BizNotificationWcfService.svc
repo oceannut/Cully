@@ -1,1 +1,1 @@
-﻿<%@ ServiceHost Factory="ThinkInBio.Spring.ServiceModel.SecureWebServiceHostFactory,ThinkInBio.Spring" Service="BizNotificationWcfService" %>
+﻿<%@ ServiceHost Factory="Spring.ServiceModel.Activation.WebServiceHostFactory" Service="BizNotificationWcfService" %>

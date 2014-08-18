@@ -19,6 +19,13 @@ namespace ThinkInBio.Cully.BLL.Impl
         public void SaveProject(Project project,
             ICollection<Participant> participants)
         {
+            SaveProject(project, participants, null);
+        }
+
+        public void SaveProject(Project project,
+            ICollection<Participant> participants,
+            Activity firstActivity)
+        {
             if (project == null)
             {
                 throw new ArgumentNullException();
@@ -28,6 +35,10 @@ namespace ThinkInBio.Cully.BLL.Impl
             if (participants != null && participants.Count > 0)
             {
                 ParticipantDao.Save(participants);
+            }
+            if (firstActivity != null)
+            {
+                ActivityDao.Save(firstActivity);
             }
         }
 

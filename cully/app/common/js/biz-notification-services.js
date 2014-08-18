@@ -11,9 +11,19 @@ define(function (require) {
         .factory('UntreatedBizNotificationService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
             function ($resource, wcfApp, bizNotificationWcfService) {
                 return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/inbox/:user/untreated/:notificationId/', {}, {
-                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} },
-                    query: { method: 'GET', params: { 'user': '@user', 'notificationId': 'all' }, isArray: true }
+                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} }
                 });
+            } ])
+        .factory('UntreatedBizNotificationListService', ['$http', 'wcfApp', 'bizNotificationWcfService',
+            function ($http, wcfApp, bizNotificationWcfService) {
+                return {
+                    list: function (username) {
+                        return $http({ method: 'GET', url: wcfApp + bizNotificationWcfService + '/notification/biz/inbox/' + username + '/untreated/list/' });
+                    },
+                    count: function (username) {
+                        return $http({ method: 'GET', url: wcfApp + bizNotificationWcfService + '/notification/biz/inbox/' + username + '/untreated/count/' });
+                    }
+                }
             } ])
         .factory('BizNotificationService4Resource', ['$resource', 'wcfApp', 'bizNotificationWcfService',
             function ($resource, wcfApp, bizNotificationWcfService) {

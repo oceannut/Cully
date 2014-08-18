@@ -19,7 +19,7 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal IProjectService ProjectService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
-        public Project SaveProject(string user, string name, string description, string[] participants)
+        public Project SaveProject(string user, string name, string description, string[] participants, string createSameNameActivity, string category)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -33,18 +33,44 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
             }
-
-            Project project = new Project();
-            project.Name = name;
-            project.Description = description;
-            project.Creator = user;
+            bool createSameNameActivityBool = false;
             try
             {
-                project.Save(participants,
-                    (e1, e2) =>
-                    {
-                        ProjectService.SaveProject(e1, e2);
-                    });
+                createSameNameActivityBool = Convert.ToBoolean(createSameNameActivity);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("createSameNameActivity", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                Project project = new Project();
+                project.Name = name;
+                project.Description = description;
+                project.Creator = user;
+                if (createSameNameActivityBool)
+                {
+                    Activity activity = new Activity();
+                    activity.Category = category;
+                    activity.Name = name;
+                    activity.Description = description;
+                    activity.Creator = user;
+                    project.Save(participants, activity,
+                        (e1, e2, e3) =>
+                        {
+                            ProjectService.SaveProject(e1, e2, e3);
+                        });
+                }
+                else
+                {
+                    project.Save(participants,
+                        (e1, e2) =>
+                        {
+                            ProjectService.SaveProject(e1, e2);
+                        });
+                }
+
                 return project;
             }
             catch (BusinessLayerException ex)

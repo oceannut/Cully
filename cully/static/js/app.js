@@ -234,9 +234,16 @@ define(function (require) {
                             roles: ['user']
                         }
                     })
-                    .when('/notification-list/', {
+                    .when('/notification-list/:box/', {
                         templateUrl: 'app/cully/partials/notification-list.htm',
                         controller: 'BizNotificationListCtrl'
+                    })
+                    .when('/untreated-notification/', {
+                        templateUrl: 'app/cully/partials/untreated-notification.htm',
+                        controller: 'UntreatedBizNotificationCtrl',
+                        access: {
+                            loginRequired: true
+                        }
                     })
                     .otherwise({
                         redirectTo: '/sign-in/'

@@ -30,7 +30,8 @@
         <div class="col-sm-4">
             <div class="input-group">
                 <span class="input-group-addon">
-                    <input type="checkbox" ng-model="allParticipantChecked" ng-change="checkOrNotAllParticipant()">全部人员 </span>
+                    <input type="checkbox" ng-model="allParticipantChecked" ng-change="checkOrNotAllParticipant()">全部人员
+                </span>
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                         ng-disabled="isParticipantLoading">
@@ -52,13 +53,19 @@
             </ul>
         </div>
     </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="createSameNameActivity">
+            新建同名的活动
+        </label>
+    </div>
+    <br />
     <div class="form-group">
         <div class="col-sm-6">
             <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
                 ng-switch="isLoading">
                 <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建项目</span></button>
-            <a class="btn btn-default" href="#/project-summary/" role="button">
-                取消</a>
+            <a class="btn btn-default" href="#/project-summary/" role="button">取消</a>
         </div>
     </div>
     <div class="alert alert-danger {{alertMessageVisible}}">

@@ -30,12 +30,20 @@
                                         ng-click="changeUrl(item)">{{item.name}}</a></li>
                                 </ul>
                                 <ul class="nav navbar-nav navbar-right">
+                                    <li><a href="#/untreated-notification/"><span class="fa-stack" style="margin: -8px 0 0 0;
+                                        width: 25px; height: 25px;"><i class="fa fa-bell-o fa-stack-2x"></i><i class="fa fa-bolt fa-stack-1x"
+                                            ng-class="{true:'text-red',false:''}[untreatedNotificationCount>0]"></i></span>
+                                        &nbsp;通知<span ng-if="untreatedNotificationCount>0" class="text-red">({{untreatedNotificationCount}})</span></a>
+                                    </li>
                                     <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                         <img class="media-object pull-left" data-src="holder.js/32x32" src="static/img/duke.png"
                                             style="margin: -6px 0 6px 0; width: 32px; height: 32px; border: 0px" alt="{{loginUser.name}}"
                                             title="{{loginUser.name}}">&nbsp; {{loginUser.name}}&nbsp;<span class="caret"></span></a>
                                         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                             <li><a href="#/user-setting/{{loginUser.username}}/">个人设置</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="#/notification-list/inbox/">收件箱</a></li>
+                                            <li><a href="#/notification-list/outbox/">已发送通知</a></li>
                                             <li class="divider"></li>
                                         </ul>
                                     </li>

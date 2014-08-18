@@ -106,7 +106,7 @@ namespace ThinkInBio.Cully
         /// <param name="participants">参与人。</param>
         /// <param name="action">保存操作定义。</param>
         /// <returns>返回保存完毕的参与人信息。</returns>
-        public IList<Participant> Save(ICollection<string> participants, 
+        public IList<Participant> Save(ICollection<string> participants,
             Action<Project, ICollection<Participant>> action)
         {
             if (!IsRequireFieldSatisfied())
@@ -114,27 +114,8 @@ namespace ThinkInBio.Cully
                 throw new InvalidOperationException();
             }
 
-            List<string> templist = new List<string>();
-            if (participants != null && participants.Count > 0)
-            {
-                //过滤掉可能重复的参与人项。
-                templist.AddRange(participants.Distinct<string>());
-            }
-            if (!templist.Contains(this.Creator))
-            {
-                //项目的创建人缺省即为项目的参与人。
-                templist.Add(this.Creator);
-            }
-
             DateTime timeStamp = DateTime.Now;
-            List<Participant> participantList = new List<Participant>();
-            foreach (string item in templist)
-            {
-                Participant participant = new Participant(this);
-                participant.Staff = item;
-                participant.Creation = timeStamp;
-                participantList.Add(participant);
-            }
+            List<Participant> participantList = BuildParticipants(timeStamp, participants);
 
             this.Creation = timeStamp;
             this.Modification = timeStamp;
@@ -142,6 +123,39 @@ namespace ThinkInBio.Cully
             if (action != null)
             {
                 action(this, participantList);
+            }
+
+            return participantList;
+        }
+
+        public IList<Participant> Save(ICollection<string> participants, Activity firstActivity,
+            Action<Project, ICollection<Participant>, Activity> action)
+        {
+            if (!IsRequireFieldSatisfied())
+            {
+                throw new InvalidOperationException();
+            }
+
+            DateTime timeStamp = DateTime.Now;
+            List<Participant> participantList = BuildParticipants(timeStamp, participants);
+
+
+            if (firstActivity != null)
+            {
+                this.IdChanged += (e) =>
+                {
+                    firstActivity.ProjectId = e;
+                };
+                firstActivity.Creation = timeStamp;
+                firstActivity.Modification = timeStamp;
+            }
+
+            this.Creation = timeStamp;
+            this.Modification = timeStamp;
+
+            if (action != null)
+            {
+                action(this, participantList, firstActivity);
             }
 
             return participantList;
@@ -186,7 +200,7 @@ namespace ThinkInBio.Cully
         /// <param name="participantFactory">获取本项目成员列表的操作定义。</param>
         /// <param name="action">添加成员操作定义。</param>
         /// <returns>返回项目添加的成员信息。</returns>
-        public Participant AddParticipant(string participant, 
+        public Participant AddParticipant(string participant,
             Func<long, IEnumerable<Participant>> participantFactory,
             Action<Participant> action)
         {
@@ -295,8 +309,34 @@ namespace ThinkInBio.Cully
 
         private bool IsRequireFieldSatisfied()
         {
-            return !string.IsNullOrWhiteSpace(this.Name) 
+            return !string.IsNullOrWhiteSpace(this.Name)
                 && !string.IsNullOrWhiteSpace(this.Creator);
+        }
+
+        private List<Participant> BuildParticipants(DateTime timeStamp, ICollection<string> participants)
+        {
+            List<string> templist = new List<string>();
+            if (participants != null && participants.Count > 0)
+            {
+                //过滤掉可能重复的参与人项。
+                templist.AddRange(participants.Distinct<string>());
+            }
+            if (!templist.Contains(this.Creator))
+            {
+                //项目的创建人缺省即为项目的参与人。
+                templist.Add(this.Creator);
+            }
+
+            List<Participant> participantList = new List<Participant>();
+            foreach (string item in templist)
+            {
+                Participant participant = new Participant(this);
+                participant.Staff = item;
+                participant.Creation = timeStamp;
+                participantList.Add(participant);
+            }
+
+            return participantList;
         }
 
         #endregion

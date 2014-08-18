@@ -8,8 +8,7 @@
     <div class="alert alert-danger {{alertMessageVisible}}">
         {{alertMessage}}</div>
     <ol class="list-unstyled">
-        <li ng-repeat="item in notificationList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
-            ng-switch="item.isLabel">
+        <li ng-repeat="item in notificationList" class="biz-list-item" ng-switch="item.isLabel">
             <p ng-switch-when="true">
                 <span class="text-green"><i class="fa fa-lemon-o"></i>&nbsp;{{item.label}}</span></p>
             <p ng-switch-when="false" style="font-weight: {{item.isUntreatedStatus}};">

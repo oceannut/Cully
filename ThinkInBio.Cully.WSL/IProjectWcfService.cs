@@ -24,6 +24,7 @@ namespace ThinkInBio.Cully.WSL
         /// <param name="name">项目名称。</param>
         /// <param name="description">项目描述。</param>
         /// <param name="participants">参与人集合。</param>
+        /// <param name="createSameNameActivity">指示是否创建同名的活动。</param>
         /// <returns>返回创建完成的项目信息。</returns>
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -31,7 +32,7 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/project/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Project SaveProject(string user, string name, string description, string[] participants);
+        Project SaveProject(string user, string name, string description, string[] participants, string createSameNameActivity, string category);
 
         /// <summary>
         /// 
