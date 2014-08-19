@@ -7,6 +7,7 @@ define(function (require) {
     require('../../app/auth/js/auth-controllers');
     require('../../app/common/js/category-controllers');
     require('../../app/common/js/user-controllers');
+    require('../../app/common/js/notice-controllers');
     require('../../app/cully/js/biz-notification-controllers');
     require('../../app/cully/js/index-controllers');
     require('../../app/cully/js/home-controllers');
@@ -20,6 +21,7 @@ define(function (require) {
             'auth.controllers',
             'category.controllers',
             'user.controllers',
+            'notice.controllers',
             'bizNotification.controllers',
             'index.controllers',
             'home.controllers',
@@ -107,6 +109,29 @@ define(function (require) {
                     .when('/user-setting/:username/', {
                         templateUrl: 'app/common/partials/user-setting.htm',
                         controller: 'UserSettingCtrl',
+                        access: {
+                            loginRequired: true
+                        }
+                    })
+                    .when('/notice-list/', {
+                        templateUrl: 'app/common/partials/notice-list.htm',
+                        controller: 'NoticeListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin', 'supvisor']
+                        }
+                    })
+                    .when('/notice-edit/:id/', {
+                        templateUrl: 'app/common/partials/notice-edit.htm',
+                        controller: 'NoticeEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin', 'supvisor']
+                        }
+                    })
+                    .when('/notice-details/:id/', {
+                        templateUrl: 'app/common/partials/notice-details.htm',
+                        controller: 'NoticeDetailsCtrl',
                         access: {
                             loginRequired: true
                         }

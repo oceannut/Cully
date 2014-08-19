@@ -31,5 +31,10 @@
     <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
   </object>
 
+  <object id="NoticeWcfService" type="ThinkInBio.CommonApp.WSL.Impl.NoticeWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="NoticeService" ref="NoticeService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
 </objects>
 

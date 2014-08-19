@@ -1,0 +1,16 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bullhorn"></i>&nbsp;{{notice.Title}}</span>
+        <ul class="list-inline pull-right">
+            <!--<li><a href="#/notice-list/"><i class="fa fa-level-up"></i>&nbsp;返回列表</a></li>-->
+        </ul>
+    </div>
+    <form class="form-horizontal css-form" role="form">
+    <div class="container">
+        <p>
+            {{notice.Content}}</p>
+        <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
+            {{alertMessage}}</div>
+    </div>
+    </form>
+</div>

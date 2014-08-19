@@ -12,6 +12,10 @@
   <object id="BizNotificationDao" type="ThinkInBio.CommonApp.MySQL.BizNotificationDao, ThinkInBio.CommonApp.MySQL">
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
+
+  <object id="NoticeDao" type="ThinkInBio.CommonApp.MySQL.NoticeDao, ThinkInBio.CommonApp.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
   
 </objects>
 

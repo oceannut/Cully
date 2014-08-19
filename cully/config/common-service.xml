@@ -30,6 +30,14 @@
   <object id="BizNotificationService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="BizNotificationServiceTarget"/>
   </object>
+
+  <object id="NoticeServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.NoticeService, ThinkInBio.CommonApp.BLL">
+    <property name="NoticeDao" ref="NoticeDao" />
+    <property name="BizNotificationDao" ref="BizNotificationDao" />
+  </object>
+  <object id="NoticeService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="NoticeServiceTarget"/>
+  </object>
   
 </objects>
 

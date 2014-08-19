@@ -1,0 +1,15 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bullhorn"></i>&nbsp;公告管理</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/notice-edit/0/"><i class="fa fa-plus"></i>&nbsp;添加公告</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="item in noticeList"><a href="#/notice-edit/{{item.Id}}/">
+            {{item.Title}}</a> <span class="pull-right">{{item.Modification | jsonDateFormat
+                | date:'yyyy-MM-dd'}}</span> </li>
+    </ul>
+</div>

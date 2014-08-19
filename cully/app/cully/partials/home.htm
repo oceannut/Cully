@@ -1,4 +1,148 @@
 ﻿<div class="story container" ng-init="init()">
-    <h3>
-        欢迎您！</h3>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+            <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="item active">
+                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                    alt="团队协作">
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h1>
+                            团队协作</h1>
+                        <blockquote class="text-left">
+                            团队协作是一种为达到既定目标所显现出来的资源共享和协同合作的精神。<footer>&nbsp;&nbsp;百度百科释义</footer></blockquote>
+                        <p class="text-justify">
+                            Cully是一款专为企业团队协作而打造的软件系统，它从分工、合作、监督三方面要求设计，为团队成员间有效的合作、协调、沟通提供强大的计算机辅助支持。</p>
+                        <p>
+                            <a class="btn btn-sm btn-primary" href="http://getbootstrap.com/" role="button">了解更多...</a></p>
+                        <br />
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                    alt="活动/项目">
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h1>
+                            活动/项目</h1>
+                        <p class="text-justify">
+                            活动是团队为完成共同目的而从事的一系列的动作总和，项目则由1个或多个活动组成。任务是构成活动的基本单元，它包括内容、人员指派、时间期限、评论反馈等。</p>
+                        <p>
+                            <a class="btn btn-sm btn-primary" href="http://getbootstrap.com/" role="button">了解更多...</a></p>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                    alt="工作记录">
+                <div class="container">
+                    <div class="carousel-caption">
+                        <h1>
+                            工作记录</h1>
+                        <p class="text-justify">
+                            类似于网络的博客，记录团队成员的日常工作，例如周/月/年报、实验/生产报告、会议记录、出差纪要等。</p>
+                        <p>
+                            <a class="btn btn-sm btn-primary" href="http://getbootstrap.com/" role="button">了解更多...</a></p>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span></a><a class="right carousel-control"
+                href="#myCarousel" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right">
+                </span></a>
+    </div>
+    <div class="container" style="padding: 0 16px; margin: 0 -24px;">
+        <div class="row">
+            <div class="col-lg-4" style="padding-right: 16px;">
+                <h4 class="text-red">
+                    <a class="pull-right" href="#"><i class="fa fa-ellipsis-h"></i>&nbsp;</a><i class="fa fa-bullhorn"></i>&nbsp;
+                    系统公告</h4>
+                <ul class="list-unstyled text-left">
+                    <li ng-repeat="item in noticeList" class="biz-list-item"><i class="fa fa-angle-double-right">
+                    </i>&nbsp;&nbsp;<a href="#/notice-details/{{item.Id}}/">{{item.Title}}（{{item.Modification
+                        | jsonDateFormat | date:'yy-MM-dd'}}）</a> </li>
+                </ul>
+            </div>
+            <div class="col-lg-4" style="padding-right: 16px;">
+                <h4 class="text-red">
+                    <i class="fa fa-gear"></i>&nbsp; 系统工具</h4>
+                <ul class="list-unstyled text-left">
+                    <li class="biz-list-item"><a><i class="fa fa-book fa-fw"></i>&nbsp;&nbsp;用户手册</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-question fa-fw"></i>&nbsp;&nbsp;常见问题</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-laptop fa-fw"></i>&nbsp;&nbsp;系统监控</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-database fa-fw"></i>&nbsp;&nbsp;数据管理</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-weixin fa-fw"></i>&nbsp;&nbsp;即时通信</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-exchange fa-fw"></i>&nbsp;&nbsp;资源共享</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-search fa-fw"></i>&nbsp;&nbsp;全文检索</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h4 class="text-red">
+                    <i class="fa fa-fire"></i>&nbsp; 产品设计</h4>
+                <ul class="list-unstyled text-left">
+                    <li class="biz-list-item"><a><i class="fa fa-sitemap fa-fw"></i>&nbsp;&nbsp;系统架构</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-coffee fa-fw"></i>&nbsp;&nbsp;功能m+n</a></li>
+                    <li class="biz-list-item"><a><i class="fa fa-tencent-weibo fa-fw"></i>&nbsp;&nbsp;我的博客</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<hr class="featurette-divider">
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading">
+                First featurette heading. <span class="text-muted">It'll blow your mind.</span></h2>
+            <p class="lead">
+                Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+                Fusce dapibus, tellus ac cursus commodo.</p>
+        </div>
+        <div class="col-md-5">
+            <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+        </div>
+    </div>
+    <hr class="featurette-divider">
+    <div class="row featurette">
+        <div class="col-md-5">
+            <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+        </div>
+        <div class="col-md-7">
+            <h2 class="featurette-heading">
+                Oh yeah, it's that good. <span class="text-muted">See for yourself.</span></h2>
+            <p class="lead">
+                Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+                Fusce dapibus, tellus ac cursus commodo.</p>
+        </div>
+    </div>
+    <hr class="featurette-divider">
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading">
+                And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+            <p class="lead">
+                Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis
+                euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+                Fusce dapibus, tellus ac cursus commodo.</p>
+        </div>
+        <div class="col-md-5">
+            <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
+        </div>
+    </div>-->
+    <hr class="featurette-divider">
 </div>
