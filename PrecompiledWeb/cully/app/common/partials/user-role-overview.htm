@@ -1,0 +1,54 @@
+﻿<div class="story container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="removeUserDialog" tabindex="-1" role="dialog" aria-labelledby="removeUserDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeUserDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除用户对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个用户[{{selectedUser.Name}}]吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="removeUser()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;用户/角色</span>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" id="tab">
+        <li class="active"><a href="#user" role="tab" data-toggle="tab">用户</a></li>
+        <li><a href="#role" role="tab" data-toggle="tab">角色</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="user">
+            <br />
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="item in userList"><a href="#/user-role-assign/{{item.Username}}/">
+                    {{item.Name}}({{item.Username}})</a> <i class="fa fa-trash-o pull-right" data-toggle="modal"
+                        data-target="#removeUserDialog" ng-click="selectUser(item)"></i></li>
+            </ul>
+        </div>
+        <div class="tab-pane" id="role">
+            <br />
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="item in roleList"><a href="#/role-user-assign/{{item.id}}/">
+                    {{item.name}}({{item.id}})</a> </li>
+            </ul>
+        </div>
+    </div>
+</div>

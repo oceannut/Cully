@@ -1,0 +1,50 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa {{actionModeIcon}}"></i>&nbsp;{{actionMode}}{{scopeName}}</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/category-list/{{category.Scope}}/"><i class="fa fa-level-up"></i>&nbsp;返回列表</a></li>
+        </ul>
+    </div>
+    <form class="form-horizontal css-form" role="form" name="form" ng-submit="save()">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group has-feedback {{codeStatus}}">
+                    <input type="text" class="form-control" placeholder="编码" id="code" name="code" ng-model="category.Code"
+                        ng-maxlength="32" ng-blur="codeChanged()" ng-disabled="codeDisabled" required
+                        autofocus>
+                    <label class="control-label" for="code">
+                        {{codeFeedbackText}}</label>
+                    <p class="help-block">
+                        （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+                    <span class="text-danger" ng-show="form.code.$error.maxlength">警告：编码太长</span> <span
+                        class="fa {{codeFeedback}} form-control-feedback"></span>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="名称" name="name" ng-model="category.Name"
+                        ng-maxlength="32" required autofocus>
+                    <p class="help-block">
+                        （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+                    <span class="text-danger" ng-show="form.name.$error.maxlength">警告：名称太长</span>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" placeholder="描述" name="desc" ng-model="category.Description"
+                        ng-maxlength="255" rows="3"></textarea>
+                    <p class="help-block">
+                        （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+                    <span class="text-danger" ng-show="form.desc.$error.maxlength">警告：描述太长</span>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default" ng-click="clear()">
+                        清空</button>
+                    <button class="btn btn-primary" type="submit" ng-disabled="form.$invalid || isLoading"
+                        ng-switch="isLoading">
+                        <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存</span></button>
+                </div>
+                <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
+                    {{alertMessage}}</div>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>

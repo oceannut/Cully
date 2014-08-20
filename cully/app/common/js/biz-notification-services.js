@@ -11,7 +11,8 @@ define(function (require) {
         .factory('UntreatedBizNotificationService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
             function ($resource, wcfApp, bizNotificationWcfService) {
                 return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/inbox/:user/untreated/:notificationId/', {}, {
-                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} }
+                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} },
+                    updateCol: { method: 'PUT', params: { 'user': '@user', 'notificationId': 'n', 'notificationIds': '@notificationIds'} }
                 });
             } ])
         .factory('UntreatedBizNotificationListService', ['$http', 'wcfApp', 'bizNotificationWcfService',

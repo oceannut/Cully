@@ -1,0 +1,105 @@
+﻿<div ng-controller="TaskListCtrl" ng-init="init()">
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <span class="navbar-brand list-title" style="color: #cc0033;"><i class="fa fa-list">
+            </i>&nbsp;任务列表</span>
+        </div>
+        <div class="navbar-text">
+            <span style="display: {{addTaskButtonVisible}};"><i class="fa fa-plus"></i>&nbsp;<a
+                href="javascript:void(0)" class="navbar-link" ng-click="createTask()">添加任务</a></span>
+        </div>
+        <div class="navbar-text navbar-right">
+            <a href="javascript:void(0)" class="btn btn-default btn-xs {{sortByTimeActive}}"
+                role="button" ng-click="sortByTime()"><i class="fa fa-sort-numeric-desc"></i>&nbsp;按时间排序</a>&nbsp;&nbsp;
+            <a href="javascript:void(0)" class="btn btn-default btn-xs {{sortByStaffActive}}"
+                role="button" ng-click="sortByStaff()"><i class="fa fa-sort-alpha-asc"></i>&nbsp;按人名排序</a>&nbsp;&nbsp;
+        </div>
+    </div>
+    <div class="well well-sm" style="display: {{taskPanelDisplay}};">
+        <form class="form-horizontal css-form" role="form" name="form">
+        <div class="form-group">
+            <div class="col-sm-6">
+                <input type="text" class="form-control" placeholder="任务内容" name="content" ng-model="task.content"
+                    ng-maxlength="255" required autofocus>
+                <span class="text-danger" ng-show="form.content.$error.maxlength">警告：任务内容太长</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-male fa-fw"></i></span>
+                    <select class="form-control" ng-model="task.staff">
+                        <option ng-repeat="item in participants" value="{{item.Staff}}">{{item.staffName}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-clock-o fa-fw"></i></span>
+                    <input type="date" class="form-control" ng-model="task.appointedDay" placeholder="截止时间">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                <button class="btn btn-default btn-sm" ng-click="save()">
+                    {{saveButtonContent}}</button>&nbsp;&nbsp; <a href="javascript:void(0)" ng-click="cancel()">
+                        取消</a>
+            </div>
+        </div>
+        <div class="alert alert-danger {{alertMessageVisible}}">
+            {{alertMessage}}</div>
+        </form>
+    </div>
+    <ol class="list-unstyled" style="margin-top: 12px;">
+        <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
+            ng-switch="item.isLabel">
+            <p ng-switch-when="true">
+                <span class="text-green"><i class="fa fa-lemon-o"></i>&nbsp;{{item.label}}</span></p>
+            <p ng-switch-when="false" style="font-weight: {{item.isUnderwayStatus}};">
+                <i class="fa fa-leaf"></i>&nbsp;
+                <input type="checkbox" title="标记为是否正在进行" ng-model="item.IsUnderway" ng-change="markIsUnderway(item)"
+                    style="display: {{item.changeIsUnderwayButtonVisible}};" />
+                <a href="#/task-details/{{item.Id}}/">{{item.Content}}&nbsp;&nbsp;<span ng-if="item.CommentCount>0">(有{{item.CommentCount}}条评论)</span></a>&nbsp;
+                <button type="button" class="btn btn-xs {{item.isTimeAssigned}}" ng-click="editTask(item)"
+                    ng-disabled="item.editButtonDisabled" data-toggle="tooltip" data-placement="bottom"
+                    title="点击重新指派">
+                    <i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;<i class="fa fa-clock-o"></i>
+                    {{item.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}
+                </button>
+                <button type="button" class="btn btn-xs {{item.isOverdueColor}}" ng-click="completeTask(item)"
+                    ng-disabled="item.completeButtonDisabled" data-toggle="tooltip" data-placement="bottom"
+                    title="点击完成任务">
+                    <i class="fa fa-check-square-o"></i>&nbsp;{{item.completeButtonContent}}
+                </button>
+            </p>
+        </li>
+    </ol>
+    <br />
+    <div class="row">
+        <div class="col-sm-12">
+            <ul class="timeline">
+                <li><span class="bg-navy time-label">已完成的任务</span>
+                    <br />
+                </li>
+                <li ng-repeat="item in completedTaskList" ng-switch="item.isLabel"><span ng-switch-when="true"
+                    class="bg-maroon time-label">{{item.label}}</span> <i ng-switch-when="false" class="fa fa-leaf bg-blue">
+                    </i>
+                    <div ng-switch-when="false" class="timeline-item">
+                        <span class="time"><i class="fa fa-male"></i>&nbsp;{{item.staffName}} &nbsp;</span>
+                        <div class="timeline-body">
+                            <a href="#/task-details/{{item.Id}}/">{{item.Content}}</a>
+                        </div>
+                        <div class='timeline-footer' style="display: {{resumeButtonVisible}};">
+                            <span ng-show="item.CommentCount>0">有{{item.CommentCount}}条评论&nbsp;&nbsp;</span>
+                            <a class="btn btn-xs btn-default" ng-click="resumeTask(item)"><i class="fa fa-play">
+                            </i>&nbsp;重启任务</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

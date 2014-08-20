@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="ProjectWcfService" type="ThinkInBio.Cully.WSL.Impl.ProjectWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="ProjectService" ref="ProjectService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
+  <object id="TaskWcfService" type="ThinkInBio.Cully.WSL.Impl.TaskWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="TaskService" ref="TaskService" />
+    <property name="ProjectService" ref="ProjectService" />
+    <property name="CommentService" ref="CommentService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
+  <object id="LogWcfService" type="ThinkInBio.Cully.WSL.Impl.LogWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="LogService" ref="LogService" />
+    <property name="CommentService" ref="CommentService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
+  <object id="CommentWcfService" type="ThinkInBio.Cully.WSL.Impl.CommentWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="CommentService" ref="CommentService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+  
+</objects>
+

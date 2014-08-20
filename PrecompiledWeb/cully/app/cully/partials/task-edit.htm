@@ -1,0 +1,57 @@
+﻿<div class="container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="removeTaskDialog" tabindex="-1" role="dialog" aria-labelledby="removeTaskDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeTaskDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除任务对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个任务吗？</p>
+                    <p class="alert alert-warning">
+                        注意：删除任务的同时，对其的评论也全部将被删除。
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="deleteTask()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑任务</span>
+        <ul class="list-inline pull-right">
+            <li><a data-toggle="modal" data-target="#removeTaskDialog"><i class="fa fa-trash-o">
+            </i>&nbsp;删除</a></li>
+            <li><a href="#/task-details/{{task.Id}}/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
+    </div>
+    <form class="form-horizontal css-form" role="form" name="form">
+    <div class="form-group">
+        <div class="col-sm-6">
+            <input type="text" class="form-control" placeholder="任务内容" name="content" ng-model="task.Content"
+                ng-maxlength="255" required autofocus>
+            <p class="help-block">
+                （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+            <span class="text-danger" ng-show="form.name.$error.maxlength">警告：内容太长</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6">
+            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
+                ng-switch="isLoading">
+                <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存修改</span></button>
+        </div>
+    </div>
+    <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    </form>
+</div>

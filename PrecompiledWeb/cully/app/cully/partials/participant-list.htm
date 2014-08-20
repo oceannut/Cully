@@ -1,0 +1,34 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-users"></i>&nbsp;成员管理</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/project-details/{{projectId}}/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <form class="form-horizontal css-form" role="form" name="form">
+    <div class="form-group">
+        <div class="col-sm-3">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                    ng-disabled="isParticipantLoading">
+                    点击邀请成员 <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li ng-repeat="item in users"><a href="javascript:void(0)" ng-click="addParticipant(item)">
+                        {{item.Name}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </form>
+    <ol class="list-group">
+        <li class="list-group-item" ng-repeat="participant in participantList">
+            <h4>
+                {{participant.staffName}}&nbsp;&nbsp;<small>于&nbsp;{{participant.Creation | jsonDateFormat
+                    | date:'yyyy-MM-dd'}}&nbsp;加入</small><span class="pull-right glyphicon glyphicon-remove"
+                        ng-click="removeParticipant(participant)"></span></h4>
+        </li>
+    </ol>
+</div>

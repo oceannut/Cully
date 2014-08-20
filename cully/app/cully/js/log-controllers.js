@@ -315,6 +315,11 @@ define(function (require) {
                             }
                         }
                     }
+                    if ($scope.log === undefined || $scope.log === null) {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：工作记录已被移除";
+                        return;
+                    }
                     CommentListService.query({ 'user': currentUser.getUsername(),
                         'commentTarget': 'log',
                         'targetId': $scope.log.Id

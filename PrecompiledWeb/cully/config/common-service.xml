@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="SignServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.SignService, ThinkInBio.CommonApp.BLL">
+    <property name="AuthProvider" ref="PlainAuthProvider" />
+    <property name="Session" ref="SessionCache"/>
+    <property name="UserDao" ref="UserDao" />
+  </object>
+  <object id="SignService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="SignServiceTarget"/>
+  </object>
+  
+  <object id="UserServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.UserService, ThinkInBio.CommonApp.BLL">
+    <property name="UserDao" ref="UserDao" />
+  </object>
+  <object id="UserService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="UserServiceTarget"/>
+  </object>
+
+  <object id="CategoryServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.CategoryService, ThinkInBio.CommonApp.BLL">
+    <property name="CategoryDao" ref="CategoryDao" />
+  </object>
+  <object id="CategoryService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="CategoryServiceTarget"/>
+  </object>
+
+  <object id="BizNotificationServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.BizNotificationService, ThinkInBio.CommonApp.BLL">
+    <property name="BizNotificationDao" ref="BizNotificationDao" />
+  </object>
+  <object id="BizNotificationService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="BizNotificationServiceTarget"/>
+  </object>
+
+  <object id="NoticeServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.NoticeService, ThinkInBio.CommonApp.BLL">
+    <property name="NoticeDao" ref="NoticeDao" />
+    <property name="BizNotificationDao" ref="BizNotificationDao" />
+  </object>
+  <object id="NoticeService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="NoticeServiceTarget"/>
+  </object>
+  
+</objects>
+

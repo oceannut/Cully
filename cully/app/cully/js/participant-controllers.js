@@ -26,7 +26,13 @@ define(function (require) {
                             .then(function (result) {
                                 $scope.participantList = result;
                                 for (var i in $scope.participantList) {
-                                    render($scope.participantList[i]);
+                                    var participant = $scope.participantList[i];
+                                    if (currentUser.getUsername() === participant.Staff) {
+                                        $scope.participantList.splice(i, 1);
+                                        continue;
+                                    } else {
+                                        render(participant);
+                                    }
                                 }
                             }, function (error) {
                                 $log.error(error);
@@ -39,18 +45,19 @@ define(function (require) {
                                     $scope.rawUsers = result;
                                     if (result != null) {
                                         for (var i = 0; i < result.length; i++) {
+                                            var user = result[i];
                                             var add = false;
-                                            if (result[i].Username != currentUser.username) {
+                                            if (user.Username !== currentUser.getUsername() && user.Roles.indexOf('user') > -1) {
                                                 add = true;
                                             }
                                             for (var j in $scope.participantList) {
-                                                if (result[i].Username == $scope.participantList[j].Staff) {
+                                                if (user.Username === $scope.participantList[j].Staff) {
                                                     add = false;
                                                     break;
                                                 }
                                             }
                                             if (add) {
-                                                $scope.users.push(result[i]);
+                                                $scope.users.push(user);
                                             }
                                         }
                                     }

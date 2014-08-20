@@ -1,0 +1,19 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-user"></i>&nbsp;分配角色</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/user-role-overview/user/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
+    </div>
+    <p class="lead">
+        当前用户：<mark>{{user.Name}}</mark></p>
+    <form class="form-horizontal css-form" role="form" name="form">
+    <div class="checkbox" ng-repeat="item in roleList">
+        <label>
+            <input type="checkbox" value="{{item.id}}" ng-checked="item.checked" ng-model="item.isSelected"
+                ng-change="checkRole(item)">
+            {{item.name}}
+        </label>
+    </div>
+    </form>
+</div>

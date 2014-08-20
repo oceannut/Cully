@@ -1,0 +1,10 @@
+﻿[{
+	"id":"user",
+	"name":"员工"
+},{
+	"id":"supvisor",
+	"name":"主管"
+},{
+	"id":"admin",
+	"name":"管理员"
+}]

@@ -1,0 +1,74 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;工作记录</span>
+        <ul class="list-inline pull-right">
+            <li access="supvisor"><a href="#/log-add/"><i class="fa fa-share-alt"></i>&nbsp;创建新记录</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <div class="row">
+        <div class="col-sm-9 blog-main">
+            <div style="margin: 0 0 0 64px;">
+                <form class="form-inline" role="form">
+                <label class="control-label">
+                    记录筛选</label>
+                <div class="form-group">
+                    <select class="form-control input-sm" ng-model="queryModel.staff" ng-change="query()">
+                        <option value="">所有成员</option>
+                        <option ng-repeat="item in users" value="{{item.Username}}">{{item.Name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query()">
+                        <option value="">所有时间</option>
+                        <option value="0">今天</option>
+                        <option value="-1">昨天</option>
+                        <option value="7">本周</option>
+                        <option value="-7">上周</option>
+                    </select>
+                </div>
+                </form>
+            </div>
+            <br />
+            <ol class="list-unstyled">
+                <li ng-repeat="item in logList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
+                    padding-bottom: 2em; margin-bottom: 0.5em;">
+                    <h4>
+                        <i class="fa {{item.icon}}"></i>&nbsp;<a href="#/log-details/{{item.Id}}/">{{item.Title}}</a></h4>
+                    <p class="text-justify" style="font-size: 10.5pt; color: #888;">
+                        {{item.filterContent}}</p>
+                    <ul style="list-style-type: none; float: left; margin-left: -2em; font-size: 10.5pt;">
+                        <li style="float: left; margin-right: 1.2em;"><span>{{item.creatorName}}</span></li>
+                        <li style="float: left; margin-right: 1.2em;"><span>{{item.StartTime | jsonDateFormat
+                            | date:'yyyy-MM-dd'}}</span></li>
+                        <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in item.TagList"><a
+                            href="#"><span class="badge">{{tag}}</span></a></li>
+                        <li style="float: left; margin-left: 1.2em;"><span>评论:{{item.CommentCount}}</span></li>
+                    </ul>
+                    <ul style="list-style-type: none; float: left; margin-left: -2em;" class="pull-right">
+                        <li style="float: left; margin-left: 0.6em; display: {{item.EditBtnVisible}};"><a
+                            class="fa fa-edit" title="编辑信息" href="#/log-edit/{{item.Id}}/"></a></li>
+                    </ul>
+            </ol>
+            <ul class="pager">
+                <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
+                <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-3 blog-sidebar">
+            <div class="sidebar-module sidebar-module-inset">
+                <h4>
+                    排行榜</h4>
+                <p>
+                </p>
+            </div>
+            <div class="sidebar-module sidebar-module-inset">
+                <h4>
+                    我的日志</h4>
+                <p>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

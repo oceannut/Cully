@@ -1,0 +1,23 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-send-o"></i>&nbsp;业务通知</span>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" id="tab">
+        <li class="active"><a href="#inbox" role="tab" data-toggle="tab">收件箱</a></li>
+        <li><a href="#outbox" role="tab" data-toggle="tab">已发送</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="inbox">
+            <br />
+            inbox
+        </div>
+        <div class="tab-pane" id="outbox">
+            <br />
+            outbox
+        </div>
+    </div>
+</div>

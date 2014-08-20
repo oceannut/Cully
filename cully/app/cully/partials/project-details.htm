@@ -9,6 +9,7 @@
                 <i class="fa fa-users"></i>&nbsp;成员</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
+            <li><a href="#/project-summary/"><i class="fa fa-list"></i>&nbsp;列表</a></li>
         </ul>
     </div>
     <div class="alert alert-danger {{alertMessageVisible}}">
@@ -81,7 +82,6 @@
                     {{activity.Description}}</p>
                 <footer> 
                     &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建
-                    &nbsp; <span ng-if="!activity.IsCompleted" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;活动未结束。</span>
                     &nbsp; <span ng-if="activity.IsCompleted" class="text-success"><i class="fa fa-check-square-o"></i>&nbsp;活动已结束。</span>
                 </footer>
             </blockquote>

@@ -32,6 +32,14 @@ define(function (require) {
                     UntreatedBizNotificationListService.count(currentUser.getUsername())
                                 .then(function (response) {
                                     $scope.untreatedNotificationCount = response.data;
+
+                                    if ($scope.untreatedNotificationCount > 0) {
+                                        var audio = document.getElementById("untreatedNotificationAudio");
+                                        if (audio !== undefined && audio !== null) {
+                                            audio.play();
+                                        }
+                                    }
+
                                 }, function (response) {
                                     $log.error(response);
                                 });
@@ -70,6 +78,9 @@ define(function (require) {
                     });
                     eventbus.subscribe("userModified", function (e, data) {
                         $scope.loginUser.name = currentUser.getName();
+                    });
+                    eventbus.subscribe('untreatedBizNotificationChanged', function (e, data) {
+                        $scope.untreatedNotificationCount = data;
                     });
 
                     //初始化导航条。

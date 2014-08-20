@@ -1,0 +1,57 @@
+﻿<div class="container" ng-init="init()">
+    <form class="form-sign form-horizontal css-form" role="form" name="form">
+    <h3 class="form-sign-heading text-center">
+        用户注册</h3>
+    <div class="form-group has-feedback {{usernameStatus}}">
+        <input type="text" class="form-control" placeholder="用户名" id="username" name="username"
+            ng-model="user.username" ng-maxlength="32" ng-pattern="/^([a-zA-Z0-9_\-])+$/"
+            ng-blur="usernameChanged()" ng-disabled="usernameDisabled" required autofocus>
+        <label class="control-label" for="code">
+            {{usernameFeedbackText}}</label>
+        <p class="help-block">
+            （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+        <span class="text-danger" ng-show="form.username.$error.maxlength">警告：用户名太长</span>
+        <span class="text-danger" ng-show="form.username.$error.pattern">警告：用户名只能是由字母和数字，或者是_和-的组合。</span>
+        <span class="form-control-feedback fa {{usernameFeedback}}"></span>
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" placeholder="密码" name="pwd" ng-model="user.pwd"
+            ng-maxlength="32" ng-pattern="/^([a-zA-Z0-9])+$/" required>
+        <p class="help-block">
+            （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+        <span class="text-danger" ng-show="form.pwd.$error.maxlength">警告：密码太长</span> <span
+            class="text-danger" ng-show="form.pwd.$error.pattern">警告：密码只能是由字母和数字的组合。</span>
+    </div>
+    <div class="form-group" ng-class="{'has-error':!isSamePwd, '':isSamePwd}">
+        <input type="password" class="form-control" placeholder="验证密码" name="pwd2" ng-model="user.pwd2"
+            ng-maxlength="32" ng-blur="pwd2Changed()" required>
+        <label class="control-label" for="pwd2" ng-show="!isSamePwd">
+            密码不一致</label>
+        <p class="help-block">
+            （<span class="text-info">验证密码要与密码一致</span>）</p>
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="显示名称" name="name" ng-model="user.name"
+            ng-maxlength="32" required>
+        <p class="help-block">
+            （<span class="text-info">文本长度限制在32个字符内</span>）</p>
+        <span class="text-danger" ng-show="form.name.$error.maxlength">警告：显示名称太长</span>
+    </div>
+    <div class="form-group">
+        <input type="text" placeholder="验证码" ng-model="inputCheckcode" required>&nbsp;
+        <label>
+            <s class="well well-sm" checkcode></s>&nbsp; <i class="fa fa-refresh" ng-click="refreshCheckCode()">
+            </i>
+        </label>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-block" type="submit" ng-disabled="form.$invalid || isBusy" ng-click="signup()">
+            <i class="fa" ng-class="{'fa-cog fa-spin': isBusy, 'fa-sign-in': !isBusy}"></i>&nbsp;注册</button>
+    </div>
+    <div class="form-group {{alertMessageVisible}} alert" ng-class="{'alert-success':isSuccess,'alert-danger':!isSuccess}">
+        {{alertMessage}}</div>
+    <ul class="list-inline">
+        <li><a href="#/signin">立即登录</a></li>
+    </ul>
+    </form>
+</div>
