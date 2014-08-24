@@ -3,6 +3,7 @@ delete from cyProject;
 delete from cyParticipant;
 delete from cyActivity;
 delete from cyTask;
+delete from cyTaskDelay;
 delete from cyLog;
 delete from cyLogVisibleUser;
 delete from cyComment;
@@ -12,6 +13,7 @@ drop table cyProject;
 drop table cyParticipant;
 drop table cyActivity;
 drop table cyTask;
+drop table cyTaskDelay;
 drop table cyLog;
 drop table cyLogVisibleUser;
 drop table cyComment;
@@ -67,6 +69,19 @@ create table cyTask
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+
+create table cyTaskDelay
+(
+	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	activityId				BIGINT			NOT NULL,
+	staff					VARCHAR(32)		NOT NULL,
+	total					INT				NOT NULL default 0,
+	delay					INT				NOT NULL default 0,
+	appointedDay			DATETIME		NOT NULL,
+	creation				DATETIME		NOT NULL,
+	PRIMARY KEY (id)
+);
+ALTER TABLE cyTaskDelay ADD INDEX creation_index  (creation);
 
 create table cyLog
 (
