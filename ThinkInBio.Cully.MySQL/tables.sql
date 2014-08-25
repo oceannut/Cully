@@ -77,7 +77,6 @@ create table cyTaskDelay
 	staff					VARCHAR(32)		NOT NULL,
 	total					INT				NOT NULL default 0,
 	delay					INT				NOT NULL default 0,
-	appointedDay			DATETIME		NOT NULL,
 	creation				DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );

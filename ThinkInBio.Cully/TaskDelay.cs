@@ -7,7 +7,9 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
-    /// 任务延误
+    /// 任务延误的情况，统计任务已逾期或按时完成，数据来源包括：
+    /// （1）未完成的任务；
+    /// （2）最新已完成的，截止上轮统计目前尚未统计的任务。
     /// </summary>
     public class TaskDelay
     {
@@ -36,11 +38,6 @@ namespace ThinkInBio.Cully
         /// 延误个数。
         /// </summary>
         public int Delay { get; set; }
-
-        /// <summary>
-        /// 期限日期。
-        /// </summary>
-        public DateTime AppointedDay { get; set; }
 
         /// <summary>
         /// 创建时间。

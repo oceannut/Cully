@@ -31,13 +31,12 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"insert into cyTaskDelay (id,activityId,staff,total,delay,appointedDay,creation) 
-                                                values (NULL,@activityId,@staff,@total,@delay,@appointedDay,@creation)";
+                    command.CommandText = @"insert into cyTaskDelay (id,activityId,staff,total,delay,creation) 
+                                                values (NULL,@activityId,@staff,@total,@delay,@creation)";
                     command.Parameters.Add(DbFactory.CreateParameter("activityId", entity.ActivityId));
                     command.Parameters.Add(DbFactory.CreateParameter("staff", entity.Staff));
                     command.Parameters.Add(DbFactory.CreateParameter("total", entity.Total));
                     command.Parameters.Add(DbFactory.CreateParameter("delay", entity.Delay));
-                    command.Parameters.Add(DbFactory.CreateParameter("appointedDay", entity.AppointedDay));
                     command.Parameters.Add(DbFactory.CreateParameter("creation", entity.Creation));
                 },
                 (id) =>
