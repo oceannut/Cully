@@ -26,12 +26,15 @@ namespace Test.ThinkInBio.Cully.MySQL
         public void TestMethod1()
         {
             TaskDelay taskDelay = new TaskDelay();
+            taskDelay.Scope = TaskDelayScope.Undone;
             taskDelay.ActivityId = 1;
             taskDelay.Staff = "zsp";
-            taskDelay.Total = 1;
+            taskDelay.Total = 3;
             taskDelay.Delay = 1;
-            taskDelay.AppointedDay = DateTime.Now;
-            taskDelay.Creation = DateTime.Now;
+            taskDelay.Untimed = 1;
+            taskDelay.Year = 2014;
+            taskDelay.Month = 8;
+            taskDelay.Day = 26;
             taskDelayDao.Save(taskDelay);
             Assert.IsTrue(taskDelay.Id > 0);
 

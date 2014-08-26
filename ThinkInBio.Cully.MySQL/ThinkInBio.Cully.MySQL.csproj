@@ -52,6 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskDao.cs" />
     <Compile Include="TaskDelayDao.cs" />
+    <Compile Include="TaskReportDao.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CommonApp\ThinkInBio.CommonApp\ThinkInBio.CommonApp.csproj">

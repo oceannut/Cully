@@ -7,7 +7,7 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
-    /// 任务的统计日报，统计的数据范围限于对应日期的任务。
+    /// 依据任务的创建时间的每日任务数统计。
     /// </summary>
     public class TaskReport
     {
@@ -16,6 +16,11 @@ namespace ThinkInBio.Cully
         /// 编号。
         /// </summary>
         public long Id { get; set; }
+
+        /// <summary>
+        /// 活动编号。
+        /// </summary>
+        public long ActivityId { get; set; }
 
         /// <summary>
         /// 指派的人员。

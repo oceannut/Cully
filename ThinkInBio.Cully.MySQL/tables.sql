@@ -4,6 +4,7 @@ delete from cyParticipant;
 delete from cyActivity;
 delete from cyTask;
 delete from cyTaskDelay;
+delete from cyTaskReport;
 delete from cyLog;
 delete from cyLogVisibleUser;
 delete from cyComment;
@@ -14,6 +15,7 @@ drop table cyParticipant;
 drop table cyActivity;
 drop table cyTask;
 drop table cyTaskDelay;
+drop table cyTaskReport;
 drop table cyLog;
 drop table cyLogVisibleUser;
 drop table cyComment;
@@ -73,14 +75,31 @@ create table cyTask
 create table cyTaskDelay
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	scope					TINYINT(1)      NOT NULL,
 	activityId				BIGINT			NOT NULL,
 	staff					VARCHAR(32)		NOT NULL,
 	total					INT				NOT NULL default 0,
 	delay					INT				NOT NULL default 0,
-	creation				DATETIME		NOT NULL,
+	untimed					INT				NOT NULL default 0,
+	year					INT				NOT NULL,
+	month					INT				NOT NULL,
+	day						INT				NOT NULL,
 	PRIMARY KEY (id)
 );
-ALTER TABLE cyTaskDelay ADD INDEX creation_index  (creation);
+ALTER TABLE cyTaskDelay ADD INDEX timestamp_index  (year,month,day);
+
+create table cyTaskReport
+(
+	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	activityId				BIGINT			NOT NULL,
+	staff					VARCHAR(32)		NOT NULL,
+	count					INT				NOT NULL default 0,
+	year					INT				NOT NULL,
+	month					INT				NOT NULL,
+	day						INT				NOT NULL,
+	PRIMARY KEY (id)
+);
+ALTER TABLE cyTaskReport ADD INDEX timestamp_index  (year,month,day);
 
 create table cyLog
 (

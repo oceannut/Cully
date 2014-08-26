@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net">
+
+  <object id="StdSchedulerFactory" type="Quartz.Impl.StdSchedulerFactory, Quartz">
+  </object>
+
+  <object id="MockJob" type="ThinkInBio.Scheduling.MockJob, ThinkInBio.Scheduling">
+    <property name="Logger" ref="GenericLogger"/>
+  </object>
+
+  <object id="TaskDelayJob" type="ThinkInBio.Cully.TaskDelayJob, ThinkInBio.Cully">
+  </object>
+
+  <object id="TaskDelaySchedule" type="ThinkInBio.Scheduling.Quartz.QuartzSchedule, ThinkInBio.Scheduling">
+    <constructor-arg name="schedulerFactory" ref="StdSchedulerFactory"/>
+    <constructor-arg name="cronExpression" value="0/20 * * * * ?"/>
+  </object>
+
+  <object id="TaskDelayScheduler" type="ThinkInBio.Scheduling.Scheduler, ThinkInBio.Scheduling">
+    <constructor-arg name="schedule" ref="TaskDelaySchedule"/>
+    <constructor-arg name="job" ref="MockJob"/>
+    <property name="Name" value="TaskDelay"/>
+    <property name="Description" value="Scheduling for computing the delay of the task."/>
+  </object>
+
+  <object id="ScheduleManager" type="ThinkInBio.Scheduling.ScheduleManager, ThinkInBio.Scheduling" init-method="Init" destroy-method="Destroy">
+    <property name="Map">
+      <dictionary key-type="string" value-type="ThinkInBio.Scheduling.Scheduler, ThinkInBio.Scheduling">
+        <entry key="TaskDelay" value-ref="TaskDelayScheduler" />
+      </dictionary>
+    </property>
+  </object>
+
+</objects>

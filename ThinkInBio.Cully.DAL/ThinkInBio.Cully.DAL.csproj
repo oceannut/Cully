@@ -47,6 +47,7 @@
     <Compile Include="IProjectDao.cs" />
     <Compile Include="ITaskDao.cs" />
     <Compile Include="ITaskDelayDao.cs" />
+    <Compile Include="ITaskReportDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

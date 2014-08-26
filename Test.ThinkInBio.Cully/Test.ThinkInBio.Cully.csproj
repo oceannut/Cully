@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LogUnitTest.cs" />
+    <Compile Include="TaskDelayBuilderUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThinkInBio.Cully\ThinkInBio.Cully.csproj">
