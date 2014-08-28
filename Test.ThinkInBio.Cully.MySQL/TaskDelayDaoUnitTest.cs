@@ -41,5 +41,43 @@ namespace Test.ThinkInBio.Cully.MySQL
             taskDelayDao.Delete(taskDelay);
         }
 
+        [TestMethod]
+        public void TestMethod2()
+        {
+
+            IList<TaskDelay> list = taskDelayDao.GetList(2014, 8, 27, 2014, 8, 27, TaskDelayScope.Undone, 0, null);
+            foreach (TaskDelay item in list)
+            {
+                Console.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}", item.ActivityId, item.Staff, item.Total, item.Delay, item.Untimed));
+            }
+
+            Console.WriteLine("-----------------------------------------------------");
+
+            list = taskDelayDao.GetList(2014, 8, null, 2014, 8, null, TaskDelayScope.Undone, 0, null);
+            foreach (TaskDelay item in list)
+            {
+                Console.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}", item.ActivityId, item.Staff, item.Total, item.Delay, item.Untimed));
+            }
+
+            Console.WriteLine("-----------------------------------------------------");
+
+            list = taskDelayDao.GetList(2014, null, null, 2014, null, null, TaskDelayScope.Undone, 0, null);
+            foreach (TaskDelay item in list)
+            {
+                Console.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}", item.ActivityId, item.Staff, item.Total, item.Delay, item.Untimed));
+            }
+
+            Console.WriteLine("-----------------------------------------------------");
+
+            list = taskDelayDao.GetList(null, null, null, null, null, null, TaskDelayScope.Undone, 0, null);
+            foreach (TaskDelay item in list)
+            {
+                Console.WriteLine(string.Format("{0}, {1}, {2}, {3}, {4}", item.ActivityId, item.Staff, item.Total, item.Delay, item.Untimed));
+            }
+
+            Console.WriteLine("-----------------------------------------------------");
+
+        }
+
     }
 }

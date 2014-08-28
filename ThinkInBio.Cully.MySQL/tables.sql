@@ -87,6 +87,7 @@ create table cyTaskDelay
 	PRIMARY KEY (id)
 );
 ALTER TABLE cyTaskDelay ADD INDEX timestamp_index  (year,month,day);
+ALTER TABLE cyTaskDelay ADD INDEX activity_id_index  (activityId);
 
 create table cyTaskReport
 (

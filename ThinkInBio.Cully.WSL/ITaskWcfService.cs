@@ -148,6 +148,17 @@ namespace ThinkInBio.Cully.WSL
             ResponseFormat = WebMessageFormat.Json)]
         void DeleteComment(string user, string id, string commentId, string[] observers);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="activityId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        [WebGet(UriTemplate = "/taskDelay/{activityId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        TaskDelay[] GetTaskDelayList(string activityId);
+
     }
 
 }

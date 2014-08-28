@@ -115,8 +115,7 @@ namespace ThinkInBio.Cully
             {
                 map = new Dictionary<string, TaskDelay>();
                 undoneDelayMap.Add(task.ActivityId, map);
-                taskDelay = new TaskDelay();
-                taskDelay.Scope = TaskDelayScope.Undone;
+                taskDelay = BuildTaskDelay(task, timeStamp, TaskDelayScope.Undone);
                 map.Add(task.Staff, taskDelay);
             }
             else
@@ -124,8 +123,7 @@ namespace ThinkInBio.Cully
                 map.TryGetValue(task.Staff, out taskDelay);
                 if (taskDelay == null)
                 {
-                    taskDelay = new TaskDelay();
-                    taskDelay.Scope = TaskDelayScope.Undone;
+                    taskDelay = BuildTaskDelay(task, timeStamp, TaskDelayScope.Undone);
                     map.Add(task.Staff, taskDelay);
                 }
             }
@@ -152,8 +150,7 @@ namespace ThinkInBio.Cully
             {
                 map = new Dictionary<string, TaskDelay>();
                 doneDelayMap.Add(task.ActivityId, map);
-                taskDelay = new TaskDelay();
-                taskDelay.Scope = TaskDelayScope.Undone;
+                taskDelay = BuildTaskDelay(task, timeStamp, TaskDelayScope.Done);
                 map.Add(task.Staff, taskDelay);
             }
             else
@@ -161,8 +158,7 @@ namespace ThinkInBio.Cully
                 map.TryGetValue(task.Staff, out taskDelay);
                 if (taskDelay == null)
                 {
-                    taskDelay = new TaskDelay();
-                    taskDelay.Scope = TaskDelayScope.Undone;
+                    taskDelay = BuildTaskDelay(task, timeStamp, TaskDelayScope.Done);
                     map.Add(task.Staff, taskDelay);
                 }
             }
@@ -178,6 +174,21 @@ namespace ThinkInBio.Cully
                 taskDelay.Untimed++;
             }
             taskDelay.Total++;
+        }
+
+        private TaskDelay BuildTaskDelay(Task task, DateTime timeStamp, TaskDelayScope scope)
+        {
+            TaskDelay taskDelay = new TaskDelay();
+            taskDelay.Scope = scope;
+            taskDelay.ActivityId = task.ActivityId;
+            taskDelay.Staff = task.Staff;
+
+            DateTime t = timeStamp.AddDays(-1);
+            taskDelay.Year = t.Year;
+            taskDelay.Month = t.Month;
+            taskDelay.Day = t.Day;
+
+            return taskDelay;
         }
 
     }

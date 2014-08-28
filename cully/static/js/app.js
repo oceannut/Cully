@@ -8,6 +8,7 @@ define(function (require) {
     require('../../app/common/js/category-controllers');
     require('../../app/common/js/user-controllers');
     require('../../app/common/js/notice-controllers');
+    require('../../app/common/js/schedule-controllers');
     require('../../app/cully/js/biz-notification-controllers');
     require('../../app/cully/js/index-controllers');
     require('../../app/cully/js/home-controllers');
@@ -22,6 +23,7 @@ define(function (require) {
             'category.controllers',
             'user.controllers',
             'notice.controllers',
+            'schedule.controllers',
             'bizNotification.controllers',
             'index.controllers',
             'home.controllers',
@@ -135,6 +137,14 @@ define(function (require) {
                             loginRequired: true
                         }
                     })
+                    .when('/schedule-list/', {
+                        templateUrl: 'app/common/partials/schedule-list.htm',
+                        controller: 'ScheduleListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
                     .when('/home/', {
                         templateUrl: 'app/cully/partials/home.htm',
                         controller: 'HomeCtrl',
@@ -204,6 +214,14 @@ define(function (require) {
                         access: {
                             loginRequired: true,
                             roles: ['supvisor']
+                        }
+                    })
+                    .when('/activity-task-delay/:id/', {
+                        templateUrl: 'app/cully/partials/activity-task-delay.htm',
+                        controller: 'ActivityTaskDelayCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
                         }
                     })
                     .when('/task-edit/:id/', {

@@ -99,6 +99,77 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public IList<TaskDelay> GetList(int? startYear, int? startMonth, int? startDay, 
+            int? endYear, int? endMonth, int? endDay, 
+            TaskDelayScope? scope, long activityId, string staff)
+        {
+            List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
+            return DbTemplate.GetList<TaskDelay>(dataSource,
+                (command) =>
+                {
+                    StringBuilder sql = new StringBuilder();
+                    sql.Append("select id,scope,activityId,staff,total,delay,untimed,year,month,day from cyTaskDelay ");
+                    if (startYear.HasValue && endYear.HasValue)
+                    {
+                        SQLHelper.AppendOp(sql, parameters);
+                        sql.Append(" year between @year1 and @year2 ");
+                        parameters.Add(new KeyValuePair<string, object>("year1", startYear.Value));
+                        parameters.Add(new KeyValuePair<string, object>("year2", endYear.Value));
+                        if (startMonth.HasValue && endMonth.HasValue)
+                        {
+                            SQLHelper.AppendOp(sql, parameters);
+                            sql.Append(" month between @month1 and @month2 ");
+                            parameters.Add(new KeyValuePair<string, object>("month1", startMonth.Value));
+                            parameters.Add(new KeyValuePair<string, object>("month2", endMonth.Value));
+                            if (startDay.HasValue && endDay.HasValue)
+                            {
+                                SQLHelper.AppendOp(sql, parameters);
+                                sql.Append(" day between @day1 and @day2 ");
+                                parameters.Add(new KeyValuePair<string, object>("day1", startDay.Value));
+                                parameters.Add(new KeyValuePair<string, object>("day2", endDay.Value));
+                            }
+                        }
+                    }
+                    if (scope.HasValue)
+                    {
+                        SQLHelper.AppendOp(sql, parameters);
+                        sql.Append(" scope=@scope ");
+                        parameters.Add(new KeyValuePair<string, object>("scope", (int)scope.Value));
+                    }
+                    if (activityId > 0)
+                    {
+                        SQLHelper.AppendOp(sql, parameters);
+                        sql.Append(" activityId=@activityId ");
+                        parameters.Add(new KeyValuePair<string, object>("activityId", activityId));
+                    }
+                    if (!string.IsNullOrWhiteSpace(staff))
+                    {
+                        SQLHelper.AppendOp(sql, parameters);
+                        sql.Append(" staff=@staff ");
+                        parameters.Add(new KeyValuePair<string, object>("staff", staff));
+                    }
+                    
+                    command.CommandText = sql.ToString();
+                },
+                parameters,
+                (reader) =>
+                {
+                    TaskDelay entity = new TaskDelay();
+                    entity.Id = reader.GetInt64(0);
+                    entity.Scope = (TaskDelayScope)reader.GetInt32(1);
+                    entity.ActivityId = reader.GetInt64(2);
+                    entity.Staff = reader.GetString(3);
+                    entity.Total = reader.GetInt32(4);
+                    entity.Delay = reader.GetInt32(5);
+                    entity.Untimed = reader.GetInt32(6);
+                    entity.Year = reader.GetInt32(7);
+                    entity.Month = reader.GetInt32(8);
+                    entity.Day = reader.GetInt32(9);
+
+                    return entity;
+                });
+        }
+
     }
 
 }

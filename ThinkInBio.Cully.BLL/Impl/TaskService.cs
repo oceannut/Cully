@@ -18,6 +18,23 @@ namespace ThinkInBio.Cully.BLL.Impl
         internal IBizNotificationService BizNotificationService { get; set; }
         internal IActivityDao ActivityDao { get; set; }
         internal ICommentDao CommentDao { get; set; }
+        internal ITaskDelayDao TaskDelayDao { get; set; }
+
+        public TaskService()
+        {
+            Delegates.UndoneTasksAccessor = (startTime, endTime) =>
+            {
+                return TaskDao.GetList(startTime, endTime, 0, null, null, false, false, 0, int.MaxValue);
+            };
+            Delegates.DoneTasksAccessor = (startTime, endTime) =>
+            {
+                return TaskDao.GetList(startTime, endTime, 0, null, null, true, false, 0, int.MaxValue);
+            };
+            Delegates.TaskDelaySaveAction = (e) =>
+            {
+                TaskDelayDao.Save(new List<TaskDelay>(e));
+            };
+        }
 
         public void SaveTask(Task task, BizNotification notification)
         {
@@ -114,7 +131,7 @@ namespace ThinkInBio.Cully.BLL.Impl
                 throw new ArgumentException();
             }
 
-            return TaskDao.GetTaskList(null, null, activityId, null, false, 0, int.MaxValue);
+            return TaskDao.GetList(null, null, activityId, null, null, null, false, 0, int.MaxValue);
         }
 
         public void SaveComment(Task task, Comment comment, ICollection<BizNotification> notificationList)
@@ -144,6 +161,40 @@ namespace ThinkInBio.Cully.BLL.Impl
             if (notificationList != null && notificationList.Count > 0)
             {
                 BizNotificationService.SaveNotification(notificationList);
+            }
+        }
+
+        public IList<TaskDelay> GetTaskDelayList(long activityId)
+        {
+            if (activityId == 0)
+            {
+                throw new ArgumentNullException();
+            }
+
+            IList<TaskDelay> list = TaskDelayDao.GetList(null, null, null, null, null, null, null, activityId, null);
+            if (list != null)
+            {
+                Dictionary<string, TaskDelay> dict = new Dictionary<string, TaskDelay>();
+                foreach (TaskDelay item in list)
+                {
+                    TaskDelay current;
+                    dict.TryGetValue(item.Staff, out current);
+                    if (current == null)
+                    {
+                        dict.Add(item.Staff, item);
+                    }
+                    else
+                    {
+                        current.Total += item.Total;
+                        current.Delay += item.Delay;
+                        current.Untimed += item.Untimed;
+                    }
+                }
+                return new List<TaskDelay>(dict.Values);
+            }
+            else
+            {
+                return new List<TaskDelay>();
             }
         }
 

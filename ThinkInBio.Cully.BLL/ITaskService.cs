@@ -29,6 +29,8 @@ namespace ThinkInBio.Cully.BLL
 
         void DeleteComment(Task task, Comment comment, ICollection<BizNotification> notificationList);
 
+        IList<TaskDelay> GetTaskDelayList(long activityId);
+
     }
 
 }

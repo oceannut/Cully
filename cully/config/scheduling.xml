@@ -4,29 +4,30 @@
   <object id="StdSchedulerFactory" type="Quartz.Impl.StdSchedulerFactory, Quartz">
   </object>
 
-  <object id="MockJob" type="ThinkInBio.Scheduling.MockJob, ThinkInBio.Scheduling">
+  <!--<object id="MockJob" type="ThinkInBio.Scheduling.MockJob, ThinkInBio.Scheduling">
     <property name="Logger" ref="GenericLogger"/>
-  </object>
+  </object>-->
 
   <object id="TaskDelayJob" type="ThinkInBio.Cully.TaskDelayJob, ThinkInBio.Cully">
   </object>
 
   <object id="TaskDelaySchedule" type="ThinkInBio.Scheduling.Quartz.QuartzSchedule, ThinkInBio.Scheduling">
     <constructor-arg name="schedulerFactory" ref="StdSchedulerFactory"/>
-    <constructor-arg name="cronExpression" value="0/20 * * * * ?"/>
+    <constructor-arg name="cronExpression" value="0/60 * * * * ?"/>
   </object>
 
-  <object id="TaskDelayScheduler" type="ThinkInBio.Scheduling.Scheduler, ThinkInBio.Scheduling">
+  <object id="TaskDelayScheduleScheme" type="ThinkInBio.Scheduling.ScheduleScheme, ThinkInBio.Scheduling">
     <constructor-arg name="schedule" ref="TaskDelaySchedule"/>
-    <constructor-arg name="job" ref="MockJob"/>
+    <constructor-arg name="job" ref="TaskDelayJob"/>
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler"/>
     <property name="Name" value="TaskDelay"/>
-    <property name="Description" value="Scheduling for computing the delay of the task."/>
+    <property name="Description" value="统计任务延误的情况"/>
   </object>
 
   <object id="ScheduleManager" type="ThinkInBio.Scheduling.ScheduleManager, ThinkInBio.Scheduling" init-method="Init" destroy-method="Destroy">
     <property name="Map">
-      <dictionary key-type="string" value-type="ThinkInBio.Scheduling.Scheduler, ThinkInBio.Scheduling">
-        <entry key="TaskDelay" value-ref="TaskDelayScheduler" />
+      <dictionary key-type="string" value-type="ThinkInBio.Scheduling.ScheduleScheme, ThinkInBio.Scheduling">
+        <entry key="TaskDelay" value-ref="TaskDelayScheduleScheme" />
       </dictionary>
     </property>
   </object>

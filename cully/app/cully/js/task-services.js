@@ -41,6 +41,12 @@ define(function (require) {
                     save: { method: 'POST', params: { 'user': '@user', 'id': '@id', 'commentId': '0', 'content': '@content', 'observers': '@observers' } },
                     remove: { method: 'DELETE', params: { 'user': '@user', 'id': '@id', 'commentId': '@commentId', 'observers': '@observers'} }
                 });
+            } ])
+        .factory('ActivityTaskDelayListService', ['$resource', 'wcfApp', 'taskWcfService',
+            function ($resource, wcfApp, taskWcfService) {
+                return $resource(wcfApp + taskWcfService + '/taskDelay/:activityId/', {}, {
+                    query: { method: 'GET', params: { 'activityId': '@activityId' }, isArray: true }
+                });
             } ]);
 
 });

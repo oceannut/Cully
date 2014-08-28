@@ -6,6 +6,8 @@
                 <i class="fa fa-trash-o"></i>&nbsp;删除</a></li>-->
             <li access="supvisor" ng-show="isEditable"><a href="#/activity-edit/{{activity.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            <li access="user,supvisor"><a href="#/activity-task-delay/{{activity.Id}}/"><i class="fa fa-bar-chart-o">
+            </i>&nbsp;延误</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
             <li><a href="#/project-details/{{activity.ProjectId}}/"><i class="fa fa-level-up"></i>

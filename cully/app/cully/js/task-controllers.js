@@ -777,6 +777,39 @@ define(function (require) {
                             });
                 }
 
+            } ])
+        .controller('ActivityTaskDelayCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCache',
+                     'ActivityTaskDelayListService',
+            function ($scope, $location, $routeParams, $log, currentUser, userCache,
+                        ActivityTaskDelayListService) {
+
+                $scope.init = function () {
+
+                    $scope.alertMessageVisible = 'hidden';
+                    $scope.timeStamp = new Date();
+                    $scope.timeStamp = $scope.timeStamp.setDate($scope.timeStamp.getDate() - 1);
+
+                    $scope.activityId = $routeParams.id;
+                    ActivityTaskDelayListService.query({ 'activityId': $scope.activityId })
+                        .$promise
+                            .then(function (result) {
+                                $scope.taskDelayList = result;
+                                for (var i = 0; i < $scope.taskDelayList.length; i++) {
+                                    var taskDelay = $scope.taskDelayList[i];
+                                    userCache.get(taskDelay.Staff, function (e) {
+                                        taskDelay.staffName = (e == null) ? taskDelay.Staff : e.Name;
+                                    });
+                                    taskDelay.delayPercent = taskDelay.Total <= 0 ? "0%" : (Math.round(taskDelay.Delay / taskDelay.Total * 10000) / 100.00 + "%");
+                                    taskDelay.untimedPercent = taskDelay.Total <= 0 ? "0%" : (Math.round(taskDelay.Untimed / taskDelay.Total * 10000) / 100.00 + "%");
+                                }
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：获取延误数据失败";
+                            });
+
+                }
+
             } ]);
 
 });

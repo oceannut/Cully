@@ -1,0 +1,23 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bar-chart-o"></i>&nbsp;延误统计</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/activity-details/{{activityId}}/"><i class="fa fa-level-up"></i>&nbsp;活动</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <p>
+        截止<mark>{{timeStamp | date:'yyyy-MM-dd'}}</mark>，任务的延误情况如下所示：</p>
+    <div class="row" ng-repeat="item in taskDelayList" style="margin: 0 16px 0 16px;">
+        <a>{{item.staffName}}</a>&nbsp;&nbsp;共<span>{{item.Total}}个任务，其中：</span>
+        <div class="progress">
+            <div class="progress-bar progress-bar-danger" style="width: {{item.delayPercent}}%">
+                延误{{item.Delay}}个
+            </div>
+            <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{item.untimedPercent}}%">
+                无限期{{item.Untimed}}个
+            </div>
+        </div>
+    </div>
+</div>

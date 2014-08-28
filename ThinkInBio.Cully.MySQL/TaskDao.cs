@@ -107,8 +107,9 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public IList<Task> GetTaskList(DateTime? startTime, DateTime? endTime, 
-            long activityId, string staff, 
+        public IList<Task> GetList(DateTime? startTime, DateTime? endTime, 
+            long activityId, string staff,
+            bool? isUnderway, bool? isCompleted,
             bool asc, 
             int startRowIndex, int maxRowsCount)
         {
@@ -118,7 +119,7 @@ namespace ThinkInBio.Cully.MySQL
                 {
                     StringBuilder sql = new StringBuilder();
                     sql.Append("select id,content,activityId,isUnderway,isCompleted,staff,appointedDay,completion,commentCount,creation,modification from cyTask ");
-                    BuildSql(sql, parameters, startTime, endTime, activityId, staff);
+                    BuildSql(sql, parameters, startTime, endTime, activityId, staff, isUnderway, isCompleted);
                     sql.Append(" order by modification ");
                     if (!asc)
                     {
@@ -139,7 +140,8 @@ namespace ThinkInBio.Cully.MySQL
 
         private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
             DateTime? startTime, DateTime? endTime, 
-            long activityId, string staff)
+            long activityId, string staff,
+            bool? isUnderway, bool? isCompleted)
         {
             if (startTime.HasValue && startTime.Value != DateTime.MinValue
                     && endTime.HasValue && endTime.Value != DateTime.MinValue
@@ -161,6 +163,18 @@ namespace ThinkInBio.Cully.MySQL
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" staff=@staff ");
                 parameters.Add(new KeyValuePair<string, object>("staff", staff));
+            }
+            if (isUnderway.HasValue)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" isUnderway=@isUnderway ");
+                parameters.Add(new KeyValuePair<string, object>("isUnderway", isUnderway.Value));
+            }
+            if (isCompleted.HasValue)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" isCompleted=@isCompleted ");
+                parameters.Add(new KeyValuePair<string, object>("isCompleted", isCompleted.Value));
             }
         }
 

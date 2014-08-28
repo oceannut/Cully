@@ -415,5 +415,36 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
+        public TaskDelay[] GetTaskDelayList(string activityId)
+        {
+            long activityIdLong = 0;
+            try
+            {
+                activityIdLong = Convert.ToInt64(activityId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                IList<TaskDelay> list = TaskService.GetTaskDelayList(activityIdLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (BusinessLayerException ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
     }
 }

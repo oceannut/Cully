@@ -15,6 +15,7 @@
     <property name="BizNotificationService" ref="BizNotificationService" />
     <property name="ActivityDao" ref="ActivityDao" />
     <property name="CommentDao" ref="CommentDao" />
+    <property name="TaskDelayDao" ref="TaskDelayDao" />
   </object>
   <object id="TaskService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="TaskServiceTarget"/>
