@@ -16,6 +16,7 @@
     <property name="ActivityDao" ref="ActivityDao" />
     <property name="CommentDao" ref="CommentDao" />
     <property name="TaskDelayDao" ref="TaskDelayDao" />
+    <property name="JobLogService" ref="JobLogService" />
   </object>
   <object id="TaskService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="TaskServiceTarget"/>

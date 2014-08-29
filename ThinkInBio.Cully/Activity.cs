@@ -92,59 +92,58 @@ namespace ThinkInBio.Cully
 
         #region methods
 
-        /// <summary>
-        /// 创建一个任务。
-        /// </summary>
-        /// <returns>返回任务。</returns>
-        public Task CreateTask()
-        {
-            if (this.Id == 0)
-            {
-                throw new InvalidOperationException();
-            }
-            Task task = new Task(this.Id);
-            return task;
-        }
+        ///// <summary>
+        ///// 把活动移入指定的项目中。
+        ///// </summary>
+        ///// <param name="project">项目。</param>
+        ///// <param name="action">活动更新操作定义。</param>
+        //public void ImmigrateToProject(Project project, 
+        //    Action<Activity> action)
+        //{
+        //    if (project == null || project.Id == 0)
+        //    {
+        //        throw new ArgumentException();
+        //    }
+        //    this.ProjectId = project.Id;
+        //    Update(action);
+        //}
 
-        /// <summary>
-        /// 把活动移入指定的项目中。
-        /// </summary>
-        /// <param name="project">项目。</param>
-        /// <param name="action">活动更新操作定义。</param>
-        public void ImmigrateToProject(Project project, 
-            Action<Activity> action)
-        {
-            if (project == null || project.Id == 0)
-            {
-                throw new ArgumentException();
-            }
-            this.ProjectId = project.Id;
-            Update(action);
-        }
-
-        /// <summary>
-        /// 把活动移出项目。
-        /// </summary>
-        /// <param name="action">活动更新操作定义。</param>
-        public void EmigrateFromProject(Action<Activity> action)
-        {
-            if (this.ProjectId == 0)
-            {
-                throw new InvalidOperationException();
-            }
-            this.ProjectId = 0;
-            Update(action);
-        }
+        ///// <summary>
+        ///// 把活动移出项目。
+        ///// </summary>
+        ///// <param name="action">活动更新操作定义。</param>
+        //public void EmigrateFromProject(Action<Activity> action)
+        //{
+        //    if (this.ProjectId == 0)
+        //    {
+        //        throw new InvalidOperationException();
+        //    }
+        //    this.ProjectId = 0;
+        //    Update(action);
+        //}
 
         /// <summary>
         /// 保存活动。
         /// </summary>
+        /// <param name="project">所属项目。</param>
+        /// <param name="isAnyActivityExisted">判断所属的项目是否还有其它的活动。</param>
         /// <param name="action">保存操作定义。</param>
-        public void Save(Action<Activity> action)
+        public void Save(Project project,
+            Func<long, bool> isAnyActivityExisted, 
+            Action<Activity, Project, bool> action)
         {
-            if (this.ProjectId == 0)
+            if (project == null)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentNullException();
+
+            }
+            this.ProjectId = project.Id;
+
+            bool existed = isAnyActivityExisted(project.Id);
+            bool update = project.IsSolo && existed;
+            if (update)
+            {
+                project.IsSolo = false;
             }
 
             DateTime timeStamp = DateTime.Now;
@@ -152,7 +151,7 @@ namespace ThinkInBio.Cully
 
             if (action != null)
             {
-                action(this);
+                action(this, project, update);
             }
         }
 
@@ -200,54 +199,54 @@ namespace ThinkInBio.Cully
             }
         }
 
-        /// <summary>
-        /// 删除活动。
-        /// </summary>
-        /// <param name="tasksFetch">获取指定活动的任务集合的操作定义。</param>
-        /// <param name="action">删除操作定义。</param>
-        public void Delete(Func<long, ICollection<Task>> tasksFetch,
-            Action<Activity, ICollection<Task>> action)
-        {
-            if (this.Id == 0)
-            {
-                throw new InvalidOperationException();
-            }
-            if (tasksFetch == null)
-            {
-                throw new ArgumentException();
-            }
-            ICollection<Task> tasks = tasksFetch(this.Id);
-            Delete(tasks, action);
-        }
+        ///// <summary>
+        ///// 删除活动。
+        ///// </summary>
+        ///// <param name="tasksFetch">获取指定活动的任务集合的操作定义。</param>
+        ///// <param name="action">删除操作定义。</param>
+        //public void Delete(Func<long, ICollection<Task>> tasksFetch,
+        //    Action<Activity, ICollection<Task>> action)
+        //{
+        //    if (this.Id == 0)
+        //    {
+        //        throw new InvalidOperationException();
+        //    }
+        //    if (tasksFetch == null)
+        //    {
+        //        throw new ArgumentException();
+        //    }
+        //    ICollection<Task> tasks = tasksFetch(this.Id);
+        //    Delete(tasks, action);
+        //}
 
-        /// <summary>
-        /// 删除活动。
-        /// </summary>
-        /// <param name="tasks">本活动的任务集合。</param>
-        /// <param name="action">删除操作定义。</param>
-        public void Delete(ICollection<Task> tasks,
-            Action<Activity, ICollection<Task>> action)
-        {
-            if (this.Id == 0)
-            {
-                throw new InvalidOperationException();
-            }
-            if (tasks == null)
-            {
-                throw new ArgumentException();
-            }
-            foreach (Task task in tasks)
-            {
-                if (this.Id != task.ActivityId)
-                {
-                    throw new InvalidOperationException("tasks");
-                }
-            }
-            if (action != null)
-            {
-                action(this, tasks);
-            }
-        }
+        ///// <summary>
+        ///// 删除活动。
+        ///// </summary>
+        ///// <param name="tasks">本活动的任务集合。</param>
+        ///// <param name="action">删除操作定义。</param>
+        //public void Delete(ICollection<Task> tasks,
+        //    Action<Activity, ICollection<Task>> action)
+        //{
+        //    if (this.Id == 0)
+        //    {
+        //        throw new InvalidOperationException();
+        //    }
+        //    if (tasks == null)
+        //    {
+        //        throw new ArgumentException();
+        //    }
+        //    foreach (Task task in tasks)
+        //    {
+        //        if (this.Id != task.ActivityId)
+        //        {
+        //            throw new InvalidOperationException("tasks");
+        //        }
+        //    }
+        //    if (action != null)
+        //    {
+        //        action(this, tasks);
+        //    }
+        //}
 
         private void _Save(DateTime timeStamp)
         {

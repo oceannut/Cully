@@ -132,6 +132,18 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public bool IsAnyExisted(long projectId)
+        {
+            int count = DbTemplate.GetCount(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"select count(id) from cyActivity
+                                                where projectId=@projectId";
+                    command.Parameters.Add(DbFactory.CreateParameter("projectId", projectId));
+                });
+            return count > 0;
+        }
+
         public int GetCountByParticipant(string participant, string category, DateTime? startTime, DateTime? endTime)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();

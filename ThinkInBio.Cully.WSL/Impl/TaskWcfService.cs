@@ -415,8 +415,20 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public TaskDelay[] GetTaskDelayList(string activityId)
+        public TaskDelay[] GetTaskDelayList(string date, string activityId, string includeDones)
         {
+            DateTime d = DateTime.MinValue;
+            if ("null" != date)
+            {
+                try
+                {
+                    d = DateTime.Parse(date);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
+                }
+            }
             long activityIdLong = 0;
             try
             {
@@ -426,10 +438,20 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
             }
+            bool includeDonesBool = false;
+            try
+            {
+                includeDonesBool = Convert.ToBoolean(includeDones);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("includeDones", HttpStatusCode.BadRequest);
+            }
+            TaskDelayScope? scope = includeDonesBool ? new TaskDelayScope?() : TaskDelayScope.Undone;
 
             try
             {
-                IList<TaskDelay> list = TaskService.GetTaskDelayList(activityIdLong);
+                IList<TaskDelay> list = TaskService.GetTaskDelayList(d, scope, activityIdLong);
                 if (list != null)
                 {
                     return list.ToArray();

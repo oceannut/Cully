@@ -78,20 +78,6 @@ namespace ThinkInBio.Cully
         #region methods
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public Activity CreateActivity()
-        {
-            if (this.Id == 0)
-            {
-                throw new InvalidOperationException();
-            }
-            Activity activity = new Activity(this);
-            return activity;
-        }
-
-        /// <summary>
         /// 保存项目。
         /// </summary>
         /// <param name="action">保存操作定义。</param>
@@ -128,6 +114,13 @@ namespace ThinkInBio.Cully
             return participantList;
         }
 
+        /// <summary>
+        /// 保存项目。
+        /// </summary>
+        /// <param name="participants">参与人。</param>
+        /// <param name="firstActivity">第一个缺省同名的活动。</param>
+        /// <param name="action">保存操作定义。</param>
+        /// <returns>返回保存完毕的参与人信息。</returns>
         public IList<Participant> Save(ICollection<string> participants, Activity firstActivity,
             Action<Project, ICollection<Participant>, Activity> action)
         {
@@ -138,7 +131,6 @@ namespace ThinkInBio.Cully
 
             DateTime timeStamp = DateTime.Now;
             List<Participant> participantList = BuildParticipants(timeStamp, participants);
-
 
             if (firstActivity != null)
             {
@@ -182,14 +174,6 @@ namespace ThinkInBio.Cully
             if (action != null)
             {
                 action(this);
-            }
-        }
-
-        public void Delete()
-        {
-            if (this.Id == 0)
-            {
-                throw new InvalidOperationException();
             }
         }
 

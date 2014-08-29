@@ -151,13 +151,15 @@ namespace ThinkInBio.Cully.WSL
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="date"></param>
+        /// <param name="includeDones"></param>
         /// <param name="activityId"></param>
         /// <returns></returns>
         [OperationContract]
-        [WebGet(UriTemplate = "/taskDelay/{activityId}/",
+        [WebGet(UriTemplate = "/taskDelay/{date}/{activityId}/{includeDones}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        TaskDelay[] GetTaskDelayList(string activityId);
+        TaskDelay[] GetTaskDelayList(string date, string activityId, string includeDones);
 
     }
 

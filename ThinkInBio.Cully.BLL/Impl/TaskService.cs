@@ -19,6 +19,7 @@ namespace ThinkInBio.Cully.BLL.Impl
         internal IActivityDao ActivityDao { get; set; }
         internal ICommentDao CommentDao { get; set; }
         internal ITaskDelayDao TaskDelayDao { get; set; }
+        internal IJobLogService JobLogService { get; set; }
 
         public TaskService()
         {
@@ -30,9 +31,9 @@ namespace ThinkInBio.Cully.BLL.Impl
             {
                 return TaskDao.GetList(startTime, endTime, 0, null, null, true, false, 0, int.MaxValue);
             };
-            Delegates.TaskDelaySaveAction = (e) =>
+            Delegates.TaskDelaySaveAction = (col, log) =>
             {
-                TaskDelayDao.Save(new List<TaskDelay>(e));
+                this.SaveTaskDelay(new List<TaskDelay>(col), log);
             };
         }
 
@@ -164,14 +165,30 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
-        public IList<TaskDelay> GetTaskDelayList(long activityId)
+        public void SaveTaskDelay(ICollection<TaskDelay> taskDelayList, JobLog log)
+        {
+            if (taskDelayList == null || log == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (taskDelayList.Count > 0)
+            {
+                TaskDelayDao.Save(taskDelayList);
+            }
+            JobLogService.SaveJobLog(log);
+        }
+
+        public IList<TaskDelay> GetTaskDelayList(DateTime timeStamp, TaskDelayScope? scope, long activityId)
         {
             if (activityId == 0)
             {
                 throw new ArgumentNullException();
             }
-
-            IList<TaskDelay> list = TaskDelayDao.GetList(null, null, null, null, null, null, null, activityId, null);
+            int year = timeStamp.Year;
+            int month = timeStamp.Month;
+            int day = timeStamp.Day;
+            IList<TaskDelay> list = TaskDelayDao.GetList(year, month, day, year, month, day, scope, activityId, null);
             if (list != null)
             {
                 Dictionary<string, TaskDelay> dict = new Dictionary<string, TaskDelay>();

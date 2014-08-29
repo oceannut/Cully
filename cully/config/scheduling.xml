@@ -9,6 +9,8 @@
   </object>-->
 
   <object id="TaskDelayJob" type="ThinkInBio.Cully.TaskDelayJob, ThinkInBio.Cully">
+    <property name="UndoneTasksDaySpan" value="180"/>
+    <property name="DoneTasksDaySpan" value="1"/>
   </object>
 
   <object id="TaskDelaySchedule" type="ThinkInBio.Scheduling.Quartz.QuartzSchedule, ThinkInBio.Scheduling">

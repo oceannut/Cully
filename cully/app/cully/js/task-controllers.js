@@ -778,19 +778,26 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityTaskDelayCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCache',
+        .controller('ActivityTaskDelayCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCache', 'dateUtil',
                      'ActivityTaskDelayListService',
-            function ($scope, $location, $routeParams, $log, currentUser, userCache,
+            function ($scope, $location, $routeParams, $log, currentUser, userCache, dateUtil,
                         ActivityTaskDelayListService) {
 
                 $scope.init = function () {
-
                     $scope.alertMessageVisible = 'hidden';
-                    $scope.timeStamp = new Date();
-                    $scope.timeStamp = $scope.timeStamp.setDate($scope.timeStamp.getDate() - 1);
-
                     $scope.activityId = $routeParams.id;
-                    ActivityTaskDelayListService.query({ 'activityId': $scope.activityId })
+
+                    $scope.queryModel = {};
+                    var timestamp = new Date();
+                    timestamp.setDate(timestamp.getDate() - 1);
+                    $scope.queryModel.date = dateUtil.formatDateByYMD(timestamp);
+                    $scope.queryModel.includeDones = false;
+
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    ActivityTaskDelayListService.query({ 'date': $scope.queryModel.date, 'activityId': $scope.activityId, 'includeDones': $scope.queryModel.includeDones })
                         .$promise
                             .then(function (result) {
                                 $scope.taskDelayList = result;
@@ -807,7 +814,6 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：获取延误数据失败";
                             });
-
                 }
 
             } ]);

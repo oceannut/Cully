@@ -17,6 +17,8 @@ namespace ThinkInBio.Cully.DAL
 
         IList<Activity> GetList(long projectId);
 
+        bool IsAnyExisted(long projectId);
+
         int GetCountByParticipant(string participant, string category,
             DateTime? startTime, DateTime? endTime);
 

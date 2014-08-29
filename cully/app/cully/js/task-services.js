@@ -44,8 +44,8 @@ define(function (require) {
             } ])
         .factory('ActivityTaskDelayListService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
-                return $resource(wcfApp + taskWcfService + '/taskDelay/:activityId/', {}, {
-                    query: { method: 'GET', params: { 'activityId': '@activityId' }, isArray: true }
+                return $resource(wcfApp + taskWcfService + '/taskDelay/:date/:activityId/:includeDones/', {}, {
+                    query: { method: 'GET', params: { 'date': '@date', 'activityId': '@activityId', 'includeDones': '@includeDones' }, isArray: true }
                 });
             } ]);
 

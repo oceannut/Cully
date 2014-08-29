@@ -365,16 +365,25 @@ namespace ThinkInBio.Cully.WSL.Impl
 
             try
             {
+                Project project = ProjectService.GetProject(idLong);
+                if (project == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
                 Activity activity = new Activity();
                 activity.Category = category;
                 activity.Name = name;
                 activity.Description = description;
-                activity.ProjectId = idLong;
                 activity.Creator = user;
-                activity.Save((e) =>
-                {
-                    ProjectService.SaveActivity(e);
-                });
+                activity.Save(project, 
+                    (e) =>
+                    {
+                        return ProjectService.IsAnyActivityExisted(e);
+                    }, 
+                    (e1, e2, e3) =>
+                    {
+                        ProjectService.SaveActivity(e1, e2, e3);
+                    });
                 return activity;
             }
             catch (BusinessLayerException ex)

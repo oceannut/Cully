@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
+
 namespace ThinkInBio.Cully
 {
 
@@ -13,7 +15,7 @@ namespace ThinkInBio.Cully
 
         public static Func<DateTime, DateTime, IList<Task>> DoneTasksAccessor { get; set; }
 
-        public static Action<IEnumerable<TaskDelay>> TaskDelaySaveAction { get; set; }
+        public static Action<ICollection<TaskDelay>, JobLog> TaskDelaySaveAction { get; set; }
 
     }
 

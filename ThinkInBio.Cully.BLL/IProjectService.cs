@@ -73,7 +73,11 @@ namespace ThinkInBio.Cully.BLL
         /// 保存活动。
         /// </summary>
         /// <param name="activity">活动。</param>
-        void SaveActivity(Activity activity);
+        /// <param name="project">项目。</param>
+        /// <param name="needUpdate">是否需要更新。</param>
+        void SaveActivity(Activity activity,
+            Project project,
+            bool needUpdate);
 
         /// <summary>
         /// 保存活动。
@@ -138,6 +142,13 @@ namespace ThinkInBio.Cully.BLL
         /// <param name="projectId"></param>
         /// <returns></returns>
         IList<Activity> GetActivityList(long projectId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        bool IsAnyActivityExisted(long projectId);
 
         /// <summary>
         /// 

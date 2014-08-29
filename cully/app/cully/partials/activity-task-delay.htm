@@ -1,15 +1,25 @@
 ﻿<div class="story container" ng-init="init()">
     <div class="page-header">
-        <span class="lead"><i class="fa fa-bar-chart-o"></i>&nbsp;延误统计</span>
+        <span class="lead"><i class="fa fa-bar-chart-o"></i>&nbsp;每日延误统计</span>
         <ul class="list-inline pull-right">
             <li><a href="#/activity-details/{{activityId}}/"><i class="fa fa-level-up"></i>&nbsp;活动</a></li>
         </ul>
     </div>
+    <form class="form-inline" role="form">
+    <div class="form-group">
+        <input type="date" class="form-control input-sm" ng-model="queryModel.date" ng-change="query()" />
+    </div>
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" ng-model="queryModel.includeDones" ng-change="query()" />&nbsp;不统计已完成的任务
+        </label>
+    </div>
+    </form>
+    <br />
     <div class="alert alert-danger {{alertMessageVisible}}">
         {{alertMessage}}</div>
-    <p>
-        截止<mark>{{timeStamp | date:'yyyy-MM-dd'}}</mark>，任务的延误情况如下所示：</p>
-    <div class="row" ng-repeat="item in taskDelayList" style="margin: 0 16px 0 16px;">
+    <br />
+    <div class="row" ng-repeat="item in taskDelayList" style="margin: 0 8px 0 8px;">
         <a>{{item.staffName}}</a>&nbsp;&nbsp;共<span>{{item.Total}}个任务，其中：</span>
         <div class="progress">
             <div class="progress-bar progress-bar-danger" style="width: {{item.delayPercent}}%">

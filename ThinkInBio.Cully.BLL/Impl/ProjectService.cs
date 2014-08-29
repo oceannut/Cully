@@ -85,13 +85,23 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ProjectDao.GetListByParticipant(user, startTime, endTime, isSolo, false, 0, maxRowsCount);
         }
 
-        public void SaveActivity(Activity activity)
+        public void SaveActivity(Activity activity,
+            Project project,
+            bool needUpdate)
         {
             if (activity == null)
             {
                 throw new ArgumentNullException();
             }
+            if (project == null)
+            {
+                throw new ArgumentNullException();
+            }
             ActivityDao.Save(activity);
+            if (needUpdate)
+            {
+                UpdateProject(project);
+            }
         }
 
         public void SaveActivity(Activity activity, 
@@ -169,6 +179,16 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             return ActivityDao.GetList(projectId);
+        }
+
+        public bool IsAnyActivityExisted(long projectId)
+        {
+            if (projectId == 0)
+            {
+                throw new ArgumentNullException();
+            }
+
+            return ActivityDao.IsAnyExisted(projectId);
         }
 
         public void SaveParticipant(Participant participant)
