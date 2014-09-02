@@ -50,9 +50,13 @@ namespace ThinkInBio.Cully.WSL.Impl
                 task.Content = content;
                 DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
                 task.Save(user, staff, d,
-                    (e1, e2) =>
+                    (e) =>
                     {
-                        TaskService.SaveTask(e1, e2);
+                        return ProjectService.GetActivity(e);
+                    },
+                    (e1, e2, e3) =>
+                    {
+                        TaskService.SaveTask(e1, e2, e3);
                     });
 
                 return task;
@@ -98,9 +102,9 @@ namespace ThinkInBio.Cully.WSL.Impl
                 task.Content = content;
                 DateTime? d = string.IsNullOrWhiteSpace(appointedDay) ? new DateTime?() : Convert.ToDateTime(appointedDay);
                 task.Appoint(user, staff, d,
-                    (e1, e2) =>
+                    (e1, e2, e3) =>
                     {
-                        TaskService.UpdateTask(e1, e2);
+                        TaskService.UpdateTask(e1, e2, e3);
                     });
                 return task;
             }
@@ -205,7 +209,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     task.Complete(activity, taskList,
                         (e1, e2) =>
                         {
-                            TaskService.UpdateTask(e2, e1);
+                            TaskService.UpdateTask(e1, e2);
                         });
                 }
                 else
@@ -213,7 +217,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     task.Resume(activity,
                         (e1, e2) =>
                         {
-                            TaskService.UpdateTask(e2, e1);
+                            TaskService.UpdateTask(e1, e2);
                         });
                 }
                 return task;

@@ -158,6 +158,7 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 保存活动，用于直接创建活动，同时创建缺省的项目。
         /// </summary>
+        /// <param name="user">创建人。</param>
         /// <param name="participants">项目的参与人。</param>
         /// <param name="action">保存操作定义。</param>
         public void Save(string user,
@@ -187,11 +188,24 @@ namespace ThinkInBio.Cully
         /// <param name="action">更新操作定义。</param>
         public void Update(Action<Activity> action)
         {
+            Update(DateTime.Now, action);
+        }
+
+        /// <summary>
+        /// 更新活动。
+        /// </summary>
+        /// <param name="timeStamp">时间戳。</param>
+        /// <param name="action">更新操作定义。</param>
+        public void Update(DateTime timeStamp, Action<Activity> action)
+        {
+            if (DateTime.MinValue == timeStamp)
+            {
+                throw new ArgumentException();
+            }
             if (this.Id == 0)
             {
                 throw new InvalidOperationException();
             }
-            DateTime timeStamp = DateTime.Now;
             this.Modification = timeStamp;
             if (action != null)
             {

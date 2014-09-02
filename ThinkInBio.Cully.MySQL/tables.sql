@@ -32,6 +32,7 @@ create table cyProject
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+ALTER TABLE cyProject ADD INDEX modification_index  (modification);
 
 create table cyParticipant
 (
@@ -39,8 +40,10 @@ create table cyParticipant
 	projectId				BIGINT			NOT NULL,
 	staff					VARCHAR(32)		NOT NULL,
 	creation				DATETIME		NOT NULL,
+	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+ALTER TABLE cyParticipant ADD INDEX modification_index  (modification);
 
 create table cyActivity
 (
@@ -55,6 +58,7 @@ create table cyActivity
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+ALTER TABLE cyActivity ADD INDEX modification_index  (modification);
 
 create table cyTask
 (
@@ -71,6 +75,7 @@ create table cyTask
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+ALTER TABLE cyTask ADD INDEX activity_id_index  (activityId);
 
 create table cyTaskDelay
 (

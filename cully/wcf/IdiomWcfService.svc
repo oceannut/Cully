@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Factory="ThinkInBio.Spring.ServiceModel.SecureWebServiceHostFactory,ThinkInBio.Spring" Service="IdiomWcfService" %>

@@ -96,7 +96,7 @@ namespace ThinkInBio.Cully
         public DateTime Modification { get; set; }
 
         /// <summary>
-        /// 
+        /// 评论任务标识。
         /// </summary>
         public long TargetId
         {
@@ -104,7 +104,7 @@ namespace ThinkInBio.Cully
         }
 
         /// <summary>
-        /// 
+        /// 评论任务。
         /// </summary>
         public CommentTarget Target
         {
@@ -178,18 +178,22 @@ namespace ThinkInBio.Cully
         #region methods
 
         /// <summary>
-        /// 保存任务。
+        /// 保存并指派任务。
         /// </summary>
+        /// <param name="user">创建人。</param>
         /// <param name="staff">指派的人员。</param>
-        /// <param name="appointedDay">任务完成截止时间。</param>
+        /// <param name="appointedDay">任务完成期限。</param>
+        /// <param name="activityFetch">获取活动的操作定义。</param>
         /// <param name="action">保存操作定义。</param>
         public void Save(string user,
             string staff,
             DateTime? appointedDay,
-            Action<Task, BizNotification> action)
+            Func<long, Activity> activityFetch,
+            Action<Task, Activity, BizNotification> action)
         {
             if (string.IsNullOrWhiteSpace(user)
-                || string.IsNullOrWhiteSpace(staff))
+                || string.IsNullOrWhiteSpace(staff)
+                || activityFetch == null)
             {
                 throw new ArgumentNullException();
             }
@@ -201,11 +205,22 @@ namespace ThinkInBio.Cully
             {
                 throw new InvalidOperationException("ActivityId");
             }
-            this.IsUnderway = false;
-            this.IsCompleted = false;
+
+            DateTime timeStamp = DateTime.Now;
+
+            bool needUpdateActivity = false;
+            Activity activity = activityFetch(this.ActivityId);
+            if (activity.IsCompleted)
+            {
+                activity.IsCompleted = false;
+                activity.Update(timeStamp, null);
+                needUpdateActivity = true;
+            }
+
             this.Staff = staff;
             this.AppointedDay = appointedDay;
-            DateTime timeStamp = DateTime.Now;
+            this.IsUnderway = false;
+            this.IsCompleted = false;
             this.Creation = timeStamp;
             this.Modification = timeStamp;
 
@@ -213,20 +228,28 @@ namespace ThinkInBio.Cully
 
             if (action != null)
             {
-                action(this, notification);
+                if (needUpdateActivity)
+                {
+                    action(this, activity, notification);
+                }
+                else
+                {
+                    action(this, null, notification);
+                }
             }
         }
 
         /// <summary>
-        /// 重新指派任务。
+        /// 指派任务。
         /// </summary>
+        /// <param name="user">创建人。</param>
         /// <param name="staff">指派的人员。</param>
-        /// <param name="appointedDay">任务完成截止时间。</param>
+        /// <param name="appointedDay">任务完成期限。</param>
         /// <param name="action">更新操作定义。</param>
         public void Appoint(string user,
             string staff,
             DateTime? appointedDay,
-            Action<Task, BizNotification> action)
+            Action<Task, BizNotification, BizNotification> action)
         {
             if (string.IsNullOrWhiteSpace(user)
                 || string.IsNullOrWhiteSpace(staff))
@@ -237,21 +260,30 @@ namespace ThinkInBio.Cully
             {
                 throw new InvalidOperationException();
             }
-            this.Staff = staff;
-            this.AppointedDay = appointedDay;
+            BizNotification notification1 = null, notification2 = null;
+            if (staff != this.Staff)
+            {
+                notification1 = BuildBizNotification(user, this.Staff, "取消了任务", this.Id);
+                notification2 = BuildBizNotification(user, staff, "添加了任务", this.Id);
+                this.Staff = staff;
+            }
+            else if(appointedDay != this.AppointedDay)
+            {
+                notification1 = BuildBizNotification(user, this.Staff, "更新了任务的完成期限", this.Id);
+                this.AppointedDay = appointedDay;
+            }
+            
             DateTime timeStamp = DateTime.Now;
             this.Modification = timeStamp;
 
-            BizNotification notification = BuildBizNotification(user, this.Staff, "更新了任务", this.Id);
-
             if (action != null)
             {
-                action(this, notification);
+                action(this, notification1, notification2);
             }
         }
 
         /// <summary>
-        /// 启动任务。
+        /// 启动执行任务。
         /// </summary>
         /// <param name="action">更新操作定义。</param>
         public void Activate(Action<Task> action)
@@ -269,7 +301,7 @@ namespace ThinkInBio.Cully
         }
 
         /// <summary>
-        /// 暂停任务。
+        /// 暂停执行任务。
         /// </summary>
         /// <param name="action">更新操作定义。</param>
         public void Inactivate(Action<Task> action)
@@ -294,7 +326,7 @@ namespace ThinkInBio.Cully
         /// <param name="action">更新操作定义。</param>
         public void Complete(Func<long, Activity> activityFetch,
             Func<long, ICollection<Task>> tasksFetch,
-            Action<Activity, Task> action)
+            Action<Task, Activity> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
@@ -317,7 +349,7 @@ namespace ThinkInBio.Cully
         /// <param name="action">更新操作定义。</param>
         public void Complete(Activity activity,
             ICollection<Task> tasks,
-            Action<Activity, Task> action)
+            Action<Task, Activity> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
@@ -327,8 +359,9 @@ namespace ThinkInBio.Cully
             {
                 throw new ArgumentException("activity");
             }
+            DateTime timeStamp = DateTime.Now;
             this.IsCompleted = true;
-            this.Completion = DateTime.Now;
+            this.Completion = timeStamp;
             if (this.IsUnderway)
             {
                 this.IsUnderway = false;
@@ -357,16 +390,17 @@ namespace ThinkInBio.Cully
             if (allOtherTaskCompleted)
             {
                 activity.IsCompleted = allOtherTaskCompleted;
+                activity.Update(timeStamp, null);
             }
             if (action != null)
             {
                 if (allOtherTaskCompleted)
                 {
-                    action(activity, this);
+                    action(this, activity);
                 }
                 else
                 {
-                    action(null, this);
+                    action(this, null);
                 }
             }
         }
@@ -377,7 +411,7 @@ namespace ThinkInBio.Cully
         /// <param name="activityFetch">获取活动的操作定义。</param>
         /// <param name="action">更新操作定义。</param>
         public void Resume(Func<long, Activity> activityFetch,
-            Action<Activity, Task> action)
+            Action<Task, Activity> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
@@ -397,7 +431,7 @@ namespace ThinkInBio.Cully
         /// <param name="activity">所属的活动。</param>
         /// <param name="action">更新操作定义。</param>
         public void Resume(Activity activity,
-            Action<Activity, Task> action)
+            Action<Task, Activity> action)
         {
             if (this.Id == 0 || this.ActivityId == 0)
             {
@@ -418,17 +452,18 @@ namespace ThinkInBio.Cully
             if (activity.IsCompleted)
             {
                 activity.IsCompleted = false;
+                activity.Update(DateTime.Now, null);
                 updateActivity = true;
             }
             if (action != null)
             {
                 if (updateActivity)
                 {
-                    action(activity, this);
+                    action(this, activity);
                 }
                 else
                 {
-                    action(null, this);
+                    action(this, null);
                 }
             }
         }
@@ -439,11 +474,20 @@ namespace ThinkInBio.Cully
         /// <param name="action">更新操作定义。</param>
         public void Update(Action<Task> action)
         {
+            Update(DateTime.Now, action);
+        }
+
+        /// <summary>
+        /// 更新任务。
+        /// </summary>
+        /// <param name="timeStamp">时间戳。</param>
+        /// <param name="action">更新操作定义。</param>
+        public void Update(DateTime timeStamp, Action<Task> action)
+        {
             if (this.Id == 0 || this.ActivityId == 0)
             {
                 throw new InvalidOperationException();
             }
-            DateTime timeStamp = DateTime.Now;
             this.Modification = timeStamp;
             if (action != null)
             {
@@ -512,16 +556,26 @@ namespace ThinkInBio.Cully
                     }
                 });
             }
-            if (allOtherTaskCompleted)
+            bool needUpdateActivity = false;
+            if (allOtherTaskCompleted && !activity.IsCompleted)
             {
                 activity.IsCompleted = allOtherTaskCompleted;
+                activity.Update(DateTime.Now, null);
+                needUpdateActivity = true;
             }
 
             BizNotification notification = BuildBizNotification(activity.Creator, this.Staff, "删除了任务", 0);
 
             if (action != null)
             {
-                action(this, activity, notification);
+                if (needUpdateActivity)
+                {
+                    action(this, activity, notification);
+                }
+                else
+                {
+                    action(this, null, notification);
+                }
             }
         }
 
@@ -547,12 +601,12 @@ namespace ThinkInBio.Cully
                 throw new InvalidOperationException();
             }
 
-            DateTime now = DateTime.Now;
+            DateTime timeStamp = DateTime.Now;
             Comment comment = new Comment(content, user);
-            ICollection<BizNotification> notificationList = comment.Save(this, observers, now, null);
+            ICollection<BizNotification> notificationList = comment.Save(this, observers, timeStamp, null);
 
             this.CommentCount++;
-            this.Modification = now;
+            this.Update(null);
 
             if (action != null)
             {
@@ -585,7 +639,7 @@ namespace ThinkInBio.Cully
             ICollection<BizNotification> notificationList = comment.Delete(observers, now, null);
 
             this.CommentCount--;
-            this.Modification = now;
+            this.Update(null);
 
             if (action != null)
             {

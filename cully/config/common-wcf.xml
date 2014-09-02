@@ -36,6 +36,11 @@
     <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
   </object>
 
+  <object id="IdiomWcfService" type="ThinkInBio.CommonApp.WSL.Impl.IdiomWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
+    <property name="IdiomService" ref="IdiomService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
+
   <object id="ScheduleWcfService" type="ThinkInBio.CommonApp.WSL.Impl.ScheduleWcfService, ThinkInBio.CommonApp.WSL" singleton="false">
     <property name="ScheduleManager" ref="ScheduleManager" />
     <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />

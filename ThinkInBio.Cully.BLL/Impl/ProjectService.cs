@@ -93,10 +93,6 @@ namespace ThinkInBio.Cully.BLL.Impl
             {
                 throw new ArgumentNullException();
             }
-            if (project == null)
-            {
-                throw new ArgumentNullException();
-            }
             ActivityDao.Save(activity);
             if (needUpdate)
             {

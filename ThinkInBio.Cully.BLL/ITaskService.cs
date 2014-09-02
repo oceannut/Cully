@@ -11,11 +11,11 @@ namespace ThinkInBio.Cully.BLL
     public interface ITaskService
     {
 
-        void SaveTask(Task task, BizNotification notification);
+        void SaveTask(Task task, Activity activity, BizNotification notification);
 
         void UpdateTask(Task task);
 
-        void UpdateTask(Task task, BizNotification notification);
+        void UpdateTask(Task task, BizNotification notification2Staff, BizNotification notification2StaffIfChanged);
 
         void UpdateTask(Task task, Activity activity);
 

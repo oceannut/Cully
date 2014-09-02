@@ -14,8 +14,9 @@ define(function (require) {
     require('../../auth/js/auth-directives');
     require('../../common/js/common-cache');
     require('../../common/js/biz-notification-services');
+    require('../../common/js/idiom-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
+    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services', 'idiom.services'])
         .factory('taskServiceUtil', ['$log', 'currentUser', 'Update4IsUnderwayTaskService', 'Update4IsCompletedTaskService',
             function ($log, currentUser, Update4IsUnderwayTaskService, Update4IsCompletedTaskService) {
 
@@ -45,9 +46,9 @@ define(function (require) {
 
             } ])
         .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService',
-                                 'ParticipantOfProjectService', 'userCache', 'dateUtil', 'taskServiceUtil',
+                                 'ParticipantOfProjectService', 'userCache', 'dateUtil', 'taskServiceUtil', 'IdiomListService',
             function ($scope, $location, $log, currentUser, TaskService, TaskListService,
-                      ParticipantOfProjectService, userCache, dateUtil, taskServiceUtil) {
+                      ParticipantOfProjectService, userCache, dateUtil, taskServiceUtil, IdiomListService) {
 
                 function clear() {
                     $scope.task = {};
@@ -266,10 +267,29 @@ define(function (require) {
                     interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
                 }
 
+                function loadIdioms() {
+                    IdiomListService.query({ 'scope': 'task' })
+                        .$promise
+                            .then(function (result) {
+                                $scope.idiomList = result;
+                            }, function (error) {
+                                scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：获取短语列表失败";
+                                $log.error(error);
+                            });
+                }
+
+                $scope.addIdiom = function () {
+                    $scope.task.content += $scope.idiom;
+                }
+
                 $scope.createTask = function () {
                     $scope.taskPanelDisplay = '';
                     $scope.saveButtonContent = '添加任务';
                     clear();
+                    if ($scope.idiomList === undefined || $scope.idiomList === null || $scope.idiomList.length === 0) {
+                        loadIdioms();
+                    }
                 }
 
                 $scope.refreshTaskList = function () {
@@ -286,6 +306,9 @@ define(function (require) {
                     $scope.task.staff = task.Staff;
                     var appointedDay = dateUtil.jsonToDate(task.AppointedDay);
                     $scope.task.appointedDay = appointedDay == null ? '' : dateUtil.formatDateByYMD(appointedDay);
+                    if ($scope.idiomList === undefined || $scope.idiomList === null || $scope.idiomList.length === 0) {
+                        loadIdioms();
+                    }
                 }
 
                 $scope.save = function () {

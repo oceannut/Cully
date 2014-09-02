@@ -43,10 +43,15 @@ namespace Test.ThinkInBio.Cully.MySQL
             activity.Name = "活动名称";
             activity.Description = "活动描述";
             activity.ProjectId = project.Id;
-            activity.Save((e) =>
-            {
-                activityDao.Save(e);
-            });
+            activity.Save(project,
+                (e) =>
+                {
+                    return activityDao.IsAnyExisted(e);
+                },
+                (e1, e2, e3) =>
+                {
+                    activityDao.Save(e1);
+                });
             Assert.IsTrue(activity.Id > 0);
 
             Task task = new Task(activity.Id);

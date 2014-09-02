@@ -211,7 +211,7 @@ namespace ThinkInBio.Cully
             {
                 p = new Participant(this);
                 p.Staff = participant;
-                p.Creation = DateTime.Now;
+                //p.Creation = DateTime.Now;
             }
             if (action != null)
             {

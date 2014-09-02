@@ -11,9 +11,9 @@ namespace ThinkInBio.Cully.DAL
     public interface IActivityDao : IDao<Activity>
     {
 
-        bool Update4IsCompleted(long id, bool isCompleted);
+        //bool Update4IsCompleted(long id, bool isCompleted, DateTime timeStamp);
 
-        bool Update4ProjectId(long id, long projectId);
+        //bool Update4ProjectId(long id, long projectId, DateTime timeStamp);
 
         IList<Activity> GetList(long projectId);
 

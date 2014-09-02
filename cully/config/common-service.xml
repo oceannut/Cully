@@ -45,6 +45,13 @@
   <object id="JobLogService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="JobLogServiceTarget"/>
   </object>
+
+  <object id="IdiomServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.IdiomService, ThinkInBio.CommonApp.BLL">
+    <property name="IdiomDao" ref="IdiomDao" />
+  </object>
+  <object id="IdiomService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="IdiomServiceTarget"/>
+  </object>
   
 </objects>
 

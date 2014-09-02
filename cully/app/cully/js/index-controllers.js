@@ -56,9 +56,15 @@ define(function (require) {
                         $scope.loginUser.username = data;
                         $scope.loginUser.name = currentUser.getName();
                         $scope.loginUser.isAdmin = false;
+                        $scope.loginUser.isSupvisor = false;
                         var roles = currentUser.getRoles();
-                        if (roles !== undefined && roles !== null && roles.indexOf('admin') > -1) {
-                            $scope.loginUser.isAdmin = true;
+                        if (roles !== undefined && roles !== null) {
+                            if (roles.indexOf('admin') > -1) {
+                                $scope.loginUser.isAdmin = true;
+                            }
+                            if (roles.indexOf('supvisor') > -1) {
+                                $scope.loginUser.isSupvisor = true;
+                            }
                         }
 
                         loadUntreatedNotificationCount();

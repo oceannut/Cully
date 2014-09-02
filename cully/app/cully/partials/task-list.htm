@@ -22,10 +22,18 @@
     <div class="well well-sm" style="display: {{taskPanelDisplay}};">
         <form class="form-horizontal css-form" role="form" name="form">
         <div class="form-group">
-            <div class="col-sm-12">
+            <div class="col-sm-8">
                 <input type="text" class="form-control" placeholder="任务内容" name="content" ng-model="task.content"
                     ng-maxlength="255" required autofocus>
                 <span class="text-danger" ng-show="form.content.$error.maxlength">警告：任务内容太长</span>
+            </div>
+            <div class="col-sm-4">
+                <div class="input-group">
+                    <span class="input-group-addon">常用短语</span>
+                    <select class="form-control" ng-model="idiom" ng-change="addIdiom()">
+                        <option ng-repeat="item in idiomList">{{item.Content}}</option>
+                    </select>
+                </div>
             </div>
         </div>
         <div class="form-group">

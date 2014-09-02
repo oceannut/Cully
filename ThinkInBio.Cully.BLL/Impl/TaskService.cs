@@ -37,7 +37,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             };
         }
 
-        public void SaveTask(Task task, BizNotification notification)
+        public void SaveTask(Task task, Activity activity, BizNotification notification)
         {
             if (task == null)
             {
@@ -45,6 +45,10 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             TaskDao.Save(task);
+            if (activity != null)
+            {
+                ActivityDao.Update(activity);
+            }
             if (notification != null)
             {
                 BizNotificationService.SaveNotification(notification);
@@ -61,7 +65,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             TaskDao.Update(task);
         }
 
-        public void UpdateTask(Task task, BizNotification notification)
+        public void UpdateTask(Task task, BizNotification notification2Staff, BizNotification notification2StaffIfChanged)
         {
             if (task == null)
             {
@@ -69,9 +73,13 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             TaskDao.Update(task);
-            if (notification != null)
+            if (notification2Staff != null)
             {
-                BizNotificationService.SaveNotification(notification);
+                BizNotificationService.SaveNotification(notification2Staff);
+            }
+            if (notification2StaffIfChanged != null)
+            {
+                BizNotificationService.SaveNotification(notification2StaffIfChanged);
             }
         }
 

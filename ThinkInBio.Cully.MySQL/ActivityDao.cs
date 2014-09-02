@@ -53,13 +53,13 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"update cyActivity 
-                                                set category=@category,name=@name,description=@description,modification=@modification,isCompleted=@isCompleted
+                                                set category=@category,name=@name,description=@description,isCompleted=@isCompleted,modification=@modification
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("category", entity.Category));
                     command.Parameters.Add(DbFactory.CreateParameter("name", entity.Name));
                     command.Parameters.Add(DbFactory.CreateParameter("description", entity.Description));
-                    command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
                     command.Parameters.Add(DbFactory.CreateParameter("isCompleted", entity.IsCompleted));
+                    command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
                     command.Parameters.Add(DbFactory.CreateParameter("id", entity.Id));
                 });
         }
@@ -90,31 +90,33 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public bool Update4IsCompleted(long id, bool isCompleted)
-        {
-            return DbTemplate.UpdateOrDelete(dataSource,
-                (command) =>
-                {
-                    command.CommandText = @"update cyActivity 
-                                                set isCompleted=@isCompleted
-                                                where id=@id";
-                    command.Parameters.Add(DbFactory.CreateParameter("isCompleted", isCompleted));
-                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
-                });
-        }
+//        public bool Update4IsCompleted(long id, bool isCompleted, DateTime timeStamp)
+//        {
+//            return DbTemplate.UpdateOrDelete(dataSource,
+//                (command) =>
+//                {
+//                    command.CommandText = @"update cyActivity 
+//                                                set isCompleted=@isCompleted,modification=@modification
+//                                                where id=@id";
+//                    command.Parameters.Add(DbFactory.CreateParameter("isCompleted", isCompleted));
+//                    command.Parameters.Add(DbFactory.CreateParameter("modification", timeStamp));
+//                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+//                });
+//        }
 
-        public bool Update4ProjectId(long id, long projectId)
-        {
-            return DbTemplate.UpdateOrDelete(dataSource,
-                (command) =>
-                {
-                    command.CommandText = @"update cyActivity 
-                                                set projectId=@projectId
-                                                where id=@id";
-                    command.Parameters.Add(DbFactory.CreateParameter("projectId", projectId));
-                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
-                });
-        }
+//        public bool Update4ProjectId(long id, long projectId, DateTime timeStamp)
+//        {
+//            return DbTemplate.UpdateOrDelete(dataSource,
+//                (command) =>
+//                {
+//                    command.CommandText = @"update cyActivity 
+//                                                set projectId=@projectId,modification=@modification
+//                                                where id=@id";
+//                    command.Parameters.Add(DbFactory.CreateParameter("projectId", projectId));
+//                    command.Parameters.Add(DbFactory.CreateParameter("modification", timeStamp));
+//                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+//                });
+//        }
 
         public IList<Activity> GetList(long projectId)
         {
