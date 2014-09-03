@@ -3,32 +3,39 @@
 define(function (require) {
 
     require('ng');
-    require('ng-local-storage');
     //require('jquery');
     //require('bootstrap');
+    require('../../../static/js/events');
     require('../../auth/js/auth-models');
+    require('./client-services');
 
-    angular.module('client.controllers', ['LocalStorageModule', 'auth.models'])
-        .controller('ClientSettingCtrl', ['$scope', '$location', '$log', '$anchorScroll', 'localStorageService', 'currentUser',
-            function ($scope, $location, $log, $anchorScroll, localStorageService, currentUser) {
+    angular.module('client.controllers', ['events', 'auth.models', 'client.services'])
+        .controller('ClientSettingCtrl', ['$scope', '$location', '$log', '$anchorScroll', 'eventbus', 'currentUser', 'LocalStorageUtil',
+            function ($scope, $location, $log, $anchorScroll, eventbus, currentUser, LocalStorageUtil) {
+
+                var username;
+
+                function load(name, value) {
+                    $scope.userData[name] = value;
+                }
+
+                function set(name) {
+
+                    LocalStorageUtil.setUserData(username, name, $scope.userData[name]);
+                }
 
                 $scope.init = function () {
 
                     $('#menu').affix();
+                    $scope.alertMessage = "";
 
-                    $scope.userData = {
-                        'animation': true,
-                        'caution': 60,
-                        'cautionByMusic': 'true',
-                        'caution4Task': 'false'
-                    };
+                    username = currentUser.getUsername();
 
-                    var username = currentUser.getUsername();
-                    var caution = localStorageService.get(username + '.caution');
-                    if (caution !== null) {
-                        $scope.userData.caution = caution;
-                    }
-
+                    $scope.userData = {};
+                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.animation, LocalStorageUtil.animationDV, true, load);
+                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.caution, LocalStorageUtil.cautionDV, false, load);
+                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.cautionByMusic, LocalStorageUtil.cautionByMusicDV, false, load);
+                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.caution4Task, LocalStorageUtil.caution4TaskDV, false, load);
                 }
 
                 $scope.gotoAnchor = function (anchor) {
@@ -37,8 +44,13 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
-                    var username = currentUser.getUsername();
-                    localStorageService.set(username + '.caution', $scope.userData.caution);
+                    $scope.alertMessage = "";
+                    set(LocalStorageUtil.animation);
+                    set(LocalStorageUtil.caution);
+                    set(LocalStorageUtil.cautionByMusic);
+                    set(LocalStorageUtil.caution4Task);
+                    eventbus.broadcast("clientUserDataChanged");
+                    $scope.alertMessage = "提示：保存成功";
                 }
 
             } ]);

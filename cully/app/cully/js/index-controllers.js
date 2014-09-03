@@ -7,10 +7,11 @@ define(function (require) {
     require('../../../static/js/events');
     require('../../common/js/biz-notification-services');
     require('../../auth/js/auth-models');
+    require('./client-services');
 
-    angular.module('index.controllers', ['configs', 'events', 'auth.models', 'bizNotification.services'])
-        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName', 'UntreatedBizNotificationListService',
-            function ($scope, $location, $log, $interval, currentUser, eventbus, appName, UntreatedBizNotificationListService) {
+    angular.module('index.controllers', ['configs', 'events', 'auth.models', 'bizNotification.services', 'client.services'])
+        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName', 'UntreatedBizNotificationListService', 'LocalStorageUtil',
+            function ($scope, $location, $log, $interval, currentUser, eventbus, appName, UntreatedBizNotificationListService, LocalStorageUtil) {
 
                 var homeNav = {
                     "name": "首页",
@@ -27,27 +28,26 @@ define(function (require) {
                     "url": "/log-summary/",
                     "active": ""
                 };
+                var untreatedBizNotificationCountTimer; //刷新通知个数的时间定义。
+                var cautionInterval;
 
                 function loadUntreatedNotificationCount() {
                     UntreatedBizNotificationListService.count(currentUser.getUsername())
                                 .then(function (response) {
                                     $scope.untreatedNotificationCount = response.data;
-
-                                    if ($scope.untreatedNotificationCount > 0) {
+                                    var cautionByMusic = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.cautionByMusic, LocalStorageUtil.cautionByMusicDV, true);
+                                    if (cautionByMusic && $scope.untreatedNotificationCount > 0) {
                                         var audio = document.getElementById("untreatedNotificationAudio");
                                         if (audio !== undefined && audio !== null) {
                                             audio.play();
                                         }
                                     }
-
                                 }, function (response) {
                                     $log.error(response);
                                 });
                 }
 
                 $scope.init = function () {
-
-                    var untreatedBizNotificationCountTimer; //刷新通知个数的时间定义。
 
                     //订阅事件。
                     eventbus.subscribe("userSignIn", function (e, data) {
@@ -68,9 +68,12 @@ define(function (require) {
                         }
 
                         loadUntreatedNotificationCount();
-                        untreatedBizNotificationCountTimer = $interval(function () {
-                            loadUntreatedNotificationCount();
-                        }, 60000);
+                        cautionInterval = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.caution, LocalStorageUtil.cautionDV, true);
+                        if (cautionInterval > 0) {
+                            untreatedBizNotificationCountTimer = $interval(function () {
+                                loadUntreatedNotificationCount();
+                            }, cautionInterval * 1000);
+                        }
 
                     });
                     eventbus.subscribe("userSignOut", function (e, data) {
@@ -87,6 +90,18 @@ define(function (require) {
                     });
                     eventbus.subscribe('untreatedBizNotificationChanged', function (e, data) {
                         $scope.untreatedNotificationCount = data;
+                    });
+                    eventbus.subscribe("clientUserDataChanged", function (e, data) {
+                        var interval = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.caution, LocalStorageUtil.cautionDV, true);
+                        if (cautionInterval != interval && untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {
+                            cautionInterval = interval;
+                            $interval.cancel(untreatedBizNotificationCountTimer);
+                            if (cautionInterval > 0) {
+                                untreatedBizNotificationCountTimer = $interval(function () {
+                                    loadUntreatedNotificationCount();
+                                }, cautionInterval * 1000);
+                            }
+                        }
                     });
 
                     //初始化导航条。
