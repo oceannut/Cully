@@ -299,6 +299,11 @@ define(function (require) {
                 }
 
                 $scope.editTask = function (task) {
+                    if (task.IsCompleted === true) {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：任务已完成，不能再修改。";
+                        return;
+                    }
                     $scope.taskPanelDisplay = '';
                     $scope.saveButtonContent = '保存修改';
                     $scope.task.id = task.Id;

@@ -57,7 +57,7 @@ namespace Test.ThinkInBio.Cully.MySQL
             Task task = new Task(activity.Id);
             task.Content = "干活去";
             DateTime? d = DateTime.Now;
-            task.Save("me", "you", d, (e1, e2) =>
+            task.Save("me", "you", d, null, (e1, e2, e3) =>
             {
                 taskDao.Save(e1);
             });

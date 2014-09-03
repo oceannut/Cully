@@ -54,7 +54,7 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"update cyTask 
-                                                set content=@content,staff=@staff,appointedDay=appointedDay,modification=@modification,
+                                                set content=@content,staff=@staff,appointedDay=@appointedDay,modification=@modification,
                                                     isUnderway=@isUnderway,isCompleted=@isCompleted,completion=@completion
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));

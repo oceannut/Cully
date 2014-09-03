@@ -260,14 +260,19 @@ namespace ThinkInBio.Cully
             {
                 throw new InvalidOperationException();
             }
+            if (this.IsCompleted)
+            {
+                throw new InvalidOperationException("IsCompleted");
+            }
             BizNotification notification1 = null, notification2 = null;
             if (staff != this.Staff)
             {
                 notification1 = BuildBizNotification(user, this.Staff, "取消了任务", this.Id);
                 notification2 = BuildBizNotification(user, staff, "添加了任务", this.Id);
                 this.Staff = staff;
+                this.IsUnderway = false;
             }
-            else if(appointedDay != this.AppointedDay)
+            if(appointedDay != this.AppointedDay)
             {
                 notification1 = BuildBizNotification(user, this.Staff, "更新了任务的完成期限", this.Id);
                 this.AppointedDay = appointedDay;

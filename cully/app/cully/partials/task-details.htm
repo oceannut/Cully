@@ -113,16 +113,17 @@
                     <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
                         data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
                         </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
-                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;|&nbsp;&nbsp;</a><small>
-                                <abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
+                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;</a>
+                </p>
+                <!--<small><abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
                                     其它通知：</abbr></small> &nbsp;&nbsp;<a href="mailto:#" class="btn btn-default btn-xs"><i
                                         class="fa fa-envelope"></i>&nbsp;邮件</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
                                             class="fa fa-qq"></i>&nbsp;QQ</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
-                                                class="fa fa-phone"></i>&nbsp;电话</a></p>
+                                                class="fa fa-phone"></i>&nbsp;电话</a>-->
             </li>
         </ol>
     </div>
-    <div class="row" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
+    <div class="row hidden-print" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
         <form class="form-horizontal css-form" role="form" name="form">
         <h3>
             发表评论</h3>

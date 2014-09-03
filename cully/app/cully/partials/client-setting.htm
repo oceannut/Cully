@@ -8,12 +8,27 @@
         <div class="col-md-2">
             <div class="hidden-print hidden-xs hidden-sm" role="complementary" id="menu">
                 <ul class="nav">
+                    <li><a ng-click="gotoAnchor('signin')">登录</a></li>
                     <li><a ng-click="gotoAnchor('ui')">界面</a></li>
                     <li><a ng-click="gotoAnchor('caution')">提醒</a></li>
                 </ul>
             </div>
         </div>
         <div class="col-md-10" role="main">
+            <h1 id="signin" class="page-header">
+                登录</h1>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">
+                    记住我的登录用户名
+                </label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox">
+                    自动登录（不建议）
+                </label>
+            </div>
             <h1 id="ui" class="page-header">
                 界面</h1>
             <div class="checkbox">
