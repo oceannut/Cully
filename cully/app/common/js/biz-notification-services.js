@@ -31,6 +31,12 @@ define(function (require) {
                 return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/both/:user/resource/:resource/resourceId/:resourceId/', {}, {
                     query: { method: 'GET', params: { 'user': '@user', 'resource': '@resource', 'resourceId': '@resourceId' }, isArray: true }
                 });
+            } ])
+        .factory('BizNotificationListService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
+            function ($resource, wcfApp, bizNotificationWcfService) {
+                return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/:box/:user/time/:date/:span/range/:start/:count/', {}, {
+                    query: { method: 'GET', params: { 'box': '@box', 'user': '@user', 'date': '@date', 'span': 'span', 'start': '@start', 'count': '@count' }, isArray: true }
+                });
             } ]);
 
 });

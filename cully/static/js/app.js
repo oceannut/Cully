@@ -322,7 +322,10 @@ define(function (require) {
                     })
                     .when('/notification-list/:box/', {
                         templateUrl: 'app/cully/partials/notification-list.htm',
-                        controller: 'BizNotificationListCtrl'
+                        controller: 'BizNotificationListCtrl',
+                        access: {
+                            loginRequired: true
+                        }
                     })
                     .when('/untreated-notification/', {
                         templateUrl: 'app/cully/partials/untreated-notification.htm',
