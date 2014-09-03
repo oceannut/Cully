@@ -30,26 +30,28 @@
                                 ng-click="changeUrl(item)">{{item.name}}</a></li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li><a href="#/untreated-notification/"><span class="fa-stack" style="margin: -8px 0 0 0;
-                                width: 25px; height: 25px;"><i class="fa fa-bell-o fa-stack-2x"></i><i class="fa fa-bolt fa-stack-1x"
-                                    ng-class="{true:'text-red',false:''}[untreatedNotificationCount>0]"></i></span>
-                                &nbsp;通知<span ng-if="untreatedNotificationCount>0" class="text-red">({{untreatedNotificationCount}})</span><audio
-                                    id="untreatedNotificationAudio" src="static/audio/1.wav"></audio></a>
-                            </li>
+                            <li><a href="#/untreated-notification/"><i class="fa " ng-class="{true:'fa-bell text-red',false:'fa-bell-slash-o'}[untreatedNotificationCount>0]">
+                            </i>&nbsp;提醒<span ng-if="untreatedNotificationCount>0" class="text-red">({{untreatedNotificationCount}})</span><audio
+                                id="untreatedNotificationAudio" src="static/audio/1.wav"></audio></a> </li>
                             <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 <img class="media-object pull-left" data-src="holder.js/32x32" src="static/img/duke.png"
                                     style="margin: -6px 0 6px 0; width: 32px; height: 32px; border: 0px" alt="{{loginUser.name}}"
                                     title="{{loginUser.name}}">&nbsp; {{loginUser.name}}&nbsp;<span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <li><a href="#/user-setting/{{loginUser.username}}/">个人设置</a></li>
+                                    <li><a href="#/user-setting/{{loginUser.username}}/"><i class="fa fa-user fa-fw"></i>
+                                        &nbsp;个人信息</a></li>
+                                    <li><a href="#/password-modify/{{loginUser.username}}/"><i class="fa fa-key fa-fw"></i>
+                                        &nbsp;重设密码</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="#/notification-list/inbox/">收件箱</a></li>
-                                    <li><a href="#/notification-list/outbox/">已发送通知</a></li>
+                                    <li><a href="#/client-setting/{{loginUser.username}}/"><i class="fa fa-desktop fa-fw">
+                                    </i>&nbsp;客户端设置</a></li>
                                     <li class="divider"></li>
+                                    <li><a href="#/notification-list/inbox/"><i class="fa fa-mail-reply fa-fw"></i>&nbsp;收件箱</a></li>
+                                    <li><a href="#/notification-list/outbox/"><i class="fa fa-mail-forward fa-fw"></i>&nbsp;已发送通知</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown" ng-show="loginUser.isAdmin || loginUser.isSupvisor"><a class="dropdown-toggle" data-toggle="dropdown"
-                                href="#"><i class="fa fa-gear"></i>&nbsp;系统管理&nbsp;<span class="caret"></span></a>
+                            <li class="dropdown" ng-show="loginUser.isAdmin || loginUser.isSupvisor"><a class="dropdown-toggle"
+                                data-toggle="dropdown" href="#"><i class="fa fa-list"></i>&nbsp;系统管理&nbsp;<span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                     <li ng-show="loginUser.isAdmin"><a href="#/category-overview/">分类</a></li>
                                     <li ng-show="loginUser.isAdmin"><a href="#/user-role-overview/user/">用户/角色</a></li>
@@ -59,7 +61,6 @@
                                     <li><a href="#/notice-list/">公告管理</a></li>
                                     <li><a href="#/notice-edit/0/">发布公告</a></li>
                                     <li><a href="#/idiom-overview/">常用短语</a></li>
-                                    <li class="divider"></li>
                                 </ul>
                             </li>
                             <li><a href="#/sign-out/"><i class="fa fa-sign-out"></i>&nbsp;退出</a></li>
@@ -91,6 +92,7 @@
                 "ng-route": "angular/angular-route.min.js",
                 "ng-resource": "angular/angular-resource.min.js",
                 "ng-cookies": "angular/angular-cookies.min.js",
+                "ng-local-storage": "local-storage/angular-local-storage.min.js",
                 "textAngular-sanitize": "textAngular/textAngular-sanitize.min.js",
                 "textAngular": "textAngular/textAngular.min.js"
             },

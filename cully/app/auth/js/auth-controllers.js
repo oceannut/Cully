@@ -9,6 +9,7 @@ define(function (require) {
     require('../../../static/js/directives');
     require('./auth-models');
     require('./auth-services');
+    require('../../common/js/user-services');
 
     require('../../../static/css/sign.css');
 
@@ -178,6 +179,65 @@ define(function (require) {
                 $scope.init = function () {
                     currentUser.sign_out();
                     eventbus.broadcast("userSignOut", currentUser.username);
+                }
+
+            } ])
+        .controller('PasswordModifyCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'UserPasswordService',
+            function ($scope, $location, $log, $routeParams, currentUser, UserPasswordService) {
+
+                $scope.init = function () {
+                    $scope.alertMessageVisible = 'hidden';
+                    $scope.user = {};
+                    $scope.isSamePwd = true;
+                    $scope.isBusy = false;
+                }
+
+                $scope.newPwd2Changed = function () {
+                    $scope.isSamePwd = $scope.user.newPwd != undefined & $scope.user.newPwd2 != undefined
+                                        & $scope.user.newPwd2 == $scope.user.newPwd;
+                }
+
+                $scope.save = function () {
+
+                    var hashObj = new jsSHA($scope.user.oldPwd, 'TEXT');
+                    var hashOldPwd = hashObj.getHash(
+					    'SHA-1',
+					    'B64',
+					    parseInt(1, 10)
+                    );
+                    hashObj = new jsSHA($scope.user.newPwd, 'TEXT');
+                    var hashNewPwd = hashObj.getHash(
+					    'SHA-1',
+					    'B64',
+					    parseInt(1, 10)
+                    );
+
+                    $scope.alertMessageVisible = 'hidden';
+                    $scope.isBusy = true;
+                    UserPasswordService.update({
+                        'username': $routeParams.username,
+                        'oldPwd': hashOldPwd,
+                        'newPwd': hashNewPwd
+                    })
+                        .$promise
+                            .then(function (result) {
+                                $scope.isSuccess = true;
+                                $scope.alertMessage = "提示：修改成功";
+                                currentUser.changePwd(hashNewPwd);
+                            }, function (error) {
+                                $scope.isSuccess = false;
+                                if (error.status == '403') {
+                                    $scope.alertMessage = "提示：旧密码输入错误";
+                                } else {
+                                    $scope.alertMessage = "提示：修改失败";
+                                }
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.isBusy = false;
+                            });
+
                 }
 
             } ])

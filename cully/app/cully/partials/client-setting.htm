@@ -1,0 +1,104 @@
+﻿<div class="story container" ng-init="init()">
+    <a id="top"></a>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-desktop"></i>&nbsp;客户端设置</span>
+    </div>
+    <form class="form-horizontal css-form" role="form" name="form">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="hidden-print hidden-xs hidden-sm" role="complementary" id="menu">
+                <ul class="nav">
+                    <li><a ng-click="gotoAnchor('ui')">界面</a></li>
+                    <li><a ng-click="gotoAnchor('caution')">提醒</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10" role="main">
+            <h1 id="ui" class="page-header">
+                界面</h1>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="userData.animation">
+                    使用动画效果
+                </label>
+            </div>
+            <h1 id="caution" class="page-header">
+                提醒</h1>
+            <div>
+                <h3 class="text-blue">
+                    通知刷新</h3>
+                客户端定时从服务端获取有与您相关的通知，如果有通知则进行声色提醒。
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution" ng-model="userData.caution" value="60">
+                        60秒
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution" ng-model="userData.caution" value="30">
+                        30秒
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution" ng-model="userData.caution" value="20">
+                        20秒
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution" ng-model="userData.caution" value="10">
+                        10秒
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution" ng-model="userData.caution" value="0">
+                        从不
+                    </label>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-blue">
+                    声音提醒</h3>
+                如果有与您相关的通知，则播放音乐进行提醒。
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="cautionByMusic" ng-model="userData.cautionByMusic" value="true">
+                        开启
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="cautionByMusic" ng-model="userData.cautionByMusic" value="false">
+                        关闭
+                    </label>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-blue">
+                    任务延误</h3>
+                如果有与您相关的任务延误，则在页面底部弹出提醒。
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution4Task" ng-model="userData.caution4Task" value="true">
+                        开启
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="caution4Task" ng-model="userData.caution4Task" value="false">
+                        关闭
+                    </label>
+                </div>
+            </div>
+            <br />
+            <button class="btn btn-primary" ng-click="save()">
+                保存</button>
+        </div>
+    </div>
+    <p class="pull-right">
+        <a ng-click="gotoAnchor('top')">置顶</a></p>
+    </form>
+</div>

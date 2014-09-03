@@ -11,6 +11,8 @@
   </object>
   
   <object id="UserServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.UserService, ThinkInBio.CommonApp.BLL">
+    <property name="AuthProvider" ref="PlainAuthProvider" />
+    <property name="Session" ref="SessionCache"/>
     <property name="UserDao" ref="UserDao" />
   </object>
   <object id="UserService" parent="TxProxyConfigurationTemplate">
