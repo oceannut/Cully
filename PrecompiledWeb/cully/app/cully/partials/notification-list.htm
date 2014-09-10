@@ -13,11 +13,61 @@
     <div class="tab-content">
         <div class="tab-pane active" id="inbox">
             <br />
-            inbox
+            <form class="form-inline" role="form">
+            <div class="form-group">
+                <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query('inbox')">
+                    <option value="">所有时间</option>
+                    <option value="-30">按月查询</option>
+                    <option value="0">今天</option>
+                    <option value="-1">昨天</option>
+                    <option value="7">本周</option>
+                    <option value="-7">上周</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: {{monthInputVisible}};">
+                <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query('inbox')" />
+            </div>
+            </form>
+            <ul class="list-unstyled">
+                <li ng-repeat="item in inboxNotificationList" class="biz-list-item">
+                    <mark>{{item.senderName}}</mark>
+                    &nbsp; <a href="javascript:void(0);" ng-click="view(item)">{{item.Content}}</a>&nbsp;
+                    <span class="pull-right">{{item.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                </li>
+            </ul>
+            <ul class="pager">
+                <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage('inbox')">上一页</a></li>
+                <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage('inbox')">下一页</a></li>
+            </ul>
         </div>
         <div class="tab-pane" id="outbox">
             <br />
-            outbox
+            <form class="form-inline" role="form">
+            <div class="form-group">
+                <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query('outbox')">
+                    <option value="">所有时间</option>
+                    <option value="-30">按月查询</option>
+                    <option value="0">今天</option>
+                    <option value="-1">昨天</option>
+                    <option value="7">本周</option>
+                    <option value="-7">上周</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: {{monthInputVisible}};">
+                <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query('outbox')" />
+            </div>
+            </form>
+            <ul class="list-unstyled">
+                <li ng-repeat="item in outboxNotificationList" class="biz-list-item">
+                    <mark>{{item.receiverName}}</mark>
+                    &nbsp; <a href="javascript:void(0);" ng-click="view(item)">{{item.Content}}</a>&nbsp;
+                    <span class="pull-right">{{item.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span>
+                </li>
+            </ul>
+            <ul class="pager">
+                <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage('outbox')">上一页</a></li>
+                <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage('outbox')">下一页</a></li>
+            </ul>
         </div>
     </div>
 </div>

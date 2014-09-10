@@ -125,7 +125,7 @@ define(function (require) {
                             },
                             function (data, status) {
                                 $scope.usernameDisabled = false;
-                                $log.error(error);
+                                $log.error(data);
                             });
                     } else if ($scope.user.username == undefined || $scope.user.username == "") {
                         $scope.usernameStatus = "";

@@ -3,11 +3,15 @@
 define(function (require) {
 
     require('ng-route');
+    require('ng-local-storage');
 
     require('../../app/auth/js/auth-controllers');
     require('../../app/common/js/category-controllers');
     require('../../app/common/js/user-controllers');
     require('../../app/common/js/notice-controllers');
+    require('../../app/common/js/idiom-controllers');
+    require('../../app/common/js/schedule-controllers');
+    require('../../app/cully/js/client-controllers');
     require('../../app/cully/js/biz-notification-controllers');
     require('../../app/cully/js/index-controllers');
     require('../../app/cully/js/home-controllers');
@@ -18,10 +22,14 @@ define(function (require) {
     require('../../app/cully/js/log-controllers');
 
     angular.module('Cully', ['ngRoute',
+            'LocalStorageModule',
             'auth.controllers',
             'category.controllers',
             'user.controllers',
             'notice.controllers',
+            'idiom.controllers',
+            'schedule.controllers',
+            'client.controllers',
             'bizNotification.controllers',
             'index.controllers',
             'home.controllers',
@@ -31,8 +39,8 @@ define(function (require) {
             'participant.controllers',
             'log.controllers'
         ])
-        .config(['$routeProvider', '$httpProvider',
-            function ($routeProvider, $httpProvider) {
+        .config(['$routeProvider', '$httpProvider', 'localStorageServiceProvider',
+            function ($routeProvider, $httpProvider, localStorageServiceProvider) {
 
                 $routeProvider
                     .when('/sign-in/', {
@@ -46,6 +54,13 @@ define(function (require) {
                     .when('/sign-out/', {
                         templateUrl: 'app/auth/partials/sign-out.htm',
                         controller: 'SignOutCtrl'
+                    })
+                    .when('/password-modify/:username/', {
+                        templateUrl: 'app/auth/partials/password-modify.htm',
+                        controller: 'PasswordModifyCtrl',
+                        access: {
+                            loginRequired: true
+                        }
                     })
                     .when('/not-authorised/', {
                         templateUrl: 'app/auth/partials/not-authorised.htm'
@@ -135,6 +150,45 @@ define(function (require) {
                             loginRequired: true
                         }
                     })
+                    .when('/idiom-overview/', {
+                        templateUrl: 'app/common/partials/idiom-overview.htm',
+                        controller: 'IdiomOverviewCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin', 'supvisor']
+                        }
+                    })
+                    .when('/idiom-list/:scope/', {
+                        templateUrl: 'app/common/partials/idiom-list.htm',
+                        controller: 'IdiomListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin', 'supvisor']
+                        }
+                    })
+                    .when('/idiom-edit/:scope/:id/', {
+                        templateUrl: 'app/common/partials/idiom-edit.htm',
+                        controller: 'IdiomEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin', 'supvisor']
+                        }
+                    })
+                    .when('/schedule-list/', {
+                        templateUrl: 'app/common/partials/schedule-list.htm',
+                        controller: 'ScheduleListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['admin']
+                        }
+                    })
+                    .when('/client-setting/:username/', {
+                        templateUrl: 'app/cully/partials/client-setting.htm',
+                        controller: 'ClientSettingCtrl',
+                        access: {
+                            loginRequired: true
+                        }
+                    })
                     .when('/home/', {
                         templateUrl: 'app/cully/partials/home.htm',
                         controller: 'HomeCtrl',
@@ -206,6 +260,14 @@ define(function (require) {
                             roles: ['supvisor']
                         }
                     })
+                    .when('/activity-task-delay/:id/', {
+                        templateUrl: 'app/cully/partials/activity-task-delay.htm',
+                        controller: 'ActivityTaskDelayCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
                     .when('/task-edit/:id/', {
                         templateUrl: 'app/cully/partials/task-edit.htm',
                         controller: 'TaskEditCtrl',
@@ -260,7 +322,10 @@ define(function (require) {
                     })
                     .when('/notification-list/:box/', {
                         templateUrl: 'app/cully/partials/notification-list.htm',
-                        controller: 'BizNotificationListCtrl'
+                        controller: 'BizNotificationListCtrl',
+                        access: {
+                            loginRequired: true
+                        }
                     })
                     .when('/untreated-notification/', {
                         templateUrl: 'app/cully/partials/untreated-notification.htm',
@@ -285,6 +350,9 @@ define(function (require) {
                         }
                     };
                 } ]);
+
+                localStorageServiceProvider.setPrefix('cully');
+                localStorageServiceProvider.setStorageCookieDomain('thinkinbio.com');
 
             } ])
         .run(['$http', '$rootScope', '$location', 'authorizationType', 'authorization', 'currentUser',

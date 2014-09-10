@@ -55,6 +55,9 @@ define(function (require) {
                 },
                 isLogin: function () {
                     return login;
+                },
+                changePwd: function (newPwd) {
+                    pwd = newPwd;
                 }
             }
 

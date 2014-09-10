@@ -14,12 +14,41 @@ define(function (require) {
     require('../../auth/js/auth-directives');
     require('../../common/js/common-cache');
     require('../../common/js/biz-notification-services');
+    require('../../common/js/idiom-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services'])
-        .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService', 'Update4IsUnderwayTaskService',
-                                 'Update4IsCompletedTaskService', 'ParticipantOfProjectService', 'userCache', 'dateUtil',
-            function ($scope, $location, $log, currentUser, TaskService, TaskListService, Update4IsUnderwayTaskService,
-                      Update4IsCompletedTaskService, ParticipantOfProjectService, userCache, dateUtil) {
+    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services', 'idiom.services'])
+        .factory('taskServiceUtil', ['$log', 'currentUser', 'Update4IsUnderwayTaskService', 'Update4IsCompletedTaskService',
+            function ($log, currentUser, Update4IsUnderwayTaskService, Update4IsCompletedTaskService) {
+
+                return {
+                    makeIsUnderway: function (task, isUnderway, callback) {
+                        Update4IsUnderwayTaskService.update({ 'user': currentUser.getUsername(), 'id': task.Id, 'isUnderway': isUnderway })
+                        .$promise
+                            .then(function (result) {
+                                task.IsUnderway = isUnderway;
+                                (callback || angular.noop)(result);
+                            }, function (error) {
+                                $log.error(error);
+                            });
+                    },
+                    makeIsCompleted: function (task, isCompleted, callback) {
+                        Update4IsCompletedTaskService.update({ 'user': currentUser.getUsername(), 'id': task.Id, 'isCompleted': isCompleted })
+                        .$promise
+                            .then(function (result) {
+                                task.IsCompleted = isCompleted;
+                                task.IsUnderway = false;
+                                (callback || angular.noop)(result);
+                            }, function (error) {
+                                $log.error(error);
+                            });
+                    }
+                }
+
+            } ])
+        .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskListService',
+                                 'ParticipantOfProjectService', 'userCache', 'dateUtil', 'taskServiceUtil', 'IdiomListService',
+            function ($scope, $location, $log, currentUser, TaskService, TaskListService,
+                      ParticipantOfProjectService, userCache, dateUtil, taskServiceUtil, IdiomListService) {
 
                 function clear() {
                     $scope.task = {};
@@ -68,6 +97,7 @@ define(function (require) {
                         task.changeIsUnderwayButtonVisible = 'none';
                         task.completeButtonDisabled = true;
                     }
+                    task.IsUnderwayChecked = task.IsUnderway;
                     task.completeButtonContent = "未完成";
                     var d = new Date();
                     if (task.AppointedDay == null) {
@@ -160,6 +190,31 @@ define(function (require) {
                     }
                 }
 
+                function load() {
+                    var parentScope = $scope.$parent.$parent;
+                    TaskListService.query({ 'user': currentUser.getUsername(), 'activityId': parentScope.activity.Id })
+                        .$promise
+                            .then(function (result) {
+                                if (result != null) {
+                                    for (var i = 0; i < result.length; i++) {
+                                        var task = result[i];
+                                        buildStaffName(task);
+                                        if (task.IsCompleted) {
+                                            $scope.rawCompletedTaskList.push(task);
+                                        } else {
+                                            $scope.rawTaskList.push(task);
+                                        }
+                                    }
+                                    $scope.sortByTime();
+                                    //$scope.sortByStaff();
+                                }
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：任务列表加载失败";
+                            });
+                }
+
                 $scope.init = function () {
                     $scope.taskPanelDisplay = 'none'
                     clear();
@@ -188,32 +243,11 @@ define(function (require) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：成员列表加载失败";
                             });
-                    TaskListService.query({ 'user': currentUser.getUsername(), 'activityId': parentScope.activity.Id })
-                        .$promise
-                            .then(function (result) {
-                                $scope.rawTaskList = [];
-                                $scope.rawCompletedTaskList = [];
-                                if (result != null) {
-                                    for (var i = 0; i < result.length; i++) {
-                                        var task = result[i];
-                                        buildStaffName(task);
-                                        if (task.IsCompleted) {
-                                            $scope.rawCompletedTaskList.push(task);
-                                        } else {
-                                            $scope.rawTaskList.push(task);
-                                        }
-                                    }
-                                    $scope.sortByTime();
-                                    //$scope.sortByStaff();
-                                }
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：任务列表加载失败";
-                            });
+
+                    $scope.rawTaskList = [];
+                    $scope.rawCompletedTaskList = [];
+                    load();
                 }
-
-
 
                 $scope.sortByTime = function () {
                     $scope.sortByTimeActive = 'active';
@@ -233,13 +267,43 @@ define(function (require) {
                     interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
                 }
 
+                function loadIdioms() {
+                    IdiomListService.query({ 'scope': 'task' })
+                        .$promise
+                            .then(function (result) {
+                                $scope.idiomList = result;
+                            }, function (error) {
+                                scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：获取短语列表失败";
+                                $log.error(error);
+                            });
+                }
+
+                $scope.addIdiom = function () {
+                    $scope.task.content += $scope.idiom;
+                }
+
                 $scope.createTask = function () {
                     $scope.taskPanelDisplay = '';
                     $scope.saveButtonContent = '添加任务';
                     clear();
+                    if ($scope.idiomList === undefined || $scope.idiomList === null || $scope.idiomList.length === 0) {
+                        loadIdioms();
+                    }
+                }
+
+                $scope.refreshTaskList = function () {
+                    $scope.rawTaskList.length = 0;
+                    $scope.rawCompletedTaskList.length = 0;
+                    load();
                 }
 
                 $scope.editTask = function (task) {
+                    if (task.IsCompleted === true) {
+                        $scope.alertMessageVisible = 'show';
+                        $scope.alertMessage = "提示：任务已完成，不能再修改。";
+                        return;
+                    }
                     $scope.taskPanelDisplay = '';
                     $scope.saveButtonContent = '保存修改';
                     $scope.task.id = task.Id;
@@ -247,6 +311,9 @@ define(function (require) {
                     $scope.task.staff = task.Staff;
                     var appointedDay = dateUtil.jsonToDate(task.AppointedDay);
                     $scope.task.appointedDay = appointedDay == null ? '' : dateUtil.formatDateByYMD(appointedDay);
+                    if ($scope.idiomList === undefined || $scope.idiomList === null || $scope.idiomList.length === 0) {
+                        loadIdioms();
+                    }
                 }
 
                 $scope.save = function () {
@@ -321,75 +388,63 @@ define(function (require) {
                 }
 
                 $scope.markIsUnderway = function (task) {
-                    Update4IsUnderwayTaskService.update({ 'user': currentUser.getUsername(), 'id': task.Id, 'isUnderway': task.IsUnderway })
-                        .$promise
-                            .then(function (result) {
-                                withIsUnderwayChanged(task);
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：任务状态修改失败";
-                            });
+                    if (task.IsUnderwayChecked) {
+                        taskServiceUtil.makeIsUnderway(task, true, function (e) {
+                            withIsUnderwayChanged(task);
+                        });
+                    } else {
+                        taskServiceUtil.makeIsUnderway(task, false, function (e) {
+                            withIsUnderwayChanged(task);
+                        });
+                    }
                 }
 
                 $scope.completeTask = function (task) {
-                    Update4IsCompletedTaskService.update({ 'user': currentUser.getUsername(), 'id': task.Id, 'isCompleted': 'true' })
-                        .$promise
-                            .then(function (result) {
-                                for (var i in $scope.rawTaskList) {
-                                    if ($scope.rawTaskList[i].Id == result.Id) {
-                                        $scope.rawTaskList.splice(i, 1);
-                                        break;
-                                    }
-                                }
-                                buildStaffName(result);
-                                $scope.rawCompletedTaskList.push(result);
+                    taskServiceUtil.makeIsCompleted(task, true, function (result) {
+                        for (var i in $scope.rawTaskList) {
+                            if ($scope.rawTaskList[i].Id == result.Id) {
+                                $scope.rawTaskList.splice(i, 1);
+                                break;
+                            }
+                        }
+                        buildStaffName(result);
+                        $scope.rawCompletedTaskList.push(result);
 
-                                $scope.taskList = [];
-                                $scope.completedTaskList = [];
-                                if ($scope.sortByTimeActive == 'active') {
-                                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
-                                    interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
-                                }
-                                else {
-                                    interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
-                                    interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
-                                }
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：任务状态修改失败";
-                            });
+                        $scope.taskList = [];
+                        $scope.completedTaskList = [];
+                        if ($scope.sortByTimeActive == 'active') {
+                            interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                            interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                        }
+                        else {
+                            interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                            interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                        }
+                    });
                 }
 
                 $scope.resumeTask = function (task) {
-                    Update4IsCompletedTaskService.update({ 'user': currentUser.getUsername(), 'id': task.Id, 'isCompleted': 'false' })
-                        .$promise
-                            .then(function (result) {
-                                for (var i in $scope.rawCompletedTaskList) {
-                                    if ($scope.rawCompletedTaskList[i].Id == result.Id) {
-                                        $scope.rawCompletedTaskList.splice(i, 1);
-                                        break;
-                                    }
-                                }
-                                buildStaffName(result);
-                                $scope.rawTaskList.push(result);
+                    taskServiceUtil.makeIsCompleted(task, false, function (result) {
+                        for (var i in $scope.rawCompletedTaskList) {
+                            if ($scope.rawCompletedTaskList[i].Id == result.Id) {
+                                $scope.rawCompletedTaskList.splice(i, 1);
+                                break;
+                            }
+                        }
+                        buildStaffName(result);
+                        $scope.rawTaskList.push(result);
 
-                                $scope.taskList = [];
-                                $scope.completedTaskList = [];
-                                if ($scope.sortByTimeActive == 'active') {
-                                    interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
-                                    interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
-                                }
-                                else {
-                                    interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
-                                    interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
-                                }
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：任务状态修改失败";
-                            });
+                        $scope.taskList = [];
+                        $scope.completedTaskList = [];
+                        if ($scope.sortByTimeActive == 'active') {
+                            interceptByTime($scope.rawTaskList, $scope.taskList, renderTask);
+                            interceptByTime($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                        }
+                        else {
+                            interceptByStaff($scope.rawTaskList, $scope.taskList, renderTask);
+                            interceptByStaff($scope.rawCompletedTaskList, $scope.completedTaskList, renderCompletedTask);
+                        }
+                    });
                 }
 
             } ])
@@ -457,9 +512,9 @@ define(function (require) {
 
             } ])
         .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'TaskService',
-                                        'Update4CommentTaskService', 'CommentListService', 'CommentService', 'userCache', 'dateUtil',
+                                        'Update4CommentTaskService', 'CommentListService', 'CommentService', 'userCache', 'dateUtil', 'taskServiceUtil',
             function ($scope, $location, $log, $routeParams, currentUser, ActivityService, TaskService,
-                        Update4CommentTaskService, CommentListService, CommentService, userCache, dateUtil) {
+                        Update4CommentTaskService, CommentListService, CommentService, userCache, dateUtil, taskServiceUtil) {
 
                 $scope.isLoading = false;
                 $scope.navbarLinkVisible = 'none';
@@ -471,7 +526,7 @@ define(function (require) {
                     userCache.get(comment.Creator, function (e) {
                         comment.creatorName = (e == null) ? comment.Creator : e.Name;
                     });
-                    if (comment.Creator == currentUser.username) {
+                    if (comment.Creator == currentUser.getUsername()) {
                         comment.editCommentButtonVisible = '';
                     } else {
                         comment.editCommentButtonVisible = 'none';
@@ -483,11 +538,21 @@ define(function (require) {
                         .$promise
                             .then(function (result) {
                                 $scope.task = result;
+                                if ($scope.task.Id === undefined) {
+                                    $scope.alertMessageVisible = 'show';
+                                    $scope.alertMessage = "提示：任务已被移除";
+                                    return;
+                                }
+                                if ($scope.task.Staff == currentUser.getUsername()) {
+                                    $scope.isExcuted = true;
+                                } else {
+                                    $scope.isExcuted = false;
+                                }
                                 userCache.get($scope.task.Staff, function (e) {
                                     $scope.task.staffName = (e == null) ? $scope.task.Staff : e.Name;
                                 });
                                 $scope.task.isOverdue = false;
-                                if (!$scope.task.IsCompleted && $scope.task.AppointedDay !== null) {
+                                if (!$scope.task.IsCompleted && $scope.task.AppointedDay !== undefined && $scope.task.AppointedDay !== null) {
                                     var d = new Date();
                                     var appointedDay = dateUtil.jsonToDate($scope.task.AppointedDay);
                                     appointedDay.setHours(23);
@@ -503,23 +568,25 @@ define(function (require) {
                                 $scope.alertMessage = "提示：加载任务详细信息失败";
                             })
                             .then(function () {
-                                ActivityService.get({ 'user': currentUser.getUsername(), 'activityId': $scope.task.ActivityId })
-                                    .$promise
-                                        .then(function (result) {
-                                            $scope.activity = result;
-                                            userCache.get($scope.activity.Creator, function (e) {
-                                                $scope.activity.CreatorName = (e == null) ? $scope.activity.Creator : e.Name;
+                                if ($scope.task.ActivityId !== undefined && $scope.task.ActivityId !== null) {
+                                    ActivityService.get({ 'user': currentUser.getUsername(), 'activityId': $scope.task.ActivityId })
+                                        .$promise
+                                            .then(function (result) {
+                                                $scope.activity = result;
+                                                userCache.get($scope.activity.Creator, function (e) {
+                                                    $scope.activity.CreatorName = (e == null) ? $scope.activity.Creator : e.Name;
+                                                });
+                                                if ($scope.activity.Creator == currentUser.getUsername()) {
+                                                    $scope.navbarLinkVisible = '';
+                                                } else {
+                                                    $scope.navbarLinkVisible = 'none';
+                                                }
+                                            }, function (error) {
+                                                $scope.alertMessageVisible = 'show';
+                                                $scope.alertMessage = "提示：加载活动详细信息失败";
+                                                $log.error(error);
                                             });
-                                            if ($scope.activity.Creator == currentUser.username) {
-                                                $scope.navbarLinkVisible = '';
-                                            } else {
-                                                $scope.navbarLinkVisible = 'none';
-                                            }
-                                        }, function (error) {
-                                            $scope.alertMessageVisible = 'show';
-                                            $scope.alertMessage = "提示：加载活动详细信息失败";
-                                            $log.error(error);
-                                        });
+                                }
                             });
 
                     CommentListService.query({ 'user': currentUser.getUsername(), 'commentTarget': 'task', 'targetId': $routeParams.id })
@@ -643,6 +710,22 @@ define(function (require) {
                             });
                 }
 
+                $scope.startTask = function () {
+                    taskServiceUtil.makeIsUnderway($scope.task, true);
+                }
+
+                $scope.pauseTask = function () {
+                    taskServiceUtil.makeIsUnderway($scope.task, false);
+                }
+
+                $scope.stopTask = function () {
+                    taskServiceUtil.makeIsCompleted($scope.task, true);
+                }
+
+                $scope.resumeTask = function () {
+                    taskServiceUtil.makeIsCompleted($scope.task, false);
+                }
+
             } ])
         .controller('TaskNotificationListCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCache', 'dateUtil',
                      'BizNotificationService4Resource', 'UntreatedBizNotificationService',
@@ -719,6 +802,45 @@ define(function (require) {
                                 $log.error(error);
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：签收通知失败";
+                            });
+                }
+
+            } ])
+        .controller('ActivityTaskDelayCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCache', 'dateUtil',
+                     'ActivityTaskDelayListService',
+            function ($scope, $location, $routeParams, $log, currentUser, userCache, dateUtil,
+                        ActivityTaskDelayListService) {
+
+                $scope.init = function () {
+                    $scope.alertMessageVisible = 'hidden';
+                    $scope.activityId = $routeParams.id;
+
+                    $scope.queryModel = {};
+                    var timestamp = new Date();
+                    timestamp.setDate(timestamp.getDate() - 1);
+                    $scope.queryModel.date = dateUtil.formatDateByYMD(timestamp);
+                    $scope.queryModel.includeDones = false;
+
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    ActivityTaskDelayListService.query({ 'date': $scope.queryModel.date, 'activityId': $scope.activityId, 'includeDones': $scope.queryModel.includeDones })
+                        .$promise
+                            .then(function (result) {
+                                $scope.taskDelayList = result;
+                                for (var i = 0; i < $scope.taskDelayList.length; i++) {
+                                    var taskDelay = $scope.taskDelayList[i];
+                                    userCache.get(taskDelay.Staff, function (e) {
+                                        taskDelay.staffName = (e == null) ? taskDelay.Staff : e.Name;
+                                    });
+                                    taskDelay.delayPercent = taskDelay.Total <= 0 ? "0%" : (Math.round(taskDelay.Delay / taskDelay.Total * 10000) / 100.00 + "%");
+                                    taskDelay.untimedPercent = taskDelay.Total <= 0 ? "0%" : (Math.round(taskDelay.Untimed / taskDelay.Total * 10000) / 100.00 + "%");
+                                }
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：获取延误数据失败";
                             });
                 }
 

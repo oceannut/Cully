@@ -1,0 +1,9 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;常用短语</span>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="item in scopeList"><a href="#/idiom-list/{{item.code}}/">
+            {{item.name}}</a> </li>
+    </ul>
+</div>

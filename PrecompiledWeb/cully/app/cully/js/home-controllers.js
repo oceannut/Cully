@@ -13,8 +13,8 @@ define(function (require) {
     require('../../../static/css/carousel.css');
 
     angular.module('home.controllers', ['filters', 'utils', 'auth.models', 'common.cache', 'notice.services'])
-        .controller('HomeCtrl', ['$scope', '$location', '$log', 'currentUser', 'userCache', 'categoryCache', 'NoticeListService', 'NoticeService', 'dateUtil',
-            function ($scope, $location, $log, currentUser, userCache, categoryCache, NoticeListService, NoticeService, dateUtil) {
+        .controller('HomeCtrl', ['$scope', '$location', '$log', '$anchorScroll', 'currentUser', 'userCache', 'categoryCache', 'NoticeListService', 'NoticeService', 'dateUtil',
+            function ($scope, $location, $log, $anchorScroll, currentUser, userCache, categoryCache, NoticeListService, NoticeService, dateUtil) {
 
                 $scope.init = function () {
 
@@ -49,6 +49,11 @@ define(function (require) {
                                 $log.error("提示：获取公告失败");
                                 $log.error(error);
                             });
+                }
+
+                $scope.gototop = function () {
+                    $location.hash('top');
+                    $anchorScroll();
                 }
 
             } ]);

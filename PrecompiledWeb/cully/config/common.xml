@@ -20,6 +20,9 @@
     <property name="InnerExceptionHandler" ref="FileLogExceptionHandler"/>
   </object>
 
+  <object id="GenericLogger" type="ThinkInBio.Entlib.Logging.GenericLogger, ThinkInBio.Entlib">
+  </object>
+
   <object id="LogRefreshAction" type="ThinkInBio.Entlib.Caching.LogRefreshAction, ThinkInBio.Entlib">
   </object>
 

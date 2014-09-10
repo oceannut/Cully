@@ -22,6 +22,12 @@ define(function (require) {
                     query: { method: 'GET', params: { }, isArray: true }
                 });
             } ])
+        .factory('UserPasswordService', ['$resource', 'wcfApp', 'userWcfService',
+            function ($resource, wcfApp, userWcfService) {
+                return $resource(wcfApp + userWcfService + '/user/:username/pwd/', {}, {
+                    update: { method: 'PUT', params: { 'username': '@username', 'oldPwd': '@oldPwd', 'newPwd': '@newPwd'} }
+                });
+            } ])
         .factory('RoleConfigService', ['$resource',
             function ($resource) {
                 return $resource('config/roles.json/', {}, {

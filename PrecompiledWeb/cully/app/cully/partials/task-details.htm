@@ -53,8 +53,8 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-leaf"></i>&nbsp;任务</span>
         <ul class="list-inline pull-right">
-            <li><a data-toggle="modal" data-target="#removeTaskDialog"><i class="fa fa-trash-o">
-            </i>&nbsp;删除</a></li>
+            <li style="display: {{navbarLinkVisible}};"><a data-toggle="modal" data-target="#removeTaskDialog">
+                <i class="fa fa-trash-o"></i>&nbsp;删除</a></li>
             <li style="display: {{navbarLinkVisible}};"><a href="#/task-edit/{{task.Id}}/"><i
                 class="fa fa-edit"></i>&nbsp;编辑</a></li>
             <li><a href="#/task-notification-list/{{task.Id}}/"><i class="fa fa-send-o"></i>&nbsp;通知</a></li>
@@ -64,15 +64,17 @@
                 &nbsp;活动</a></li>
         </ul>
     </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
     <blockquote>
-        <dl style="font-size: 10.5pt; line-height: 1.2em">
+        <dl class="dl-horizontal" style="font-size: 10.5pt; line-height: 1.2em">
             <dt>任务内容</dt>
             <dd>
                 {{task.Content}}</dd>
             <dt>指派方向</dt>
             <dd>
                 <a>{{activity.CreatorName}}</a>&nbsp;<i class="fa fa-long-arrow-right"></i>&nbsp;<a>{{task.staffName}}</a></dd>
-            <dt ng-show="task.AppointedDay!==null">截止日期</dt>
+            <dt ng-show="task.AppointedDay!==null">期限</dt>
             <dd ng-show="task.AppointedDay!==null">
                 {{task.AppointedDay | jsonDateFormat | date:'yyyy-MM-dd'}}</dd>
             <dt>创建时间</dt>
@@ -83,15 +85,22 @@
                 {{task.Completion | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}</dd>
         </dl>
         <footer>
-            &nbsp;<span ng-show="!task.IsUnderway && !task.IsCompleted" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;任务未开始</span>
+            &nbsp;<span ng-show="!task.IsUnderway && !task.IsCompleted" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;任务未开始或暂停</span>
             &nbsp;<span ng-show="task.IsUnderway" class="text-info"><i class="fa fa-spin fa-gear"></i>&nbsp;任务正在进行...</span>
             &nbsp;<span ng-show="task.IsCompleted" class="text-success"><i class="fa fa-check-square-o"></i>&nbsp;任务已完成</span>
             &nbsp;<span ng-show="task.AppointedDay===null" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;未指定截止日期</span>
             &nbsp;<span ng-show="task.isOverdue" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;已逾期</span>
         </footer>
     </blockquote>
-    <div class="alert alert-danger {{alertMessageVisible}}">
-        {{alertMessage}}</div>
+    <ul class="list-inline">
+        <li ng-if="isExcuted && !task.IsCompleted" ng-switch="task.IsUnderway"><a class="btn btn-primary btn-sm"
+            ng-switch-when="true" ng-click="pauseTask()"><i class="fa fa-pause"></i>&nbsp;暂停执行</a><a
+                class="btn btn-default btn-sm" ng-switch-when="false" ng-click="startTask()"><i class="fa fa-play"></i>&nbsp;开始执行</a></li>
+        <li ng-if="isExcuted && !task.IsCompleted"><a class="btn btn-default btn-sm" ng-click="stopTask()">
+            <i class="fa fa-stop"></i>&nbsp;结束任务</a></li>
+        <li ng-if="!isExcuted && task.IsCompleted"><a class="btn btn-default btn-sm" ng-click="resumeTask()">
+            <i class="fa fa-play"></i>&nbsp;重启任务</a></li>
+    </ul>
     <div class="row" style="margin: 2em 2em 0 2em;">
         <ol class="list-unstyled">
             <li ng-repeat="item in commentList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
@@ -104,16 +113,17 @@
                     <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
                         data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
                         </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
-                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;|&nbsp;&nbsp;</a><small>
-                                <abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
+                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;</a>
+                </p>
+                <!--<small><abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
                                     其它通知：</abbr></small> &nbsp;&nbsp;<a href="mailto:#" class="btn btn-default btn-xs"><i
                                         class="fa fa-envelope"></i>&nbsp;邮件</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
                                             class="fa fa-qq"></i>&nbsp;QQ</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
-                                                class="fa fa-phone"></i>&nbsp;电话</a></p>
+                                                class="fa fa-phone"></i>&nbsp;电话</a>-->
             </li>
         </ol>
     </div>
-    <div class="row" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
+    <div class="row hidden-print" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
         <form class="form-horizontal css-form" role="form" name="form">
         <h3>
             发表评论</h3>

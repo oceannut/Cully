@@ -40,10 +40,9 @@ create table cyParticipant
 	projectId				BIGINT			NOT NULL,
 	staff					VARCHAR(32)		NOT NULL,
 	creation				DATETIME		NOT NULL,
-	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
-ALTER TABLE cyParticipant ADD INDEX modification_index  (modification);
+ALTER TABLE cyParticipant ADD INDEX creation_index  (creation);
 
 create table cyActivity
 (

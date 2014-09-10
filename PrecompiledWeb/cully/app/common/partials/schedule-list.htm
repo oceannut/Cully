@@ -1,0 +1,22 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-clock-o"></i>&nbsp;工作调度</span>
+        <ul class="list-inline pull-right">
+            <li><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;刷新</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="item in schedulerList"><span class="pull-right"
+            ng-switch="item.State"><i ng-switch-when="0" class="fa fa-chain-broken"></i><i ng-switch-when="1"
+                class="fa fa-chain text-info"></i><i ng-switch-when="2" class="fa fa-gear fa-spin">
+            </i><i ng-switch-when="3" class="fa fa-exclamation-triangle text-danger"></i>&nbsp;&nbsp;
+            <button ng-disabled="item.State==2" class="btn btn-default btn-xs" ng-click="changeState(item)">
+                <span ng-switch-when="0">启动</span><span ng-switch-when="1">停止</span><span ng-switch-when="2">停止</span><span
+                    ng-switch-when="3">启动</span></button></span> {{item.Name}}
+            <p class="list-group-item-text">
+                {{item.Description}}</p>
+        </li>
+    </ul>
+</div>

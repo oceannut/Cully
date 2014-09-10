@@ -11,7 +11,8 @@ define(function (require) {
         .factory('UntreatedBizNotificationService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
             function ($resource, wcfApp, bizNotificationWcfService) {
                 return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/inbox/:user/untreated/:notificationId/', {}, {
-                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} }
+                    update: { method: 'PUT', params: { 'user': '@user', 'notificationId': '@notificationId'} },
+                    updateCol: { method: 'PUT', params: { 'user': '@user', 'notificationId': 'n', 'notificationIds': '@notificationIds'} }
                 });
             } ])
         .factory('UntreatedBizNotificationListService', ['$http', 'wcfApp', 'bizNotificationWcfService',
@@ -29,6 +30,12 @@ define(function (require) {
             function ($resource, wcfApp, bizNotificationWcfService) {
                 return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/both/:user/resource/:resource/resourceId/:resourceId/', {}, {
                     query: { method: 'GET', params: { 'user': '@user', 'resource': '@resource', 'resourceId': '@resourceId' }, isArray: true }
+                });
+            } ])
+        .factory('BizNotificationListService', ['$resource', 'wcfApp', 'bizNotificationWcfService',
+            function ($resource, wcfApp, bizNotificationWcfService) {
+                return $resource(wcfApp + bizNotificationWcfService + '/notification/biz/:box/:user/time/:date/:span/range/:start/:count/', {}, {
+                    query: { method: 'GET', params: { 'box': '@box', 'user': '@user', 'date': '@date', 'span': 'span', 'start': '@start', 'count': '@count' }, isArray: true }
                 });
             } ]);
 

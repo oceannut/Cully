@@ -200,6 +200,18 @@ define(function (require) {
                     $scope.activity.description = '';
                 }
 
+                function renderActivity(activity) {
+                    categoryCache.get('activity', activity.Category, function (e) {
+                        var icon = 'fa fa-tasks';
+                        if (e != null) {
+                            activity.icon = e.Icon;
+                        }
+                    });
+                    userCache.get(activity.Creator, function (e) {
+                        activity.creatorName = (e == null) ? activity.Creator : e.Name;
+                    });
+                }
+
                 $scope.init = function () {
 
                     $scope.addActivityPanelDisplay = 'none';
@@ -232,15 +244,7 @@ define(function (require) {
                                 for (var i = 0; i < $scope.activityList.length; i++) {
                                     var activity = $scope.activityList[i];
                                     activity.index = (i + 1);
-                                    categoryCache.get('activity', activity.Category, function (e) {
-                                        var icon = 'fa fa-tasks';
-                                        if (e != null) {
-                                            activity.icon = e.Icon;
-                                        }
-                                    });
-                                    userCache.get(activity.Creator, function (e) {
-                                        activity.creatorName = (e == null) ? activity.Creator : e.Name;
-                                    });
+                                    renderActivity(activity);
                                 }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
@@ -286,6 +290,11 @@ define(function (require) {
                                 clear();
                                 $scope.toggleAddActivityPanelVisibible();
                                 $scope.activityList.unshift(result);
+                                renderActivity(result);
+                                for (var i = 0; i < $scope.activityList.length; i++) {
+                                    var activity = $scope.activityList[i];
+                                    activity.index = (i + 1);
+                                }
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：添加活动失败";

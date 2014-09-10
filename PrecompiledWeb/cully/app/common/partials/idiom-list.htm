@@ -1,0 +1,40 @@
+﻿<div class="story container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="removeDialog" tabindex="-1" role="dialog" aria-labelledby="removeDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;删除短语对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个短语吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="remove()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-pencil"></i>&nbsp;常用短语</span>
+        <ul class="list-inline pull-right">
+            <li><a href="#/idiom-edit/{{scope}}/0/"><i class="fa fa-plus"></i>&nbsp;添加短语</a></li>
+            <li><a href="#/idiom-overview/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger {{alertMessageVisible}}">
+        {{alertMessage}}</div>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="item in idiomList"><a href="#/idiom-edit/{{item.Scope}}/{{item.Id}}/">
+            {{item.Content}}</a> <i class="fa fa-trash-o pull-right" data-toggle="modal" data-target="#removeDialog"
+                ng-click="select(item)"></i></li>
+    </ul>
+</div>

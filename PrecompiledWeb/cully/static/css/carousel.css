@@ -38,7 +38,7 @@
 .featurette-divider
 {
     border-bottom: solid #3c8dbc 1px;
-    margin: 32px 0; /* Space out the Bootstrap <hr> more */
+    margin: 16px 0; /* Space out the Bootstrap <hr> more */
 }
 
 /* Thin out the marketing headings */

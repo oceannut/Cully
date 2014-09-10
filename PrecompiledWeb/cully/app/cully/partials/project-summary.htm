@@ -32,6 +32,8 @@
                 <div class="form-group" style="display: {{monthInputVisible}};">
                     <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
                 </div>
+                <i class="fa fa-refresh pull-right" title="刷新" style="margin: 8px 24px 0 0;" ng-click="query()">
+                </i>
                 </form>
             </div>
             <br />

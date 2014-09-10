@@ -11,6 +11,8 @@
   </object>
   
   <object id="UserServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.UserService, ThinkInBio.CommonApp.BLL">
+    <property name="AuthProvider" ref="PlainAuthProvider" />
+    <property name="Session" ref="SessionCache"/>
     <property name="UserDao" ref="UserDao" />
   </object>
   <object id="UserService" parent="TxProxyConfigurationTemplate">
@@ -37,6 +39,20 @@
   </object>
   <object id="NoticeService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="NoticeServiceTarget"/>
+  </object>
+
+  <object id="JobLogServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.JobLogService, ThinkInBio.CommonApp.BLL">
+    <property name="JobLogDao" ref="JobLogDao" />
+  </object>
+  <object id="JobLogService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="JobLogServiceTarget"/>
+  </object>
+
+  <object id="IdiomServiceTarget" type="ThinkInBio.CommonApp.BLL.Impl.IdiomService, ThinkInBio.CommonApp.BLL">
+    <property name="IdiomDao" ref="IdiomDao" />
+  </object>
+  <object id="IdiomService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="IdiomServiceTarget"/>
   </object>
   
 </objects>
