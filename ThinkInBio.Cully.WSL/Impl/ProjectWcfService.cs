@@ -73,7 +73,7 @@ namespace ThinkInBio.Cully.WSL.Impl
 
                 return project;
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -119,7 +119,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                 });
                 return project;
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -151,7 +155,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 return ProjectService.GetProject(idLong);
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -196,7 +200,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -289,7 +293,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -328,7 +332,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 });
                 return activity;
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -386,7 +390,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                     });
                 return activity;
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -434,7 +442,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                 ProjectService.UpdateActivity(activity);
                 return activity;
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -461,7 +473,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 return ProjectService.GetActivity(idLong);
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -562,7 +574,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -597,7 +609,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -636,7 +648,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                     ProjectService.SaveParticipant(e);
                 });
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -680,7 +696,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                         ProjectService.DeleteParticipant(e);
                     });
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -715,7 +735,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);

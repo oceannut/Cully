@@ -8,16 +8,16 @@
   <object id="TransactionManager" type="Spring.Data.Core.TxScopeTransactionManager, Spring.Data">
   </object>
 
-  <object id="FileLogExceptionHandler" type="ThinkInBio.Common.ExceptionHandling.FileLogExceptionHandler, ThinkInBio.Common">
-    <property name="Filename" value="sys_error.log"/>
+  <object id="SimpleFileLogExceptionHandler" type="ThinkInBio.Common.ExceptionHandling.SimpleFileLogExceptionHandler, ThinkInBio.Common">
+    <property name="Filename" value="sys_conf_error.log"/>
   </object>
 
   <object id="LogOnlyExceptionHandler" type="ThinkInBio.Entlib.ExceptionHandling.LogOnlyExceptionHandler, ThinkInBio.Entlib">
-    <property name="InnerExceptionHandler" ref="FileLogExceptionHandler"/>
+    <property name="InnerExceptionHandler" ref="SimpleFileLogExceptionHandler"/>
   </object>
 
   <object id="WrapExceptionHandler" type="ThinkInBio.Entlib.ExceptionHandling.WrapExceptionHandler, ThinkInBio.Entlib">
-    <property name="InnerExceptionHandler" ref="FileLogExceptionHandler"/>
+    <property name="InnerExceptionHandler" ref="SimpleFileLogExceptionHandler"/>
   </object>
 
   <object id="GenericLogger" type="ThinkInBio.Entlib.Logging.GenericLogger, ThinkInBio.Entlib">
@@ -27,7 +27,7 @@
   </object>
 
   <object id="SessionCache" type="ThinkInBio.Entlib.Caching.SlideTimingCache, ThinkInBio.Entlib">
-    <constructor-arg type="double" value="30"/>
+    <constructor-arg type="double" value="1440"/>
     <property name="CacheItemRefreshAction" ref="LogRefreshAction"/>
   </object>
 

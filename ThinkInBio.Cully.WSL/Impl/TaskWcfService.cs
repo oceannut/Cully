@@ -61,7 +61,7 @@ namespace ThinkInBio.Cully.WSL.Impl
 
                 return task;
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -108,7 +108,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                     });
                 return task;
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -163,7 +167,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                 }
                 return task;
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -222,7 +230,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                 }
                 return task;
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -260,7 +272,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                         TaskService.DeleteTask(e1, e2, e3);
                     });
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -287,7 +303,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 return TaskService.GetTask(idLong);
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -322,7 +338,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -362,7 +378,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                         TaskService.SaveComment(e1, e2, e3);
                     });
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -412,7 +432,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                         TaskService.DeleteComment(e1, e2, e3);
                     });
             }
-            catch (BusinessLayerException ex)
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
@@ -465,7 +489,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                     return null;
                 }
             }
-            catch (BusinessLayerException ex)
+            catch (Exception ex)
             {
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
