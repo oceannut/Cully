@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IActivityDao.cs" />
+    <Compile Include="ICalendarDao.cs" />
     <Compile Include="ICommentDao.cs" />
     <Compile Include="ILogDao.cs" />
     <Compile Include="IParticipantDao.cs" />

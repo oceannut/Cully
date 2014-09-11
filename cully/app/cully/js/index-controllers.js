@@ -18,12 +18,17 @@ define(function (require) {
                     "url": "/home/",
                     "active": "active"
                 };
-                var categoryNav = {
+                var activityNav = {
                     "name": "活动/项目",
                     "url": "/project-summary/",
                     "active": ""
                 };
-                var userRoleNav = {
+                var calendarNav = {
+                    "name": "日程安排",
+                    "url": "/calendar-summary/",
+                    "active": ""
+                };
+                var logNav = {
                     "name": "工作记录",
                     "url": "/log-summary/",
                     "active": ""
@@ -107,7 +112,7 @@ define(function (require) {
                     //初始化导航条。
                     $scope.appName = appName;
                     $scope.makeNavbarVisible();
-                    $scope.navList = [homeNav, categoryNav, userRoleNav];
+                    $scope.navList = [homeNav, activityNav, calendarNav, logNav];
 
                     $scope.$on("$destroy", function (event) {
                         if (untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {

@@ -40,9 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calendar.cs" />
+    <Compile Include="CalendarCaution.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="TaskDelayBuilder.cs" />
-    <Compile Include="DayReport.cs" />
+    <None Include="DayReport.cs_" />
     <Compile Include="Activity.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="TaskDelay.cs" />

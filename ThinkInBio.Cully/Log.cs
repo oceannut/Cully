@@ -46,6 +46,11 @@ namespace ThinkInBio.Cully
         public long Id { get; set; }
 
         /// <summary>
+        /// 项目编号。
+        /// </summary>
+        public long ProjectId { get; set; }
+
+        /// <summary>
         /// 标题。
         /// </summary>
         public string Title { get; set; }

@@ -141,3 +141,27 @@ create table cyComment
 	modification			DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+
+create table cyCalendar
+(
+	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	content					VARCHAR(255)		NOT NULL,
+	appointed				DATETIME			NOT NULL,
+	_interval				INT,
+	_repeat					INT,
+	expression				VARCHAR(255),
+	isStop					TINYINT				NOT NULL default 0,
+	creator					VARCHAR(32)			NOT NULL,
+	creation				DATETIME			NOT NULL,
+	modification			DATETIME			NOT NULL,
+	PRIMARY KEY (id)
+);
+
+create table cyCalendarCaution
+(
+	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	calendarId				BIGINT	unsigned	NOT NULL,
+	staff					VARCHAR(32)			NOT NULL,
+	memo					VARCHAR(255),
+	PRIMARY KEY (id)
+);

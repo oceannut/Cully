@@ -20,6 +20,7 @@ define(function (require) {
     require('../../app/cully/js/task-controllers');
     require('../../app/cully/js/participant-controllers');
     require('../../app/cully/js/log-controllers');
+    require('../../app/cully/js/calendar-controllers');
 
     angular.module('Cully', ['ngRoute',
             'LocalStorageModule',
@@ -37,7 +38,8 @@ define(function (require) {
             'activity.controllers',
             'task.controllers',
             'participant.controllers',
-            'log.controllers'
+            'log.controllers',
+            'calendar.controllers'
         ])
         .config(['$routeProvider', '$httpProvider', 'localStorageServiceProvider',
             function ($routeProvider, $httpProvider, localStorageServiceProvider) {
@@ -318,6 +320,22 @@ define(function (require) {
                         access: {
                             loginRequired: true,
                             roles: ['user']
+                        }
+                    })
+                    .when('/calendar-summary/', {
+                        templateUrl: 'app/cully/partials/calendar-summary.htm',
+                        controller: 'CalendarSummaryCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/calendar-edit/', {
+                        templateUrl: 'app/cully/partials/calendar-edit.htm',
+                        controller: 'CalendarEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
                         }
                     })
                     .when('/notification-list/:box/', {
