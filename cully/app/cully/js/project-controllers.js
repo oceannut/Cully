@@ -201,6 +201,11 @@ define(function (require) {
                 }
 
                 function renderActivity(activity) {
+                    if (activity.index === 1) {
+                        activity.isDescVisible = true;
+                    } else {
+                        activity.isDescVisible = false;
+                    }
                     categoryCache.get('activity', activity.Category, function (e) {
                         var icon = 'fa fa-tasks';
                         if (e != null) {
@@ -265,6 +270,10 @@ define(function (require) {
                     });
                 }
 
+                $scope.toggleDescVisible = function (activity) {
+                    activity.isDescVisible = !activity.isDescVisible;
+                }
+
                 $scope.selectCategory = function (selectedCategory) {
                     CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
                         $scope.category = e;
@@ -299,11 +308,11 @@ define(function (require) {
                                 clear();
                                 $scope.toggleAddActivityPanelVisibible();
                                 $scope.activityList.unshift(result);
-                                renderActivity(result);
                                 for (var i = 0; i < $scope.activityList.length; i++) {
                                     var activity = $scope.activityList[i];
                                     activity.index = (i + 1);
                                 }
+                                renderActivity(result);
                             }, function (error) {
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：添加活动失败";

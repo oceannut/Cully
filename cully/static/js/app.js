@@ -346,7 +346,7 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
-                    .when('/calendar-edit/', {
+                    .when('/calendar-edit/:projectId/', {
                         templateUrl: 'app/cully/partials/calendar-edit.htm',
                         controller: 'CalendarEditCtrl',
                         access: {

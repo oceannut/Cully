@@ -79,19 +79,14 @@
     </div>
     <ol class="list-group">
         <li class="list-group-item" ng-repeat="activity in activityList">
-            <h4 class="list-group-item-heading">
-                <mark>[活动{{activity.index}}]</mark>
-                &nbsp;<i class="{{activity.icon}}"></i>&nbsp; <a href="#/activity-details/{{activity.Id}}/">
-                    {{activity.Name}}</a></h4>
-            <blockquote>
+            <mark class="pull-right" ng-click="toggleDescVisible(activity)">[活动{{activity.index}}]&nbsp;<i class="fa" ng-class="{true:'fa-angle-double-up',false:'fa-angle-double-down'}[activity.isDescVisible]"></i></mark>
+            <a href="#/activity-details/{{activity.Id}}/"><i class="{{activity.icon}} fa-fw"></i>&nbsp;
+                {{activity.Name}}</a>
+            <div class="clearfix" ng-show="activity.isDescVisible">
                 <p>
                     {{activity.Description}}</p>
-                <footer> 
-                    &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建
-                    &nbsp; <span ng-if="activity.IsCompleted" class="text-success"><i class="fa fa-check-square-o"></i>&nbsp;活动已结束。</span>
-                </footer>
-            </blockquote>
-            <div ng-include="'app/cully/partials/task-list.htm'">
+                <div ng-include="'app/cully/partials/task-list.htm'">
+                </div>
             </div>
         </li>
     </ol>

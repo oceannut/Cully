@@ -7,6 +7,25 @@ namespace ThinkInBio.Cully
 {
 
     /// <summary>
+    /// 事情等级。
+    /// </summary>
+    public enum AffairLevel
+    {
+        /// <summary>
+        /// 普通。
+        /// </summary>
+        General = 1,
+        /// <summary>
+        /// 重要。
+        /// </summary>
+        Important = 2,
+        /// <summary>
+        /// 紧急。
+        /// </summary>
+        Urgency = 3
+    }
+
+    /// <summary>
     /// 日程表。
     /// </summary>
     public class Calendar
@@ -28,6 +47,11 @@ namespace ThinkInBio.Cully
         /// 提醒内容。
         /// </summary>
         public string Content { get; set; }
+
+        /// <summary>
+        /// 事情等级。
+        /// </summary>
+        public AffairLevel Level { get; set; }
 
         /// <summary>
         /// 约定开始提醒的时间

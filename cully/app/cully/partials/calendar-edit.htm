@@ -2,8 +2,8 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑日程</span>
         <ul class="list-inline pull-right">
-            <li><a href="javascript:void(0);" data-toggle="modal" data-target="#settingDialog"><i class="fa fa-gear"></i>&nbsp;提醒设置</a></li>
-            <li><a href="#/calendar-summary/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+            <li><a href="javascript:void(0);" data-toggle="modal" data-target="#settingDialog"><i
+                class="fa fa-gear"></i>&nbsp;提醒设置</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
@@ -16,7 +16,29 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                     <h4 class="modal-title" id="settingDialogLabel">
-                        <i class="fa fa-trash-o"></i>&nbsp;提醒配置话框</h4>
+                        <i class="fa fa-trash-o"></i>&nbsp;提醒配置对话框</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="findProjectDialog" tabindex="-1" role="dialog" aria-labelledby="findProjectDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="findProjectDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;查找项目对话框</h4>
                 </div>
                 <div class="modal-body">
                 </div>
@@ -32,13 +54,13 @@
     <div class="form-group">
         <div class="col-sm-6">
             <input type="date" class="form-control" placeholder="约定日期" name="appointed" ng-model="calendar.Appointed"
-                required autofocus>
+                required>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-6">
             <textarea class="form-control" placeholder="内容" name="content" ng-model="calendar.Content"
-                ng-maxlength="255" rows="3"></textarea>
+                ng-maxlength="255" rows="3" required autofocus></textarea>
             <p class="help-block">
                 （<span class="text-info">文本长度限制在255个字符内</span>）</p>
             <span class="text-danger" ng-show="form.content.$error.maxlength">警告：内容介绍太长</span>
@@ -81,6 +103,27 @@
                     <input type="checkbox" ng-model="calendar.isAlertMore">
                     提醒更多的人
                 </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="calendar.isBindProject">
+                    与项目绑定
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" ng-show="calendar.isBindProject">
+        <div class="col-sm-6">
+            <label>
+                相关项目</label>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="项目名称" disabled>
+                <span class="input-group-addon"><a href="javascript:void(0);" data-toggle="modal"
+                    data-target="#findProjectDialog"><i class="fa fa-external-link"></i></a></span>
             </div>
         </div>
     </div>

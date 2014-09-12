@@ -103,18 +103,22 @@ define(function (require) {
                 }
 
             } ])
-        .controller('CalendarEditCtrl', ['$scope', '$location', '$log', 'dateUtil',
-            function ($scope, $location, $log, dateUtil) {
+        .controller('CalendarEditCtrl', ['$scope', '$routeParams', '$log', 'dateUtil',
+            function ($scope, $routeParams, $log, dateUtil) {
 
                 $scope.init = function () {
-
+                    $scope.projectId = $routeParams.projectId;
                     $scope.isBusy = false;
                     $scope.calendar = {
                         Appointed: dateUtil.formatDateByYMD(new Date()),
                         Level: 1,
                         IsAlert: true,
-                        isAlertMore: false
+                        isAlertMore: false,
+                        isBindProject: false
                     };
+                    if ($scope.projectId > 0) {
+                        $scope.calendar.isBindProject = true;
+                    }
 
                 }
 
