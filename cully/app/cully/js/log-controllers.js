@@ -145,6 +145,15 @@ define(function (require) {
                 }
 
             } ])
+        .controller('LogListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil',
+            function ($scope, $routeParams, $log, dateUtil) {
+
+                $scope.init = function () {
+                    $scope.projectId = $routeParams.projectId;
+
+                }
+
+            } ])
         .controller('LogAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'LogService', 'dateUtil', 'categoryCache', 'CategoryHelper',
             function ($scope, $location, $log, currentUser, LogService, dateUtil, categoryCache, CategoryHelper) {
 

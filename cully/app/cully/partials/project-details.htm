@@ -1,32 +1,38 @@
 ﻿<div class="story container" ng-init="init()">
+    <ul class="breadcrumb">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li class="active">项目</li>
+    </ul>
     <div class="page-header">
         <span class="lead" ng-switch="project.IsSolo"><i ng-switch-when="true" class="fa fa-cube">
         </i><i ng-switch-when="false" class="fa fa-cubes"></i>&nbsp;{{project.Name}}</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
             <li access="supvisor" ng-show="isEditable"><a href="#/project-edit/{{project.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
-            <li access="supvisor" ng-show="isEditable"><a href="#/participant-list/{{project.Id}}/">
-                <i class="fa fa-users"></i>&nbsp;成员</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li><a href="#/project-summary/"><i class="fa fa-list"></i>&nbsp;列表</a></li>
+            <li access="supvisor" ng-show="isEditable"><a href="#/participant-list/{{project.Id}}/">
+                <i class="fa fa-users"></i>&nbsp;成员</a></li>
+            <li><a href="#/calendar-list/{{project.Id}}/"><i class="fa fa-calendar-o"></i>&nbsp;日程</a></li>
+            <li><a href="#/log-list/{{project.Id}}/"><i class="fa fa-magic"></i>&nbsp;记事</a></li>
         </ul>
     </div>
-    <div class="alert alert-danger {{alertMessageVisible}}">
+    <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
     <blockquote>
         <p>
             {{project.Description}}</p>
         <footer> &nbsp; <a>{{project.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建</footer>
     </blockquote>
-    <div class="navbar navbar-default" role="navigation">
-        <div class="navbar-header">
-            <span class="navbar-brand list-title" style="color: #5277a9;"><i class="fa fa-th-list">
-            </i>&nbsp;活动列表</span>
-        </div>
-        <div class="navbar-text">
-            <i class="fa fa-plus"></i><a href="javascript:void(0)" class="navbar-link" ng-click="toggleAddActivityPanelVisibible()">
-                添加活动</a></div>
+    <div>
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" ng-click="toggleAddActivityPanelVisibible()"><i
+                class="fa fa-plus"></i>&nbsp;添加活动</a></li>
+            <li><a href="javascript:void(0)" ng-click="refreshActivityList()"><i class="fa fa-refresh">
+            </i>&nbsp;刷新列表</a></li>
+        </ul>
+    </div>
+    <div class="clearfix">
     </div>
     <div class="well well-sm" style="display: {{addActivityPanelDisplay}};">
         <form class="form-horizontal css-form" role="form" name="form">

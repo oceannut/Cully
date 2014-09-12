@@ -298,6 +298,14 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
+                    .when('/log-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/log-list.htm',
+                        controller: 'LogListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
                     .when('/log-add/', {
                         templateUrl: 'app/cully/partials/log-add.htm',
                         controller: 'LogAddCtrl',
@@ -325,6 +333,14 @@ define(function (require) {
                     .when('/calendar-summary/', {
                         templateUrl: 'app/cully/partials/calendar-summary.htm',
                         controller: 'CalendarSummaryCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/calendar-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/calendar-list.htm',
+                        controller: 'CalendarListCtrl',
                         access: {
                             loginRequired: true,
                             roles: ['user', 'supvisor']

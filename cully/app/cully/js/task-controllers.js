@@ -220,10 +220,10 @@ define(function (require) {
                     clear();
                     var parentScope = $scope.$parent.$parent;
                     if (currentUser.getUsername() == parentScope.activity.Creator) {
-                        $scope.addTaskButtonVisible = '';
+                        $scope.addTaskButtonVisible = true;
                         $scope.resumeButtonVisible = '';
                     } else {
-                        $scope.addTaskButtonVisible = 'none';
+                        $scope.addTaskButtonVisible = false;
                         $scope.resumeButtonVisible = 'none';
                     }
                     ParticipantOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': parentScope.activity.ProjectId })
@@ -319,7 +319,7 @@ define(function (require) {
                 $scope.save = function () {
                     if ($scope.task.staff == null || $scope.task.staff == '') {
                         $scope.alertMessageVisible = 'show';
-                        $scope.alertMessage = "提示：请选着要执行任务的人员";
+                        $scope.alertMessage = "提示：请选择要执行任务的人员";
                         return;
                     }
                     $scope.alertMessageVisible = 'hide';

@@ -8,14 +8,13 @@
     <meta name="keywords" content="" />
     <meta name="description" content="" />
     <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
     <link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <link href="static/css/theme.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div class="navbar-wrapper" style="display: {{navbarVisible}};">
         <div class="container">
-            <div class="navbar navbar-fixed-top navbar-default" role="navigation">
+            <div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
                 <div class="container">
                     <div class="navbar-header">
                         <button type="button" class="btn navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -52,15 +51,16 @@
                                 </ul>
                             </li>
                             <li class="dropdown" ng-show="loginUser.isAdmin || loginUser.isSupvisor"><a class="dropdown-toggle"
-                                data-toggle="dropdown" href="#"><i class="fa fa-list"></i>&nbsp;系统管理&nbsp;<span class="caret"></span></a>
+                                data-toggle="dropdown" href="#"><i class="fa fa-tags"></i>&nbsp;管理&nbsp;<span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                     <li ng-show="loginUser.isAdmin"><a href="#/category-overview/">分类</a></li>
                                     <li ng-show="loginUser.isAdmin"><a href="#/user-role-overview/user/">用户/角色</a></li>
                                     <li ng-show="loginUser.isAdmin" class="divider"></li>
                                     <li ng-show="loginUser.isAdmin"><a href="#/schedule-list/">工作调度</a></li>
                                     <li ng-show="loginUser.isAdmin" class="divider"></li>
-                                    <li><a href="#/notice-list/">公告管理</a></li>
+                                    <li><a href="#/notice-list/">公告列表</a></li>
                                     <li><a href="#/notice-edit/0/">发布公告</a></li>
+                                    <li class="divider"></li>
                                     <li><a href="#/idiom-overview/">常用短语</a></li>
                                 </ul>
                             </li>
@@ -73,7 +73,7 @@
     </div>
     <div ng-view>
     </div>
-    <div class="container">
+    <div class="container hidden-print">
         <div class="footer">
             <div class="inner">
                 <p>

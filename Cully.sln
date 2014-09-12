@@ -82,7 +82,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "cully", "cully\", "{7EE21DD
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "22350"
+		VWDPort = "6059"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject

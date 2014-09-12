@@ -44,7 +44,7 @@ define(function (require) {
                             });
                         },
                         onAfterViewLoad: function (view) {
-                            $('.text-blue i').text(' ' + this.getTitle());
+                            $('.text-red i').text(' ' + this.getTitle());
                             $('.btn-group button').removeClass('active');
                             $('button[data-calendar-view="' + view + '"]').addClass('active');
                         },
@@ -90,6 +90,15 @@ define(function (require) {
                         //e.preventDefault();
                         //e.stopPropagation();
                     });
+
+                }
+
+            } ])
+        .controller('CalendarListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil',
+            function ($scope, $routeParams, $log, dateUtil) {
+
+                $scope.init = function () {
+                    $scope.projectId = $routeParams.projectId;
 
                 }
 

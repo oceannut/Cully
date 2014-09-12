@@ -4,6 +4,6 @@ define(function (require) {
 
     angular.module('configs', [])
         .constant("appName", "Cully")
-        .constant("wcfApp", "http://localhost:22350/cully");
+        .constant("wcfApp", "http://localhost:6059/cully");
 
 });

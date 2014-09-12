@@ -24,13 +24,18 @@ define(function (require) {
                     "active": ""
                 };
                 var calendarNav = {
-                    "name": "日程安排",
+                    "name": "日程",
                     "url": "/calendar-summary/",
                     "active": ""
                 };
                 var logNav = {
-                    "name": "工作记录",
+                    "name": "记事",
                     "url": "/log-summary/",
+                    "active": ""
+                };
+                var statNav = {
+                    "name": "统计",
+                    "url": "/#/",
                     "active": ""
                 };
                 var untreatedBizNotificationCountTimer; //刷新通知个数的时间定义。
@@ -112,7 +117,7 @@ define(function (require) {
                     //初始化导航条。
                     $scope.appName = appName;
                     $scope.makeNavbarVisible();
-                    $scope.navList = [homeNav, activityNav, calendarNav, logNav];
+                    $scope.navList = [homeNav, activityNav, calendarNav, logNav, statNav];
 
                     $scope.$on("$destroy", function (event) {
                         if (untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {

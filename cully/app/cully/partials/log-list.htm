@@ -1,0 +1,14 @@
+﻿<div class="story container" ng-init="init()">
+    <ul class="breadcrumb">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li><a href="#/project-details/{{projectId}}/">项目</a></li>
+        <li class="active">记事</li>
+    </ul>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-magic"></i>&nbsp;记事</span>
+        <ul class="list-inline pull-right">
+        </ul>
+    </div>
+    <div class="alert alert-danger" ng-show="alertMessage">
+        {{alertMessage}}</div>
+</div>

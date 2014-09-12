@@ -212,6 +212,23 @@ define(function (require) {
                     });
                 }
 
+                function loadActivityList() {
+                    ActivityOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': $routeParams.id })
+                        .$promise
+                            .then(function (result) {
+                                $scope.activityList = result;
+                                for (var i = 0; i < $scope.activityList.length; i++) {
+                                    var activity = $scope.activityList[i];
+                                    activity.index = (i + 1);
+                                    renderActivity(activity);
+                                }
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessage = "提示：加载活动列表失败";
+                                $log.error(error);
+                            });
+                }
+
                 $scope.init = function () {
 
                     $scope.addActivityPanelDisplay = 'none';
@@ -237,20 +254,8 @@ define(function (require) {
                                 $scope.alertMessage = "提示：加载项目详细信息失败";
                                 $log.error(error);
                             });
-                    ActivityOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': $routeParams.id })
-                        .$promise
-                            .then(function (result) {
-                                $scope.activityList = result;
-                                for (var i = 0; i < $scope.activityList.length; i++) {
-                                    var activity = $scope.activityList[i];
-                                    activity.index = (i + 1);
-                                    renderActivity(activity);
-                                }
-                            }, function (error) {
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：加载活动列表失败";
-                                $log.error(error);
-                            });
+
+                    loadActivityList();
 
                     categoryCache.list('activity', function (result) {
                         $scope.categoryList = result;
@@ -273,6 +278,10 @@ define(function (require) {
                         $scope.addActivityPanelDisplay = 'none';
                         clear();
                     }
+                }
+
+                $scope.refreshActivityList = function () {
+                    loadActivityList();
                 }
 
                 $scope.saveActivity = function () {
