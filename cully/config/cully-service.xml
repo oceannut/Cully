@@ -37,6 +37,15 @@
   <object id="CommentService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="CommentServiceTarget"/>
   </object>
+
+  <object id="CalendarServiceTarget" type="ThinkInBio.Cully.BLL.Impl.CalendarService, ThinkInBio.Cully.BLL">
+    <property name="CalendarDao" ref="CalendarDao" />
+    <property name="CalendarCautionDao" ref="CalendarCautionDao" />
+    <property name="BizNotificationService" ref="BizNotificationService" />
+  </object>
+  <object id="CalendarService" parent="TxProxyConfigurationTemplate">
+    <property name="Target" ref="CalendarServiceTarget"/>
+  </object>
   
 </objects>
 

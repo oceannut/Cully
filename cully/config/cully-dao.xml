@@ -28,6 +28,14 @@
   <object id="CommentDao" type="ThinkInBio.Cully.MySQL.CommentDao, ThinkInBio.Cully.MySQL">
     <constructor-arg type="string" value="${db.dataSource}"/>
   </object>
+
+  <object id="CalendarDao" type="ThinkInBio.Cully.MySQL.CalendarDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
+
+  <object id="CalendarCautionDao" type="ThinkInBio.Cully.MySQL.CalendarCautionDao, ThinkInBio.Cully.MySQL">
+    <constructor-arg type="string" value="${db.dataSource}"/>
+  </object>
   
 </objects>
 

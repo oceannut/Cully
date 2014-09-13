@@ -2,43 +2,22 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑日程</span>
         <ul class="list-inline pull-right">
-            <li><a href="javascript:void(0);" data-toggle="modal" data-target="#settingDialog"><i
-                class="fa fa-gear"></i>&nbsp;提醒设置</a></li>
+            <!--<li><a href="javascript:void(0);" data-toggle="modal" data-target="#settingDialog"><i
+                class="fa fa-gear"></i>&nbsp;提醒设置</a></li>-->
+            <li><a href="javascript:void(0);" ng-click="gotoCalendarSummary()"><i class="fa fa-calendar-o"></i>&nbsp;日程表</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
     <!-- Modal -->
-    <div class="modal fade" id="settingDialog" tabindex="-1" role="dialog" aria-labelledby="settingDialogLabel"
+    <div class="modal fade" id="viewProjectDialog" tabindex="-1" role="dialog" aria-labelledby="viewProjectDialogLabel"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="settingDialogLabel">
-                        <i class="fa fa-trash-o"></i>&nbsp;提醒配置对话框</h4>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">
-                        确定</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        取消</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="findProjectDialog" tabindex="-1" role="dialog" aria-labelledby="findProjectDialogLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="findProjectDialogLabel">
-                        <i class="fa fa-trash-o"></i>&nbsp;查找项目对话框</h4>
+                    <h4 class="modal-title" id="viewProjectDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;项目对话框</h4>
                 </div>
                 <div class="modal-body">
                 </div>
@@ -54,7 +33,7 @@
     <div class="form-group">
         <div class="col-sm-6">
             <input type="date" class="form-control" placeholder="约定日期" name="appointed" ng-model="calendar.Appointed"
-                required>
+                required />
         </div>
     </div>
     <div class="form-group">
@@ -63,7 +42,7 @@
                 ng-maxlength="255" rows="3" required autofocus></textarea>
             <p class="help-block">
                 （<span class="text-info">文本长度限制在255个字符内</span>）</p>
-            <span class="text-danger" ng-show="form.content.$error.maxlength">警告：内容介绍太长</span>
+            <span class="text-danger" ng-show="form.content.$error.maxlength">警告：内容太长</span>
         </div>
     </div>
     <div class="form-group">
@@ -72,15 +51,15 @@
                 事情级别</label>
             <div>
                 <label class="radio-inline">
-                    <input type="radio" name="level" ng-model="calendar.Level" value="1">
+                    <input type="radio" name="level" ng-model="calendar.Level" value="1" />
                     普通
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="level" ng-model="calendar.Level" value="2">
+                    <input type="radio" name="level" ng-model="calendar.Level" value="2" />
                     重要
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="level" ng-model="calendar.Level" value="3">
+                    <input type="radio" name="level" ng-model="calendar.Level" value="3" />
                     紧急
                 </label>
             </div>
@@ -88,48 +67,58 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="calendar.IsAlert">
-                    是否声音提醒
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-6">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="calendar.isAlertMore">
-                    提醒更多的人
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-6">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="calendar.isBindProject">
-                    与项目绑定
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" ng-show="calendar.isBindProject">
-        <div class="col-sm-6">
             <label>
-                相关项目</label>
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="项目名称" disabled>
-                <span class="input-group-addon"><a href="javascript:void(0);" data-toggle="modal"
-                    data-target="#findProjectDialog"><i class="fa fa-external-link"></i></a></span>
+                重复周期</label>
+            <div>
+                <label class="radio-inline">
+                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="0" />
+                    从不
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="1" />
+                    每天
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="2" />
+                    每周
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="3" />
+                    每月
+                </label>
             </div>
         </div>
     </div>
-    <div class="form-group" ng-if="isAlertMore">
+    <div class="form-group">
+        <div class="col-sm-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="calendar.isAlert" />
+                    声音提醒
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" ng-show="calendar.isAlert">
+        <div class="col-sm-6">
+            <div class="form-inline">
+                <input type="time" class="form-control" ng-model="calendar.caution" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="calendar.isMoreParticipants" />
+                    邀请更多成员参与
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" ng-show="calendar.isMoreParticipants">
         <label class="col-sm-2 control-label">
-            要提醒的成员:</label>
+            要参与的成员:</label>
         <div class="col-sm-4">
             <div class="input-group">
                 <span class="input-group-addon">
@@ -148,12 +137,23 @@
             </div>
         </div>
     </div>
-    <div class="form-group" ng-if="isAlertMore">
+    <div class="form-group" ng-show="calendar.isMoreParticipants">
         <div class="col-sm-6">
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="item in participants">{{item.Name}}<span class="pull-right glyphicon glyphicon-remove"
                     ng-click="removeParticipant(item)"></span></li>
             </ul>
+        </div>
+    </div>
+    <div class="form-group" ng-if="calendar.isBindProject">
+        <div class="col-sm-6">
+            <label>
+                相关项目</label>
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="项目名称" disabled />
+                <span class="input-group-addon"><a href="javascript:void(0);" data-toggle="modal"
+                    data-target="#viewProjectDialog"><i class="fa fa-external-link"></i></a></span>
+            </div>
         </div>
     </div>
     <div class="form-group">

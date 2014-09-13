@@ -28,9 +28,53 @@ namespace ThinkInBio.Cully
         public string Staff { get; set; }
 
         /// <summary>
-        /// 提醒备注。
+        /// 创建时间。
         /// </summary>
-        public string Memo { get; set; }
+        public DateTime Creation { get; set; }
+
+        public CalendarCaution() { }
+
+        public CalendarCaution(Calendar calendar)
+        {
+            if (calendar == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (calendar.Id > 0)
+            {
+                this.CalendarId = calendar.Id;
+            }
+            else
+            {
+                calendar.IdChanged += new Action<long>(CalendarIdChanged);
+            }
+        }
+
+        public void Save(Action<CalendarCaution> action)
+        {
+            Save(DateTime.Now, action);
+        }
+
+        public void Save(DateTime timeStamp,
+            Action<CalendarCaution> action)
+        {
+            if (this.CalendarId == 0 || string.IsNullOrWhiteSpace(this.Staff))
+            {
+                throw new InvalidOperationException();
+            }
+
+            this.Creation = timeStamp;
+
+            if (action != null)
+            {
+                action(this);
+            }
+        }
+
+        private void CalendarIdChanged(long id)
+        {
+            this.CalendarId = id;
+        }
 
     }
 }

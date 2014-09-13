@@ -28,7 +28,8 @@ namespace Test.ThinkInBio.Cully.MySQL
             Calendar calendar = new Calendar();
             calendar.Content = "测试";
             calendar.Appointed = DateTime.Now;
-            calendar.Expression = "test";
+            calendar.Level = AffairLevel.General;
+            calendar.Repeat = AffairRepeat.None;
             calendar.Creator = "me";
             calendar.Creation = DateTime.Now;
             calendar.Modification = DateTime.Now;

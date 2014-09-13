@@ -10,5 +10,10 @@ namespace ThinkInBio.Cully.DAL
 {
     public interface ICalendarDao : IDao<Calendar>
     {
+
+        IList<Calendar> GetList(string participant, long projectId,
+            DateTime startTime, DateTime endTime, bool asc,
+            int startRowIndex, int maxRowsCount);
+
     }
 }

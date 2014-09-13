@@ -40,8 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICalendarService.cs" />
     <Compile Include="ICommentService.cs" />
     <Compile Include="ILogService.cs" />
+    <Compile Include="Impl\CalendarService.cs" />
     <Compile Include="Impl\CommentService.cs" />
     <Compile Include="Impl\LogService.cs" />
     <Compile Include="Impl\ProjectService.cs" />

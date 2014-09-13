@@ -330,7 +330,7 @@ define(function (require) {
                             roles: ['user']
                         }
                     })
-                    .when('/calendar-summary/', {
+                    .when('/calendar-summary/:day/', {
                         templateUrl: 'app/cully/partials/calendar-summary.htm',
                         controller: 'CalendarSummaryCtrl',
                         access: {

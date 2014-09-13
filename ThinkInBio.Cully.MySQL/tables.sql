@@ -8,6 +8,8 @@ delete from cyTaskReport;
 delete from cyLog;
 delete from cyLogVisibleUser;
 delete from cyComment;
+delete from cyCalendar;
+delete from cyCalendarCaution;
 
 
 drop table cyProject;
@@ -19,6 +21,8 @@ drop table cyTaskReport;
 drop table cyLog;
 drop table cyLogVisibleUser;
 drop table cyComment;
+drop table cyCalendar;
+drop table cyCalendarCaution;
 
 
 create table cyProject
@@ -145,12 +149,12 @@ create table cyComment
 create table cyCalendar
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	projectId				BIGINT,
 	content					VARCHAR(255)		NOT NULL,
 	appointed				DATETIME			NOT NULL,
-	_interval				INT,
-	_repeat					INT,
-	expression				VARCHAR(255),
-	isStop					TINYINT				NOT NULL default 0,
+	level					TINYINT(1)			NOT NULL,
+	_repeat					TINYINT(1)			NOT NULL,
+	caution					DATETIME,
 	creator					VARCHAR(32)			NOT NULL,
 	creation				DATETIME			NOT NULL,
 	modification			DATETIME			NOT NULL,
@@ -162,6 +166,6 @@ create table cyCalendarCaution
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
 	calendarId				BIGINT	unsigned	NOT NULL,
 	staff					VARCHAR(32)			NOT NULL,
-	memo					VARCHAR(255),
+	creation				DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );

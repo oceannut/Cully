@@ -25,7 +25,7 @@ define(function (require) {
                 };
                 var calendarNav = {
                     "name": "日程",
-                    "url": "/calendar-summary/",
+                    "url": "/calendar-summary/null/",
                     "active": ""
                 };
                 var logNav = {

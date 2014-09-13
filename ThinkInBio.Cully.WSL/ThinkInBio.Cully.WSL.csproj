@@ -42,8 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICalendarWcfService.cs" />
     <Compile Include="ICommentWcfService.cs" />
     <Compile Include="ILogWcfService.cs" />
+    <Compile Include="Impl\CalendarWcfService.cs" />
     <Compile Include="Impl\CommentWcfService.cs" />
     <Compile Include="Impl\LogWcfService.cs" />
     <Compile Include="Impl\ProjectWcfService.cs" />

@@ -12,20 +12,40 @@ define(function (require) {
     require('../../../lib/bootstrap-calendar/js/language/zh-CN');
     require('../../../lib/bootstrap-calendar/js/calendar');
 
+    require('../../auth/js/auth-models');
     require('../../../static/js/utils');
 
-    angular.module('calendar.controllers', ['utils'])
-        .controller('CalendarSummaryCtrl', ['$scope', '$location', '$log',
-            function ($scope, $location, $log) {
+    require('./calendar-services');
+
+    angular.module('calendar.controllers', ['utils', 'auth.models', 'calendar.services'])
+        .controller('CalendarSummaryCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'CalendarListService',
+            function ($scope, $routeParams, $log, dateUtil, CalendarListService) {
 
                 $scope.init = function () {
+
+                    var dateString = $routeParams.day;
+                    if (undefined === dateString || 'null' === dateString) {
+                        dateString = dateUtil.formatDateByYMD(new Date());
+                    }
+                    var dateArray = dateString.split('-');
+                    console.log(dateArray);
+                    var year = dateArray[0];
+                    var month = dateArray[1];
+                    CalendarListService.query({ 'year': year, 'month': month })
+                            .$promise
+                                .then(function (result) {
+                                    console.log(result);
+                                }, function (error) {
+                                    $log.error(error);
+                                });
 
                     var options = {
                         events_source: 'events.json.php',
                         language: 'zh-CN',
                         view: 'month',
                         tmpl_cache: false,
-                        day: '2013-03-12',
+                        //day: '2013-03-12',
+                        day: dateString,
                         tmpl_path: 'lib/bootstrap-calendar/tmpls/',
                         modal: "#events-modal",
                         modal_type: "template",
@@ -103,23 +123,51 @@ define(function (require) {
                 }
 
             } ])
-        .controller('CalendarEditCtrl', ['$scope', '$routeParams', '$log', 'dateUtil',
-            function ($scope, $routeParams, $log, dateUtil) {
+        .controller('CalendarEditCtrl', ['$scope', '$routeParams', '$log', '$location', 'dateUtil', 'currentUser', 'CalendarService',
+            function ($scope, $routeParams, $log, $location, dateUtil, currentUser, CalendarService) {
 
                 $scope.init = function () {
                     $scope.projectId = $routeParams.projectId;
                     $scope.isBusy = false;
+                    var timestamp = new Date();
+                    var hour = (timestamp.getHours() + 1) % 24;
                     $scope.calendar = {
-                        Appointed: dateUtil.formatDateByYMD(new Date()),
+                        Appointed: dateUtil.formatDateByYMD(timestamp),
                         Level: 1,
-                        IsAlert: true,
-                        isAlertMore: false,
-                        isBindProject: false
+                        Repeat: 0,
+                        isAlert: true,
+                        caution: (hour < 10 ? '0' + hour : hour) + ':00',
+                        isMoreParticipants: false
                     };
                     if ($scope.projectId > 0) {
                         $scope.calendar.isBindProject = true;
+                    } else {
+                        $scope.calendar.isBindProject = false;
                     }
 
+                }
+
+                $scope.gotoCalendarSummary = function () {
+                    $location.path('/calendar-summary/' + $scope.calendar.Appointed + '/');
+                }
+
+                $scope.save = function () {
+                    CalendarService.save({
+                        'user': currentUser.getUsername(),
+                        'projectId': $scope.projectId,
+                        'appointed': $scope.calendar.Appointed,
+                        'content': $scope.calendar.Content,
+                        'level': $scope.calendar.Level,
+                        'repeat': $scope.calendar.Repeat,
+                        'caution': $scope.calendar.caution,
+                        'participants': null
+                    })
+                        .$promise
+                            .then(function (result) {
+                                console.log(result);
+                            }, function (error) {
+                                $log.error(error);
+                            });
                 }
 
             } ]);
