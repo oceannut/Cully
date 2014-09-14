@@ -1,9 +1,8 @@
 ﻿<div class="story container" ng-init="init()">
     <div class="page-header">
-        <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑日程</span>
+        <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑时钟</span>
         <ul class="list-inline pull-right">
-            <li><a href="javascript:void(0);" ng-click="gotoCalendarSummary()"><i class="fa fa-list">
-            </i>&nbsp;日程列表</a></li>
+            <li><a href="javascript:void(0);"><i class="fa fa-list"></i>&nbsp;时钟列表</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
@@ -31,88 +30,57 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <textarea class="form-control" placeholder="内容" name="content" ng-model="calendar.Content"
-                ng-maxlength="255" rows="3" required autofocus></textarea>
-            <p class="help-block">
-                （<span class="text-info">文本长度限制在255个字符内</span>）</p>
-            <span class="text-danger" ng-show="form.content.$error.maxlength">警告：内容太长</span>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-6">
             <label>
-                开始日期</label>
-            <input type="date" class="form-control" name="appointed" ng-model="calendar.Appointed"
-                required />
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-6">
-            <label>
-                结束日期</label>
-            <input type="date" class="form-control" name="appointed" ng-model="calendar.Appointed"
-                required />
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-6">
-            <label>
-                事情级别</label>
-            <div>
-                <label class="radio-inline">
-                    <input type="radio" name="level" ng-model="calendar.Level" value="1" />
-                    普通
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="level" ng-model="calendar.Level" value="2" />
-                    重要
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="level" ng-model="calendar.Level" value="3" />
-                    紧急
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-6">
-            <label>
-                重复周期</label>
+                重复</label>
             <div>
                 <label class="radio-inline">
                     <input type="radio" name="repeat" ng-model="calendar.Repeat" value="0" />
-                    从不
+                    响一次
                 </label>
                 <label class="radio-inline">
                     <input type="radio" name="repeat" ng-model="calendar.Repeat" value="1" />
                     每天
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="2" />
-                    每周
+                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="5" />
+                    周一至周五
                 </label>
                 <label class="radio-inline">
-                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="3" />
-                    每月
+                    <input type="radio" name="repeat" ng-model="calendar.Repeat" value="-1" />
+                    自定义
                 </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" ng-show="calendar.Repeat==-1">
+        <div class="col-sm-6">
+            <select class="form-control" ng-model="calendar.customRepeat">
+                <option value="11">星期一</option>
+                <option value="12">星期二</option>
+                <option value="13">星期三</option>
+                <option value="14">星期四</option>
+                <option value="15">星期五</option>
+                <option value="16">星期六</option>
+                <option value="10">星期日</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6">
+            <div class="form-inline">
+                <label>
+                    提醒时间</label>
+                <input type="time" class="form-control" ng-model="calendar.caution" />
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="calendar.isAlert" />
-                    是否提醒
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" ng-show="calendar.isAlert">
-        <div class="col-sm-6">
-            <div class="form-inline">
-                <input type="time" class="form-control" ng-model="calendar.caution" />
-            </div>
+            <textarea class="form-control" placeholder="备注" name="content" ng-model="calendar.Content"
+                ng-maxlength="255" rows="3" required autofocus></textarea>
+            <p class="help-block">
+                （<span class="text-info">文本长度限制在255个字符内</span>）</p>
+            <span class="text-danger" ng-show="form.content.$error.maxlength">警告：备注太长</span>
         </div>
     </div>
     <div class="form-group">
@@ -120,14 +88,14 @@
             <div class="checkbox">
                 <label>
                     <input type="checkbox" ng-model="calendar.isMoreParticipants" />
-                    邀请更多成员参与
+                    提醒更多的人
                 </label>
             </div>
         </div>
     </div>
     <div class="form-group" ng-show="calendar.isMoreParticipants">
         <label class="col-sm-2 control-label">
-            要参与的成员:</label>
+            要提醒的成员:</label>
         <div class="col-sm-4">
             <div class="input-group">
                 <span class="input-group-addon">
@@ -152,17 +120,6 @@
                 <li class="list-group-item" ng-repeat="item in participants">{{item.Name}}<span class="pull-right glyphicon glyphicon-remove"
                     ng-click="removeParticipant(item)"></span></li>
             </ul>
-        </div>
-    </div>
-    <div class="form-group" ng-if="calendar.isBindProject">
-        <div class="col-sm-6">
-            <label>
-                相关项目</label>
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="项目名称" disabled />
-                <span class="input-group-addon"><a href="javascript:void(0);" data-toggle="modal"
-                    data-target="#viewProjectDialog"><i class="fa fa-external-link"></i></a></span>
-            </div>
         </div>
     </div>
     <div class="form-group">

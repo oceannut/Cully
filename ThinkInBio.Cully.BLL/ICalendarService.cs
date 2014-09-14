@@ -28,9 +28,9 @@ namespace ThinkInBio.Cully.BLL
 
         IList<Calendar> GetCalendarList(int year, int month, string participant);
 
-        IList<Calendar> GetCalendarList(int year, int month, long projectId);
+        IList<Calendar> GetCalendarList(int year, int month, long? projectId);
 
-        IList<Calendar> GetCalendarList(int year, int month, long projectId, string participant);
+        IList<Calendar> GetCalendarList(int year, int month, long? projectId, string participant);
 
         void SaveCalendarCaution(CalendarCaution calendarCaution, 
             BizNotification notification);

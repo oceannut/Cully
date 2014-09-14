@@ -1,8 +1,21 @@
 ﻿<div class="story container" ng-init="init()">
     <div class="page-header">
-        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;日程</span>
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;日历</span>
         <ul class="list-inline pull-right">
-            <li access="user"><a href="#/calendar-edit/0/"><i class="fa fa-plus"></i>&nbsp;新建</a></li>
+            <li access="user" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"
+                href="#"><i class="fa fa-calendar-o"></i>&nbsp;日程<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#/calendar-edit/0/"><i class="fa fa-plus fa-fw"></i>&nbsp;新建一条</a></li>
+                    <li><a href="#"><i class="fa fa-list fa-fw"></i>&nbsp;日程列表</a></li>
+                </ul>
+            </li>
+            <li access="user" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"
+                href="#"><i class="fa fa-clock-o"></i>&nbsp;时钟<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#/clock-edit/"><i class="fa fa-plus fa-fw"></i>&nbsp;新建一条</a></li>
+                    <li><a href="#"><i class="fa fa-list fa-fw"></i>&nbsp;时钟列表</a></li>
+                </ul>
+            </li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">

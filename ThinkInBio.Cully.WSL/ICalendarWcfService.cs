@@ -20,8 +20,16 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/calendar/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar SaveCalendar(string user, string projectId, string appointed, string content, 
+        Calendar SaveCalendar(string user, string projectId, string appointed, string endAppointed, string content, 
             string level, string repeat, string caution, string[] participants);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/clock/0/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Calendar SaveClock(string user, string content, string repeat, string caution, string[] participants);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",

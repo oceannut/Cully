@@ -30,11 +30,13 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                  (command) =>
                  {
-                     command.CommandText = @"insert into cyCalendar (id,projectId,content,appointed,level,_repeat,caution,creator,creation,modification) 
-                                                values (NULL,@projectId,@content,@appointed,@level,@repeat,@caution,@creator,@creation,@modification)";
+                     command.CommandText = @"insert into cyCalendar (id,type,projectId,content,appointed,endAppointed,level,_repeat,caution,creator,creation,modification) 
+                                                values (NULL,@type,@projectId,@content,@appointed,@endAppointed,@level,@repeat,@caution,@creator,@creation,@modification)";
+                     command.Parameters.Add(DbFactory.CreateParameter("type", entity.Type));
                      command.Parameters.Add(DbFactory.CreateParameter("projectId", entity.ProjectId));
                      command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
                      command.Parameters.Add(DbFactory.CreateParameter("appointed", entity.Appointed));
+                     command.Parameters.Add(DbFactory.CreateParameter("endAppointed", entity.EndAppointed));
                      command.Parameters.Add(DbFactory.CreateParameter("level", entity.Level));
                      command.Parameters.Add(DbFactory.CreateParameter("repeat", entity.Repeat));
                      command.Parameters.Add(DbFactory.CreateParameter("caution", entity.Caution));
@@ -54,11 +56,12 @@ namespace ThinkInBio.Cully.MySQL
                 (command) =>
                 {
                     command.CommandText = @"update cyCalendar 
-                                                set content=@content,appointed=@appointed,level=@level,_repeat=@repeat,
+                                                set content=@content,appointed=@appointed,endAppointed=@endAppointed,level=@level,_repeat=@repeat,
                                                 caution=@caution,modification=@modification
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("content", entity.Content));
                     command.Parameters.Add(DbFactory.CreateParameter("appointed", entity.Appointed));
+                    command.Parameters.Add(DbFactory.CreateParameter("endAppointed", entity.EndAppointed));
                     command.Parameters.Add(DbFactory.CreateParameter("level", entity.Level));
                     command.Parameters.Add(DbFactory.CreateParameter("repeat", entity.Repeat));
                     command.Parameters.Add(DbFactory.CreateParameter("caution", entity.Caution));
@@ -83,7 +86,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Calendar>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,projectId,content,appointed,level,_repeat,caution,creator,creation,modification from cyCalendar 
+                    command.CommandText = @"select id,type,projectId,content,appointed,endAppointed,level,_repeat,caution,creator,creation,modification from cyCalendar 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -93,19 +96,19 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public IList<Calendar> GetList(string participant, long projectId, DateTime startTime, DateTime endTime, bool asc, int startRowIndex, int maxRowsCount)
+        public IList<Calendar> GetList(string participant, long? projectId, CalendarType? type, DateTime startTime, DateTime endTime, bool asc, int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetList<Calendar>(dataSource,
                 (command) =>
                 {
                     StringBuilder sql = new StringBuilder();
-                    sql.Append("select t.id,t.projectId,t.content,t.appointed,t.level,t._repeat,t.caution,t.creator,t.creation,t.modification from cyCalendar t ");
+                    sql.Append("select t.id,t.type,t.projectId,t.content,t.appointed,t.endAppointed,t.level,t._repeat,t.caution,t.creator,t.creation,t.modification from cyCalendar t ");
                     if (!string.IsNullOrWhiteSpace(participant))
                     {
                         sql.Append(" inner join cyCalendarCaution p on t.id=p.calendarId ");
                     }
-                    BuildSql(sql, parameters, participant, projectId, startTime, endTime);
+                    BuildSql(sql, parameters, participant, projectId, type, startTime, endTime);
                     sql.Append(" order by t.appointed ");
                     if (!asc)
                     {
@@ -125,14 +128,14 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string participant, long projectId, DateTime startTime, DateTime endTime)
+            string participant, long? projectId, CalendarType? type, DateTime startTime, DateTime endTime)
         {
             if (startTime != DateTime.MinValue
                     && endTime != DateTime.MinValue
                     && endTime > startTime)
             {
                 SQLHelper.AppendOp(sql, parameters);
-                sql.Append(" t.appointed between @startTime and @endTime ");
+                sql.Append(" ((t.appointed <= @startTime and t.endAppointed > @startTime) or (t.appointed > @startTime and t.appointed < @endTime)) ");
                 parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
                 parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
             }
@@ -142,11 +145,17 @@ namespace ThinkInBio.Cully.MySQL
                 sql.Append(" p.staff=@participant ");
                 parameters.Add(new KeyValuePair<string, object>("participant", participant));
             }
-            if (projectId > 0)
+            if (projectId.HasValue)
             {
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" t.projectId=@projectId ");
-                parameters.Add(new KeyValuePair<string, object>("projectId", projectId));
+                parameters.Add(new KeyValuePair<string, object>("projectId", projectId.Value));
+            }
+            if (type.HasValue)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.type=@type ");
+                parameters.Add(new KeyValuePair<string, object>("type", type.Value));
             }
         }
 
@@ -154,15 +163,17 @@ namespace ThinkInBio.Cully.MySQL
         {
             Calendar entity = new Calendar();
             entity.Id = reader.GetInt64(0);
-            entity.ProjectId = reader.IsDBNull(1) ? 0 : reader.GetInt64(1);
-            entity.Content = reader.GetString(2);
-            entity.Appointed = reader.GetDateTime(3);
-            entity.Level = (AffairLevel)reader.GetInt32(4);
-            entity.Repeat = (AffairRepeat)reader.GetInt32(5);
-            entity.Caution = reader.IsDBNull(6) ? new DateTime?() : reader.GetDateTime(6);
-            entity.Creator = reader.GetString(7);
-            entity.Creation = reader.GetDateTime(8);
-            entity.Modification = reader.GetDateTime(9);
+            entity.Type = (CalendarType)reader.GetInt32(1);
+            entity.ProjectId = reader.IsDBNull(2) ? 0 : reader.GetInt64(2);
+            entity.Content = reader.GetString(3);
+            entity.Appointed = reader.IsDBNull(4) ? new DateTime?() : reader.GetDateTime(4);
+            entity.EndAppointed = reader.IsDBNull(5) ? new DateTime?() : reader.GetDateTime(5);
+            entity.Level = (AffairLevel)reader.GetInt32(6);
+            entity.Repeat = (AffairRepeat)reader.GetInt32(7);
+            entity.Caution = reader.IsDBNull(8) ? new DateTime?() : reader.GetDateTime(8);
+            entity.Creator = reader.GetString(9);
+            entity.Creation = reader.GetDateTime(10);
+            entity.Modification = reader.GetDateTime(11);
 
             return entity;
         }

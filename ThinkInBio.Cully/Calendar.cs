@@ -8,11 +8,32 @@ using ThinkInBio.CommonApp;
 namespace ThinkInBio.Cully
 {
 
+    #region enums
+
+    /// <summary>
+    /// 日历类型。
+    /// </summary>
+    public enum CalendarType
+    {
+        /// <summary>
+        /// 日程。
+        /// </summary>
+        Calendar = 0,
+        /// <summary>
+        /// 闹钟。
+        /// </summary>
+        Clock = 1
+    }
+
     /// <summary>
     /// 事情等级。
     /// </summary>
     public enum AffairLevel
     {
+        /// <summary>
+        /// 未定义。
+        /// </summary>
+        None = 0,
         /// <summary>
         /// 普通。
         /// </summary>
@@ -33,7 +54,7 @@ namespace ThinkInBio.Cully
     public enum AffairRepeat
     {
         /// <summary>
-        /// 不重复。
+        /// 只进行一次且不重复。
         /// </summary>
         None = 0,
         /// <summary>
@@ -47,11 +68,45 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 每月重复。
         /// </summary>
-        Month = 3
+        Month = 3,
+        /// <summary>
+        /// 周一至周五重复。
+        /// </summary>
+        Monday2Friday = 5,
+        /// <summary>
+        /// 周一重复。
+        /// </summary>
+        Monday = 11,
+        /// <summary>
+        /// 周二重复。
+        /// </summary>
+        Tuesday = 12,
+        /// <summary>
+        /// 周三重复。
+        /// </summary>
+        Wednesday = 13,
+        /// <summary>
+        /// 周四重复。
+        /// </summary>
+        Thursday = 14,
+        /// <summary>
+        /// 周五重复。
+        /// </summary>
+        Friday = 15,
+        /// <summary>
+        /// 周六重复。
+        /// </summary>
+        Saturday = 16,
+        /// <summary>
+        /// 周日重复。
+        /// </summary>
+        Sunday = 10
     }
 
+    #endregion
+
     /// <summary>
-    /// 日程表。
+    /// 日历。
     /// </summary>
     public class Calendar
     {
@@ -73,6 +128,11 @@ namespace ThinkInBio.Cully
         public long Id { get; set; }
 
         /// <summary>
+        /// 日历类型。
+        /// </summary>
+        public CalendarType Type { get; set; }
+
+        /// <summary>
         /// 项目编号。
         /// </summary>
         public long ProjectId { get; set; }
@@ -83,9 +143,14 @@ namespace ThinkInBio.Cully
         public string Content { get; set; }
 
         /// <summary>
-        /// 约定日期。
+        /// 起始日期。
         /// </summary>
-        public DateTime Appointed { get; set; }
+        public DateTime? Appointed { get; set; }
+
+        /// <summary>
+        /// 结束日期。
+        /// </summary>
+        public DateTime? EndAppointed { get; set; }
 
         /// <summary>
         /// 事情等级。
@@ -141,13 +206,17 @@ namespace ThinkInBio.Cully
             DateTime timeStamp = DateTime.Now;
             List<CalendarCaution> calendarCautionList = BuildCalendarCautions(timeStamp, templist);
 
-            List<BizNotification> bizNotificationList = new List<BizNotification>();
-            foreach (string participant in templist)
+            List<BizNotification> bizNotificationList = null;
+            if (CalendarType.Calendar == this.Type)
             {
-                BizNotification notification = BuildBizNotifications(participant, "邀请您参加日程", this.Id);
-                if (notification != null)
+                bizNotificationList = new List<BizNotification>();
+                foreach (string participant in templist)
                 {
-                    bizNotificationList.Add(notification);
+                    BizNotification notification = BuildBizNotifications(participant, "制定了日程", this.Id);
+                    if (notification != null)
+                    {
+                        bizNotificationList.Add(notification);
+                    }
                 }
             }
 
@@ -190,21 +259,25 @@ namespace ThinkInBio.Cully
                 throw new InvalidOperationException();
             }
             List<CalendarCaution> calendarCautionList = new List<CalendarCaution>();
-            List<BizNotification> bizNotificationList = new List<BizNotification>();
+            List<BizNotification> bizNotificationList = null;
             IEnumerable<CalendarCaution> participants = participantFactory == null ? null : participantFactory(this.Id);
             if (participants != null && participants.Count() > 0)
             {
                 calendarCautionList.AddRange(participants);
-                foreach (CalendarCaution participant in participants)
+                if (CalendarType.Calendar == this.Type)
                 {
-                    if (this.Creator == participant.Staff)
+                    bizNotificationList = new List<BizNotification>();
+                    foreach (CalendarCaution participant in participants)
                     {
-                        continue;
-                    }
-                    BizNotification notification = BuildBizNotifications(participant.Staff, "删除了日程", 0);
-                    if (notification != null)
-                    {
-                        bizNotificationList.Add(notification);
+                        if (this.Creator == participant.Staff)
+                        {
+                            continue;
+                        }
+                        BizNotification notification = BuildBizNotifications(participant.Staff, "删除了日程", 0);
+                        if (notification != null)
+                        {
+                            bizNotificationList.Add(notification);
+                        }
                     }
                 }
             }
@@ -247,7 +320,11 @@ namespace ThinkInBio.Cully
                 p.Staff = participant;
                 p.Creation = DateTime.Now;
             }
-            BizNotification notification = BuildBizNotifications(participant, "邀请您参加日程", this.Id);
+            BizNotification notification = null;
+            if (CalendarType.Calendar == this.Type)
+            {
+                notification = BuildBizNotifications(participant, "邀请您参加日程", this.Id);
+            }
             if (action != null)
             {
                 action(p, notification);
@@ -286,7 +363,11 @@ namespace ThinkInBio.Cully
             }
             if (p != null && action != null)
             {
-                BizNotification notification = BuildBizNotifications(participant, "从日程安排中移除了您", this.Id);
+                BizNotification notification = null;
+                if (CalendarType.Calendar == this.Type)
+                {
+                    notification = BuildBizNotifications(participant, "从日程安排中移除了您", this.Id);
+                }
                 action(p, notification);
             }
             return p;

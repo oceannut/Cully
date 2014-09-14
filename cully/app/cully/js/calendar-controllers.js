@@ -135,7 +135,7 @@ define(function (require) {
                         Appointed: dateUtil.formatDateByYMD(timestamp),
                         Level: 1,
                         Repeat: 0,
-                        isAlert: true,
+                        isAlert: false,
                         caution: (hour < 10 ? '0' + hour : hour) + ':00',
                         isMoreParticipants: false
                     };
@@ -169,6 +169,25 @@ define(function (require) {
                                 $log.error(error);
                             });
                 }
+
+            } ])
+        .controller('ClockEditCtrl', ['$scope', '$routeParams', '$log', '$location', 'dateUtil', 'currentUser', 'CalendarService',
+            function ($scope, $routeParams, $log, $location, dateUtil, currentUser, CalendarService) {
+
+                $scope.init = function () {
+                    $scope.projectId = $routeParams.projectId;
+                    $scope.isBusy = false;
+                    var timestamp = new Date();
+                    var hour = (timestamp.getHours() + 1) % 24;
+                    $scope.calendar = {
+                        Appointed: dateUtil.formatDateByYMD(timestamp),
+                        Level: 1,
+                        Repeat: 0,
+                        caution: (hour < 10 ? '0' + hour : hour) + ':00',
+                        isMoreParticipants: false
+                    };
+
+                };
 
             } ]);
 

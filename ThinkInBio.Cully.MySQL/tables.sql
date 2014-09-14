@@ -149,11 +149,13 @@ create table cyComment
 create table cyCalendar
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	type					TINYINT(1)			NOT NULL,
 	projectId				BIGINT,
 	content					VARCHAR(255)		NOT NULL,
-	appointed				DATETIME			NOT NULL,
+	appointed				DATETIME,
+	endAppointed			DATETIME,
 	level					TINYINT(1)			NOT NULL,
-	_repeat					TINYINT(1)			NOT NULL,
+	_repeat					TINYINT(2)			NOT NULL,
 	caution					DATETIME,
 	creator					VARCHAR(32)			NOT NULL,
 	creation				DATETIME			NOT NULL,

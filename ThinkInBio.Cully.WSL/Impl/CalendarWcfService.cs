@@ -18,7 +18,7 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal ICalendarService CalendarService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
-        public Calendar SaveCalendar(string user, string projectId, string appointed, string content,
+        public Calendar SaveCalendar(string user, string projectId, string appointed, string endAppointed, string content,
             string level, string repeat, string caution, string[] participants)
         {
             if (string.IsNullOrWhiteSpace(user))
@@ -42,6 +42,15 @@ namespace ThinkInBio.Cully.WSL.Impl
             catch
             {
                 throw new WebFaultException<string>("appointed", HttpStatusCode.BadRequest);
+            }
+            DateTime endAppointedDate;
+            try
+            {
+                endAppointedDate = Convert.ToDateTime(endAppointed);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("endAppointed", HttpStatusCode.BadRequest);
             }
             if (string.IsNullOrWhiteSpace(content))
             {
@@ -87,10 +96,74 @@ namespace ThinkInBio.Cully.WSL.Impl
             try
             {
                 Calendar calendar = new Calendar();
+                calendar.Type = CalendarType.Calendar;
                 calendar.ProjectId = projectIdLong;
                 calendar.Appointed = appointedDate;
+                calendar.EndAppointed = endAppointedDate;
                 calendar.Content = content;
                 calendar.Level = affairLevel;
+                calendar.Repeat = affairRepeat;
+                calendar.Caution = cautionTime;
+                calendar.Creator = user;
+
+                calendar.Save(participants,
+                    (e1, e2, e3) =>
+                    {
+                        CalendarService.SaveCalendar(e1, e2, e3);
+                    });
+
+                return calendar;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public Calendar SaveClock(string user, string content, string repeat, string caution, string[] participants)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            AffairRepeat affairRepeat = AffairRepeat.None;
+            if (!string.IsNullOrWhiteSpace(repeat))
+            {
+                try
+                {
+                    affairRepeat = (AffairRepeat)Convert.ToInt32(repeat);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("repeat", HttpStatusCode.BadRequest);
+                }
+            }
+            DateTime? cautionTime = null;
+            if (!string.IsNullOrWhiteSpace(caution))
+            {
+                try
+                {
+                    cautionTime = Convert.ToDateTime(caution);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("caution", HttpStatusCode.BadRequest);
+                }
+            }
+
+            try
+            {
+                DateTime now = DateTime.Now;
+                Calendar calendar = new Calendar();
+                calendar.Type = CalendarType.Calendar;
+                calendar.Appointed = now.Date;
+                calendar.EndAppointed = now.AddYears(100);
+                calendar.Content = content;
                 calendar.Repeat = affairRepeat;
                 calendar.Caution = cautionTime;
                 calendar.Creator = user;

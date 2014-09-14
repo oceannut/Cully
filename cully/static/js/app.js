@@ -354,6 +354,14 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
+                    .when('/clock-edit/', {
+                        templateUrl: 'app/cully/partials/clock-edit.htm',
+                        controller: 'ClockEditCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
                     .when('/notification-list/:box/', {
                         templateUrl: 'app/cully/partials/notification-list.htm',
                         controller: 'BizNotificationListCtrl',

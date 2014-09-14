@@ -78,20 +78,20 @@ namespace ThinkInBio.Cully.BLL.Impl
 
         public IList<Calendar> GetCalendarList(int year, int month)
         {
-            return GetCalendarList(year, month, 0, null);
+            return GetCalendarList(year, month, null, null);
         }
 
         public IList<Calendar> GetCalendarList(int year, int month, string participant)
         {
-            return GetCalendarList(year, month, 0, participant);
+            return GetCalendarList(year, month, null, participant);
         }
 
-        public IList<Calendar> GetCalendarList(int year, int month, long projectId)
+        public IList<Calendar> GetCalendarList(int year, int month, long? projectId)
         {
             return GetCalendarList(year, month, projectId, null);
         }
 
-        public IList<Calendar> GetCalendarList(int year, int month, long projectId, string participant)
+        public IList<Calendar> GetCalendarList(int year, int month, long? projectId, string participant)
         {
             if (year < 1970)
             {
@@ -103,7 +103,7 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
             DateTime startTime = new DateTime(year, month, 1);
             DateTime endTime = startTime.AddMonths(1);
-            return CalendarDao.GetList(participant, projectId, startTime, endTime, false, 0, int.MaxValue);
+            return CalendarDao.GetList(participant, projectId, null, startTime, endTime, false, 0, int.MaxValue);
         }
 
         public void SaveCalendarCaution(CalendarCaution calendarCaution, BizNotification notification)
