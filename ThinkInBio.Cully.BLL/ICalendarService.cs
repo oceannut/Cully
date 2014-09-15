@@ -24,13 +24,13 @@ namespace ThinkInBio.Cully.BLL
 
         Calendar GetCalendar(long id);
 
-        IList<Calendar> GetCalendarList(int year, int month);
+        IList<Calendar> GetCalendarList(int year, int month, CalendarType? type);
 
-        IList<Calendar> GetCalendarList(int year, int month, string participant);
+        IList<Calendar> GetCalendarList(int year, int month, CalendarType? type, string participant);
 
-        IList<Calendar> GetCalendarList(int year, int month, long? projectId);
+        IList<Calendar> GetCalendarList(int year, int month, CalendarType? type, long? projectId);
 
-        IList<Calendar> GetCalendarList(int year, int month, long? projectId, string participant);
+        IList<Calendar> GetCalendarList(int year, int month, CalendarType? type, long? projectId, string participant);
 
         void SaveCalendarCaution(CalendarCaution calendarCaution, 
             BizNotification notification);

@@ -124,6 +124,13 @@ define(function (require) {
                         return null;
                     }
                 },
+                jsonToTicks: function (json) {
+                    if (json) {
+                        return json.substring(6, json.length - 7);
+                    } else {
+                        return null;
+                    }
+                },
                 formatDateByYMD: function (date) {
                     var d = date.getDate();
                     var m = date.getMonth() + 1;

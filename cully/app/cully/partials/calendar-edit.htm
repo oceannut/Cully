@@ -1,9 +1,13 @@
 ﻿<div class="story container" ng-init="init()">
+    <ul class="breadcrumb" ng-hide="projectId==0">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li><a href="#/project-details/{{projectId}}/">项目</a></li>
+        <li class="active">日程</li>
+    </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑日程</span>
         <ul class="list-inline pull-right">
-            <li><a href="javascript:void(0);" ng-click="gotoCalendarSummary()"><i class="fa fa-list">
-            </i>&nbsp;日程列表</a></li>
+            <li><a href="#/calendar-list/{{projectId}}/"><i class="fa fa-list"></i>&nbsp;日程列表</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
@@ -42,7 +46,7 @@
         <div class="col-sm-6">
             <label>
                 开始日期</label>
-            <input type="date" class="form-control" name="appointed" ng-model="calendar.Appointed"
+            <input type="date" class="form-control" name="appointed" ng-model="calendar.appointed"
                 required />
         </div>
     </div>
@@ -50,7 +54,7 @@
         <div class="col-sm-6">
             <label>
                 结束日期</label>
-            <input type="date" class="form-control" name="appointed" ng-model="calendar.Appointed"
+            <input type="date" class="form-control" name="appointed" ng-model="calendar.endAppointed"
                 required />
         </div>
     </div>
@@ -74,7 +78,25 @@
             </div>
         </div>
     </div>
+    <hr ng-show="calendar.IsCaution" />
     <div class="form-group">
+        <div class="col-sm-6">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" ng-model="calendar.IsCaution" />
+                    是否提醒
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" ng-show="calendar.IsCaution">
+        <div class="col-sm-6">
+            <div class="form-inline">
+                <input type="time" class="form-control" ng-model="calendar.caution" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group" ng-show="calendar.IsCaution">
         <div class="col-sm-6">
             <label>
                 重复周期</label>
@@ -98,23 +120,7 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-sm-6">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="calendar.isAlert" />
-                    是否提醒
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="form-group" ng-show="calendar.isAlert">
-        <div class="col-sm-6">
-            <div class="form-inline">
-                <input type="time" class="form-control" ng-model="calendar.caution" />
-            </div>
-        </div>
-    </div>
+    <hr ng-show="calendar.IsCaution || calendar.isMoreParticipants" />
     <div class="form-group">
         <div class="col-sm-6">
             <div class="checkbox">
@@ -154,26 +160,15 @@
             </ul>
         </div>
     </div>
-    <div class="form-group" ng-if="calendar.isBindProject">
-        <div class="col-sm-6">
-            <label>
-                相关项目</label>
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="项目名称" disabled />
-                <span class="input-group-addon"><a href="javascript:void(0);" data-toggle="modal"
-                    data-target="#viewProjectDialog"><i class="fa fa-external-link"></i></a></span>
-            </div>
-        </div>
-    </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isBusy"
-                ng-switch="isBusy">
-                <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建日程</span></button>
+            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
+                ng-switch="isLoading">
+                <span ng-switch-when="true">正在保存...</span> <span ng-switch-when="false">保存日程</span></button>
             <a class="btn btn-default" href="#/calendar-summary/" role="button">取消</a>
         </div>
     </div>
-    <div class="alert {{alertMessageColor}}" ng-show="alertMessage">
+    <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
     </form>
 </div>

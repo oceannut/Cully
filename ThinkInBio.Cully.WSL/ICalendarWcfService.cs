@@ -21,7 +21,7 @@ namespace ThinkInBio.Cully.WSL
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Calendar SaveCalendar(string user, string projectId, string appointed, string endAppointed, string content, 
-            string level, string repeat, string caution, string[] participants);
+            string level, string repeat, string caution, string isCaution, string[] participants);
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -38,7 +38,7 @@ namespace ThinkInBio.Cully.WSL
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Calendar UpdateCalendar(string user, string id, string appointed, string content,
-            string level, string repeat, string caution);
+            string level, string repeat, string caution, string isCaution);
 
         [OperationContract]
         [WebInvoke(Method = "DELETE",
@@ -49,10 +49,44 @@ namespace ThinkInBio.Cully.WSL
         void DeleteCalendar(string user, string id);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/calendar/{year}/{month}/",
+        [WebGet(UriTemplate = "/{user}/calendar/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar[] GetCalendarList(string year, string month);
+        Calendar GetCalendar(string user, string id);
+
+        [OperationContract(Name = "GetCalendarList4User")]
+        [WebGet(UriTemplate = "/{user}/calendar/{year}/{month}/{type}/{projectId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Calendar[] GetCalendarList(string user, string year, string month, string type, string projectId);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/calendar/{year}/{month}/{type}/{projectId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Calendar[] GetCalendarList(string year, string month, string type, string projectId);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/calendar/{calendarId}/caution/{participant}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        CalendarCaution SaveCalendarCaution(string user, string calendarId, string participant);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/calendar/{calendarId}/caution/{participant}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteCalendarCaution(string user, string calendarId, string participant);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/{user}/calendar/{id}/caution/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        CalendarCaution[] GetCalendarCautionList(string user, string id);
 
     }
 }

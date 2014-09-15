@@ -1,5 +1,5 @@
 ﻿<div class="story container" ng-init="init()">
-    <ul class="breadcrumb">
+    <ul class="breadcrumb" ng-hide="projectId==0">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <li><a href="#/project-details/{{projectId}}/">项目</a></li>
         <li class="active">日程</li>
@@ -7,9 +7,28 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-calendar-o"></i>&nbsp;日程</span>
         <ul class="list-inline pull-right">
-            <li access="user"><a href="#/calendar-edit/{{projectId}}/"><i class="fa fa-plus"></i>&nbsp;新建</a></li>
+            <li access="user"><a href="#/calendar-edit/{{projectId}}/0/"><i class="fa fa-plus"></i>
+                &nbsp;添加</a></li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
+    <ol class="list-unstyled">
+        <li ng-repeat="item in calendarList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
+            padding-bottom: 0.5em; margin-bottom: 0.5em;">
+            <p ng-class="item.textColor">
+                <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}<a
+                    ng-if="item.ProjectId>0" href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i
+                        class="fa fa-cube"></i></a></p>
+            <ul class="list-unstyled list-inline pull-right">
+                <li ng-show="item.isEidtable"><a href="#/calendar-edit/{{projectId}}/{{item.Id}}/"><i
+                    class="fa fa-edit"></i>&nbsp;编辑</a></li>
+            </ul>
+            <small>时间范围：从
+                <mark>{{item.Appointed | jsonDateFormat | date:'yyyy-MM-dd'}}</mark>
+                至
+                <mark>{{item.EndAppointed
+                | jsonDateFormat | date:'yyyy-MM-dd'}}</mark>
+            </small>
+    </ol>
 </div>

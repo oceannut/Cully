@@ -122,10 +122,25 @@ namespace ThinkInBio.Cully
 
         #region properties
 
+        private long id;
         /// <summary>
         /// 编号。
         /// </summary>
-        public long Id { get; set; }
+        public long Id
+        {
+            get { return id; }
+            set
+            {
+                if (id != value)
+                {
+                    id = value;
+                    if (IdChanged != null)
+                    {
+                        IdChanged(id);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 日历类型。
@@ -168,6 +183,11 @@ namespace ThinkInBio.Cully
         public DateTime? Caution { get; set; }
 
         /// <summary>
+        /// 是否提醒。
+        /// </summary>
+        public bool IsCaution { get; set; }
+
+        /// <summary>
         /// 创建人。
         /// </summary>
         public string Creator { get; set; }
@@ -190,10 +210,13 @@ namespace ThinkInBio.Cully
             Action<Calendar, ICollection<CalendarCaution>, ICollection<BizNotification>> action)
         {
             if (string.IsNullOrWhiteSpace(this.Content) ||
-                this.Appointed == DateTime.MinValue ||
                 string.IsNullOrWhiteSpace(this.Creator))
             {
                 throw new InvalidOperationException();
+            }
+            if (this.IsCaution && !this.Caution.HasValue)
+            {
+                throw new InvalidOperationException("caution");
             }
 
             List<string> templist = new List<string>();
@@ -235,10 +258,13 @@ namespace ThinkInBio.Cully
         {
             if (this.Id == 0 ||
                 string.IsNullOrWhiteSpace(this.Content) ||
-                this.Appointed == DateTime.MinValue ||
                 string.IsNullOrWhiteSpace(this.Creator))
             {
                 throw new InvalidOperationException();
+            }
+            if (this.IsCaution && !this.Caution.HasValue)
+            {
+                throw new InvalidOperationException("caution");
             }
 
             DateTime timeStamp = DateTime.Now;

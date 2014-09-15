@@ -5,14 +5,14 @@
             <li access="user" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"
                 href="#"><i class="fa fa-calendar-o"></i>&nbsp;日程<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="#/calendar-edit/0/"><i class="fa fa-plus fa-fw"></i>&nbsp;新建一条</a></li>
-                    <li><a href="#"><i class="fa fa-list fa-fw"></i>&nbsp;日程列表</a></li>
+                    <li><a href="#/calendar-edit/0/0/"><i class="fa fa-plus fa-fw"></i>&nbsp;添加一条</a></li>
+                    <li><a href="#/calendar-list/0/"><i class="fa fa-list fa-fw"></i>&nbsp;日程列表</a></li>
                 </ul>
             </li>
             <li access="user" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"
                 href="#"><i class="fa fa-clock-o"></i>&nbsp;时钟<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="#/clock-edit/"><i class="fa fa-plus fa-fw"></i>&nbsp;新建一条</a></li>
+                    <li><a href="#/clock-edit/"><i class="fa fa-plus fa-fw"></i>&nbsp;添加一条</a></li>
                     <li><a href="#"><i class="fa fa-list fa-fw"></i>&nbsp;时钟列表</a></li>
                 </ul>
             </li>
@@ -23,7 +23,7 @@
     <div class="row">
         <div class="col-sm-9 blog-main">
             <div>
-                <span class="lead text-red"><i class="fa fa-clock-o"></i></span>
+                <span class="lead text-red" id="canlendarTitle"></span>
                 <ul class="pull-right list-inline">
                     <li class="btn-group">
                         <button class="btn btn-default btn-sm" data-calendar-nav="prev">

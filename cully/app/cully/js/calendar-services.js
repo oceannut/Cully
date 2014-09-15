@@ -11,21 +11,35 @@ define(function (require) {
         .factory('CalendarService', ['$resource', 'wcfApp', 'calendarWcfService',
             function ($resource, wcfApp, calendarWcfService) {
                 return $resource(wcfApp + calendarWcfService + '/:user/calendar/:id/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'projectId': '@projectId', 'appointed': '@appointed', 'endAppointed': '@endAppointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution', 'participants': '@participants'} },
-                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'appointed': '@appointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution'} },
-                    remove: { method: 'DELETE', params: { 'user': '@user', 'id': '@id'} }
+                    save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'projectId': '@projectId', 'appointed': '@appointed', 'endAppointed': '@endAppointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution', 'isCaution': '@isCaution', 'participants': '@participants'} },
+                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'appointed': '@appointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution', 'isCaution': '@isCaution'} },
+                    remove: { method: 'DELETE', params: { 'user': '@user', 'id': '@id'} },
+                    get: { method: 'GET', params: { 'user': '@user', 'id': '@id'} }
                 });
             } ])
         .factory('CalendarListService', ['$resource', 'wcfApp', 'calendarWcfService',
             function ($resource, wcfApp, calendarWcfService) {
-                return $resource(wcfApp + calendarWcfService + '/calendar/:year/:month/', {}, {
-                    query: { method: 'GET', params: { 'year': '@year', 'month': '@month' }, isArray: true }
+                return $resource(wcfApp + calendarWcfService + '/:user/calendar/:year/:month/:type/:projectId/', {}, {
+                    query: { method: 'GET', params: { 'user': '@user', 'year': '@year', 'month': '@month', 'type': '@type', 'projectId': '@projectId' }, isArray: true }
                 });
             } ])
         .factory('ClockService', ['$resource', 'wcfApp', 'calendarWcfService',
             function ($resource, wcfApp, calendarWcfService) {
-                return $resource(wcfApp + calendarWcfService + '/:user/calendar/:id/', {}, {
+                return $resource(wcfApp + calendarWcfService + '/:user/clock/:id/', {}, {
                     save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'content': '@content', 'repeat': '@repeat', 'caution': '@caution', 'participants': '@participants'} }
+                });
+            } ])
+        .factory('CalendarCautionService', ['$resource', 'wcfApp', 'calendarWcfService',
+            function ($resource, wcfApp, calendarWcfService) {
+                return $resource(wcfApp + calendarWcfService + '/:user/calendar/:calendarId/caution/:participant/', {}, {
+                    save: { method: 'POST', params: { 'user': '@user', 'calendarId': '@calendarId', 'participant': '@participant'} },
+                    remove: { method: 'DELETE', params: { 'user': '@user', 'calendarId': '@calendarId', 'participant': '@participant'} }
+                });
+            } ])
+        .factory('CalendarCautionListService', ['$resource', 'wcfApp', 'calendarWcfService',
+            function ($resource, wcfApp, calendarWcfService) {
+                return $resource(wcfApp + calendarWcfService + '/:user/calendar/:id/caution/', {}, {
+                    query: { method: 'GET', params: { 'user': '@user', 'id': '@id' }, isArray: true }
                 });
             } ]);
 
