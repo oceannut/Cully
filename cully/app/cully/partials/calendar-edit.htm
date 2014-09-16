@@ -8,6 +8,7 @@
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑日程</span>
         <ul class="list-inline pull-right">
             <li><a href="#/calendar-list/{{projectId}}/"><i class="fa fa-list"></i>&nbsp;日程列表</a></li>
+            <li ng-show="id!=0"><a href="javascript:void(0);" ng-click="viewCalendar()"><i class="fa fa-calendar"></i>&nbsp;查看日历</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
@@ -136,12 +137,12 @@
             要参与的成员:</label>
         <div class="col-sm-4">
             <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-addon" ng-show="id==0">
                     <input type="checkbox" ng-model="allParticipantChecked" ng-change="checkOrNotAllParticipant()"
-                        ng-disabled="isParticipantLoading">全部人员 </span>
+                        ng-disabled="isParticipantLoading || isLoading">全部人员</span>
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                        ng-disabled="isParticipantLoading">
+                        ng-disabled="isParticipantLoading || isLoading">
                         点击邀请成员 <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
@@ -165,10 +166,9 @@
             <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
                 ng-switch="isLoading">
                 <span ng-switch-when="true">正在保存...</span> <span ng-switch-when="false">保存日程</span></button>
-            <a class="btn btn-default" href="#/calendar-summary/" role="button">取消</a>
         </div>
     </div>
-    <div class="alert alert-danger" ng-show="alertMessage">
+    <div class="alert {{alertMessageColor}}" ng-show="alertMessage">
         {{alertMessage}}</div>
     </form>
 </div>

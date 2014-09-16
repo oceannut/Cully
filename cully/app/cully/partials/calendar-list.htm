@@ -8,11 +8,20 @@
         <span class="lead"><i class="fa fa-calendar-o"></i>&nbsp;日程</span>
         <ul class="list-inline pull-right">
             <li access="user"><a href="#/calendar-edit/{{projectId}}/0/"><i class="fa fa-plus"></i>
-                &nbsp;添加</a></li>
+                &nbsp;添加一条</a></li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
+    <div style="margin: 0 0 1em 0;">
+        <form class="form-inline" role="form">
+        <label class="control-label">
+            筛选:</label>
+        <div class="form-group">
+            <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
+        </div>
+        </form>
+    </div>
     <ol class="list-unstyled">
         <li ng-repeat="item in calendarList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
             padding-bottom: 0.5em; margin-bottom: 0.5em;">

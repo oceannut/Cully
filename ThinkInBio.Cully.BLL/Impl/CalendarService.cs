@@ -97,12 +97,21 @@ namespace ThinkInBio.Cully.BLL.Impl
             {
                 throw new ArgumentOutOfRangeException();
             }
-            if (month < 1 || month > 12)
+            if (month < 0 || month > 12)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            DateTime startTime = new DateTime(year, month, 1);
-            DateTime endTime = startTime.AddMonths(1);
+            DateTime startTime, endTime;
+            if (month > 0)
+            {
+                startTime = new DateTime(year, month, 1);
+                endTime = startTime.AddMonths(1);
+            }
+            else
+            {
+                startTime = new DateTime(year, 1, 1);
+                endTime = startTime.AddYears(1);
+            }
             return CalendarDao.GetList(participant, projectId, type, startTime, endTime, false, 0, int.MaxValue);
         }
 

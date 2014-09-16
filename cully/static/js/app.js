@@ -354,7 +354,15 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
-                    .when('/clock-edit/', {
+                    .when('/clock-list/', {
+                        templateUrl: 'app/cully/partials/clock-list.htm',
+                        controller: 'ClockListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/clock-edit/:id/', {
                         templateUrl: 'app/cully/partials/clock-edit.htm',
                         controller: 'ClockEditCtrl',
                         access: {

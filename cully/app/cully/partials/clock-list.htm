@@ -1,0 +1,23 @@
+﻿<div class="story container" ng-init="init()">
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-clock-o"></i>&nbsp;时钟</span>
+        <ul class="list-inline pull-right">
+            <li access="user"><a href="#/clock-edit/0/"><i class="fa fa-plus"></i>&nbsp;添加一条</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger" ng-show="alertMessage">
+        {{alertMessage}}</div>
+    <ol class="list-unstyled">
+        <li ng-repeat="item in calendarList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
+            padding-bottom: 0.5em; margin-bottom: 0.5em;">
+            <ul class="list-inline pull-right">
+                <li ng-show="item.isEidtable"><a href="#/clock-edit/{{item.Id}}/"><i class="fa fa-edit">
+                </i>&nbsp;编辑</a></li>
+                <li ng-show="item.isEidtable"><a href="javascript:void(0)" ng-click="toggleCaution(item)"
+                    ng-switch="item.IsCaution"><i ng-switch-when="true" class="fa fa-toggle-on text-orange">
+                        &nbsp;关闭</i><i ng-switch-when="false" class="fa fa-toggle-off">&nbsp;开启</i></a></li>
+            </ul>
+            <p ng-class="item.textColor">
+                <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}</p>
+    </ol>
+</div>

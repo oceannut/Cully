@@ -2,32 +2,10 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑时钟</span>
         <ul class="list-inline pull-right">
-            <li><a href="javascript:void(0);"><i class="fa fa-list"></i>&nbsp;时钟列表</a></li>
+            <li><a href="#/clock-list/"><i class="fa fa-list"></i>&nbsp;时钟列表</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
-    <!-- Modal -->
-    <div class="modal fade" id="viewProjectDialog" tabindex="-1" role="dialog" aria-labelledby="viewProjectDialogLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="viewProjectDialogLabel">
-                        <i class="fa fa-trash-o"></i>&nbsp;项目对话框</h4>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">
-                        确定</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        取消</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="form-group">
         <div class="col-sm-6">
             <label>
@@ -98,12 +76,12 @@
             要提醒的成员:</label>
         <div class="col-sm-4">
             <div class="input-group">
-                <span class="input-group-addon">
+                <span class="input-group-addon" ng-show="id==0">
                     <input type="checkbox" ng-model="allParticipantChecked" ng-change="checkOrNotAllParticipant()"
-                        ng-disabled="isParticipantLoading">全部人员 </span>
+                        ng-disabled="isParticipantLoading || isLoading">全部人员 </span>
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                        ng-disabled="isParticipantLoading">
+                        ng-disabled="isParticipantLoading || isLoading">
                         点击邀请成员 <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
@@ -124,13 +102,12 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isBusy"
-                ng-switch="isBusy">
-                <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建日程</span></button>
-            <a class="btn btn-default" href="#/calendar-summary/" role="button">取消</a>
+            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
+                ng-switch="isLoading">
+                <span ng-switch-when="true">正在保存...</span> <span ng-switch-when="false">保存时钟</span></button>
         </div>
     </div>
-    <div class="alert alert-danger" ng-show="alertMessage">
+    <div class="alert {{alertMessageColor}}" ng-show="alertMessage">
         {{alertMessage}}</div>
     </form>
 </div>

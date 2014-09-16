@@ -40,16 +40,20 @@ define(function (require) {
                     if (list !== undefined && list !== null) {
                         if (list.indexOf(item) === -1) {
                             list.push(item);
+                            return true;
                         }
                     }
+                    return false;
                 },
                 remove: function (list, item) {
                     if (list !== undefined && list !== null) {
                         var i = list.indexOf(item);
                         if (i > -1) {
                             list.splice(i, 1);
+                            return true;
                         }
                     }
+                    return false;
                 },
                 shallowCopyList: function (target, srouce, append, predicate) {
                     target = target || [];

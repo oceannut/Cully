@@ -37,8 +37,24 @@ namespace ThinkInBio.Cully.WSL
             UriTemplate = "/{user}/calendar/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar UpdateCalendar(string user, string id, string appointed, string content,
+        Calendar UpdateCalendar(string user, string id, string appointed, string endAppointed, string content,
             string level, string repeat, string caution, string isCaution);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/calendar/{id}/caution/{isCaution}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Calendar UpdateCalendar4ToggleCaution(string user, string id, string isCaution);
+
+        [OperationContract]
+        [WebInvoke(Method = "PUT",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/{user}/clock/{id}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Calendar UpdateClock(string user, string id, string content, string repeat, string caution, string isCaution);
 
         [OperationContract]
         [WebInvoke(Method = "DELETE",

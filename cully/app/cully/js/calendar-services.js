@@ -12,9 +12,15 @@ define(function (require) {
             function ($resource, wcfApp, calendarWcfService) {
                 return $resource(wcfApp + calendarWcfService + '/:user/calendar/:id/', {}, {
                     save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'projectId': '@projectId', 'appointed': '@appointed', 'endAppointed': '@endAppointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution', 'isCaution': '@isCaution', 'participants': '@participants'} },
-                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'appointed': '@appointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution', 'isCaution': '@isCaution'} },
+                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'appointed': '@appointed', 'endAppointed': '@endAppointed', 'content': '@content', 'level': '@level', 'repeat': '@repeat', 'caution': '@caution', 'isCaution': '@isCaution'} },
                     remove: { method: 'DELETE', params: { 'user': '@user', 'id': '@id'} },
                     get: { method: 'GET', params: { 'user': '@user', 'id': '@id'} }
+                });
+            } ])
+        .factory('CalendarService4UpdateCaution', ['$resource', 'wcfApp', 'calendarWcfService',
+            function ($resource, wcfApp, calendarWcfService) {
+                return $resource(wcfApp + calendarWcfService + '/:user/calendar/:id/caution/:isCaution/', {}, {
+                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'isCaution': '@isCaution'} }
                 });
             } ])
         .factory('CalendarListService', ['$resource', 'wcfApp', 'calendarWcfService',
@@ -26,7 +32,8 @@ define(function (require) {
         .factory('ClockService', ['$resource', 'wcfApp', 'calendarWcfService',
             function ($resource, wcfApp, calendarWcfService) {
                 return $resource(wcfApp + calendarWcfService + '/:user/clock/:id/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'content': '@content', 'repeat': '@repeat', 'caution': '@caution', 'participants': '@participants'} }
+                    save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'content': '@content', 'repeat': '@repeat', 'caution': '@caution', 'participants': '@participants'} },
+                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'content': '@content', 'repeat': '@repeat', 'caution': '@caution', 'isCaution': '@isCaution'} }
                 });
             } ])
         .factory('CalendarCautionService', ['$resource', 'wcfApp', 'calendarWcfService',

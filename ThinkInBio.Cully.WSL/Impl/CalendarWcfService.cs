@@ -197,7 +197,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar UpdateCalendar(string user, string id, string appointed, string content,
+        public Calendar UpdateCalendar(string user, string id, string appointed, string endAppointed, string content,
             string level, string repeat, string caution, string isCaution)
         {
             if (string.IsNullOrWhiteSpace(user))
@@ -221,6 +221,15 @@ namespace ThinkInBio.Cully.WSL.Impl
             catch
             {
                 throw new WebFaultException<string>("appointed", HttpStatusCode.BadRequest);
+            }
+            DateTime endAppointedDate;
+            try
+            {
+                endAppointedDate = Convert.ToDateTime(endAppointed);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("endAppointed", HttpStatusCode.BadRequest);
             }
             if (string.IsNullOrWhiteSpace(content))
             {
@@ -287,8 +296,158 @@ namespace ThinkInBio.Cully.WSL.Impl
                     throw new WebFaultException(HttpStatusCode.Forbidden);
                 }
                 calendar.Appointed = appointedDate;
+                calendar.EndAppointed = endAppointedDate;
                 calendar.Content = content;
                 calendar.Level = affairLevel;
+                calendar.Repeat = affairRepeat;
+                calendar.Caution = cautionTime;
+                calendar.IsCaution = isCautionBool;
+
+                calendar.Update((e) =>
+                {
+                    CalendarService.UpdateCalendar(e);
+                });
+
+                return calendar;
+            }
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public Calendar UpdateCalendar4ToggleCaution(string user, string id, string isCaution)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            long idLong;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
+            }
+            bool isCautionBool = false;
+            if (!string.IsNullOrWhiteSpace(isCaution))
+            {
+                try
+                {
+                    isCautionBool = Convert.ToBoolean(isCaution);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("isCaution", HttpStatusCode.BadRequest);
+                }
+            }
+
+            try
+            {
+                Calendar calendar = CalendarService.GetCalendar(idLong);
+                if (calendar == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                if (user != calendar.Creator)
+                {
+                    throw new WebFaultException(HttpStatusCode.Forbidden);
+                }
+                calendar.IsCaution = isCautionBool;
+
+                calendar.Update((e) =>
+                {
+                    CalendarService.UpdateCalendar(e);
+                });
+
+                return calendar;
+            }
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public Calendar UpdateClock(string user, string id, string content, string repeat, string caution, string isCaution)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            long idLong;
+            try
+            {
+                idLong = Convert.ToInt64(id);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("id", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            AffairRepeat affairRepeat = AffairRepeat.None;
+            if (!string.IsNullOrWhiteSpace(repeat))
+            {
+                try
+                {
+                    affairRepeat = (AffairRepeat)Convert.ToInt32(repeat);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("repeat", HttpStatusCode.BadRequest);
+                }
+            }
+            DateTime? cautionTime = null;
+            if (!string.IsNullOrWhiteSpace(caution))
+            {
+                try
+                {
+                    cautionTime = Convert.ToDateTime(caution);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("caution", HttpStatusCode.BadRequest);
+                }
+            }
+            bool isCautionBool = false;
+            if (!string.IsNullOrWhiteSpace(isCaution))
+            {
+                try
+                {
+                    isCautionBool = Convert.ToBoolean(isCaution);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("isCaution", HttpStatusCode.BadRequest);
+                }
+            }
+
+            try
+            {
+                Calendar calendar = CalendarService.GetCalendar(idLong);
+                if (calendar == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                if (user != calendar.Creator)
+                {
+                    throw new WebFaultException(HttpStatusCode.Forbidden);
+                }
+                calendar.Content = content;
                 calendar.Repeat = affairRepeat;
                 calendar.Caution = cautionTime;
                 calendar.IsCaution = isCautionBool;
@@ -402,17 +561,24 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new WebFaultException<string>("year", HttpStatusCode.RequestedRangeNotSatisfiable);
             }
             int monthInt;
-            try
+            if (!string.IsNullOrWhiteSpace(month) && "null" == month)
             {
-                monthInt = Convert.ToInt32(month);
+                monthInt = 0;
             }
-            catch
+            else
             {
-                throw new WebFaultException<string>("month", HttpStatusCode.BadRequest);
-            }
-            if (monthInt < 1 || monthInt > 12)
-            {
-                throw new WebFaultException<string>("month", HttpStatusCode.RequestedRangeNotSatisfiable);
+                try
+                {
+                    monthInt = Convert.ToInt32(month);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("month", HttpStatusCode.BadRequest);
+                }
+                if (monthInt < 1 || monthInt > 12)
+                {
+                    throw new WebFaultException<string>("month", HttpStatusCode.RequestedRangeNotSatisfiable);
+                }
             }
             CalendarType? typeEnum = null;
             if (!string.IsNullOrWhiteSpace(type) && "null" != type)
@@ -595,7 +761,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
-
 
     }
 }

@@ -12,8 +12,8 @@
             <li access="user" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"
                 href="#"><i class="fa fa-clock-o"></i>&nbsp;时钟<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="#/clock-edit/"><i class="fa fa-plus fa-fw"></i>&nbsp;添加一条</a></li>
-                    <li><a href="#"><i class="fa fa-list fa-fw"></i>&nbsp;时钟列表</a></li>
+                    <li><a href="#/clock-edit/0/"><i class="fa fa-plus fa-fw"></i>&nbsp;添加一条</a></li>
+                    <li><a href="#/clock-list/"><i class="fa fa-list fa-fw"></i>&nbsp;时钟列表</a></li>
                 </ul>
             </li>
         </ul>
@@ -55,25 +55,44 @@
             <div class="sidebar-module sidebar-module-inset">
                 <h4>
                     日程列表</h4>
-                <ul id="eventlist" class="nav nav-list">
-                </ul>
+                <ol class="list-unstyled">
+                    <li ng-repeat="item in calendarList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
+                        padding-bottom: 0.5em; margin-bottom: 0.5em;">
+                        <p ng-class="item.textColor">
+                            <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}<a
+                                ng-if="item.ProjectId>0" href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i
+                                    class="fa fa-cube"></i></a>
+                        </p>
+                </ol>
+            </div>
+            <div class="sidebar-module sidebar-module-inset">
+                <h4>
+                    时钟列表</h4>
+                <ol class="list-unstyled">
+                    <li ng-repeat="item in clockList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
+                        padding-bottom: 0.5em; margin-bottom: 0.5em;">
+                        <p>
+                            <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}&nbsp;&middot;&nbsp;[{{item.caution}}]
+                        </p>
+                    </li>
+                </ol>
             </div>
         </div>
-        <div class="modal fade" id="events-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        <div class="modal fade" id="events-modal" tabindex="-1" role="dialog" aria-labelledby="viewDialogLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                             &times;</button>
-                        <h3 class="modal-title">
+                        <h3 class="modal-title" id="viewDialogLabel">
                             Event</h3>
                     </div>
                     <div class="modal-body" style="height: 400px">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">
-                            Close</button>
+                            关闭</button>
                     </div>
                 </div>
             </div>

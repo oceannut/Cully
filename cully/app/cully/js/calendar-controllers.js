@@ -22,15 +22,59 @@ define(function (require) {
         .controller('CalendarSummaryCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'currentUser', 'CalendarListService',
             function ($scope, $routeParams, $log, dateUtil, currentUser, CalendarListService) {
 
-                $scope.init = function () {
-
-                    var dateString = $routeParams.day;
-                    if (undefined === dateString || 'null' === dateString) {
-                        dateString = dateUtil.formatDateByYMD(new Date());
+                var calendarOptions = {
+                    events_source: [],
+                    language: 'zh-CN',
+                    view: 'month',
+                    tmpl_cache: false,
+                    tmpl_path: 'lib/bootstrap-calendar/tmpls/',
+                    modal: "#events-modal",
+                    modal_type: "template",
+                    modal_title: function (e) { return "日程对话框" },
+                    onAfterEventsLoad: function (events) {
+                        if (!events) {
+                            return;
+                        }
+                    },
+                    onAfterViewLoad: function (view) {
+                        $('#canlendarTitle').text(' ' + this.getTitle());
+                        $('.btn-group button').removeClass('active');
+                        $('button[data-calendar-view="' + view + '"]').addClass('active');
+                    },
+                    classes: {
+                        months: {
+                            general: 'label'
+                        }
                     }
-                    var dateArray = dateString.split('-');
-                    var year = dateArray[0];
-                    var month = dateArray[1];
+                };
+                var calendarCtrl;
+                var lastMonth;
+
+                function getMonth(dateString) {
+                    var year = dateString.substr(0, 4);
+                    var month = dateString.substr(5, 2);
+                    return year + '-' + month;
+                }
+
+                function refresh(day, view) {
+                    var month
+                    if ("year" === view) {
+                        month = day.substr(0, 4);
+                    } else {
+                        month = getMonth(day);
+                    }
+                    if (month !== lastMonth) {
+                        lastMonth = month;
+                        query(day);
+                    }
+                }
+
+                function query(dateString) {
+                    var year = lastMonth.substr(0, 4);
+                    var month = 'null';
+                    if (lastMonth.length > 5) {
+                        month = lastMonth.substr(5, 2);
+                    }
                     CalendarListService.query({
                         'user': currentUser.getUsername(),
                         'year': year,
@@ -38,121 +82,93 @@ define(function (require) {
                         'type': 'null',
                         'projectId': '0'
                     })
-                        .$promise
-                            .then(function (result) {
-                                var list = [];
-                                if (result != null && result.length > 0) {
-                                    var color = "";
-                                    var start = "";
-                                    var end = "";
-                                    for (var i = 0; i < result.length; i++) {
-                                        var calendar = result[i];
-                                        if (0 === calendar.Type) {
-                                            switch (calendar.Level) {
-                                                case 1:
-                                                    color = "event-info";
-                                                    break;
-                                                case 2:
-                                                    color = "event-important";
-                                                    break;
-                                                case 3:
-                                                    color = "event-special";
-                                                    break;
-                                            }
-                                            start = dateUtil.jsonToTicks(calendar.Appointed);
-                                            end = dateUtil.jsonToTicks(calendar.EndAppointed);
-                                            list.push({
-                                                "id": calendar.Id,
-                                                "title": calendar.Content,
-                                                "url": "//" + calendar.Id + "/",
-                                                "class": color,
-                                                "start": start,
-                                                "end": end
-                                            });
+                    .$promise
+                        .then(function (result) {
+                            var list = [];
+                            $scope.calendarList = [];
+                            $scope.clockList = [];
+                            if (result != null && result.length > 0) {
+                                var color = "";
+                                var start = "";
+                                var end = "";
+                                for (var i = 0; i < result.length; i++) {
+                                    var calendar = result[i];
+                                    if (0 === calendar.Type) {
+                                        switch (calendar.Level) {
+                                            case 1:
+                                                color = "event-info";
+                                                break;
+                                            case 2:
+                                                color = "event-warning";
+                                                break;
+                                            case 3:
+                                                color = "event-important";
+                                                break;
                                         }
-
+                                        start = dateUtil.jsonToTicks(calendar.Appointed);
+                                        end = dateUtil.jsonToTicks(calendar.EndAppointed);
+                                        list.push({
+                                            "id": calendar.Id,
+                                            "title": calendar.Content,
+                                            "class": color,
+                                            "start": start,
+                                            "end": end
+                                        });
+                                        switch (calendar.Level) {
+                                            case 1:
+                                                calendar.textColor = "text-light-blue";
+                                                break;
+                                            case 2:
+                                                calendar.textColor = "text-yellow";
+                                                break;
+                                            case 3:
+                                                calendar.textColor = "text-red";
+                                                break;
+                                        }
+                                        $scope.calendarList.push(calendar);
+                                    }
+                                    else {
+                                        var caution = dateUtil.jsonToDate(calendar.Caution);
+                                        var hour = caution.getHours();
+                                        var minute = caution.getMinutes();
+                                        calendar.caution = (hour < 10 ? '0' + hour : hour) + ":" + (minute < 10 ? '0' + minute : minute);
+                                        $scope.clockList.push(calendar);
                                     }
                                 }
+                            }
 
-                                var options = {
-                                    events_source: list,
-                                    language: 'zh-CN',
-                                    view: 'month',
-                                    tmpl_cache: false,
-                                    //day: '2013-03-12',
-                                    day: dateString,
-                                    tmpl_path: 'lib/bootstrap-calendar/tmpls/',
-                                    modal: "#events-modal",
-                                    modal_type: "template",
-                                    modal_title: function (e) { return e.title },
-                                    onAfterEventsLoad: function (events) {
-                                        if (!events) {
-                                            return;
-                                        }
-                                        //                                            var list = $('#eventlist');
-                                        //                                            list.html('');
+                            calendarCtrl.setOptions({ events_source: list });
+                            calendarCtrl.setOptions({ day: dateString });
+                            calendarCtrl.view();
 
-                                        //                                            $.each(events, function (key, val) {
-                                        //                                                $(document.createElement('li'))
-                                        //                            		            .html('<a href="' + val.url + '">' + val.title + '</a>')
-                                        //                            		            .appendTo(list);
-                                        //                                            });
-                                    },
-                                    onAfterViewLoad: function (view) {
-                                        $('#canlendarTitle').text(' ' + this.getTitle());
-                                        $('.btn-group button').removeClass('active');
-                                        $('button[data-calendar-view="' + view + '"]').addClass('active');
-                                    },
-                                    classes: {
-                                        months: {
-                                            general: 'label'
-                                        }
-                                    }
-                                };
-                                var calendar = $('#calendar').calendar(options);
+                        }, function (error) {
+                            $log.error(error);
+                        });
+                }
 
-                                $('.btn-group button[data-calendar-nav]').each(function () {
-                                    var $this = $(this);
-                                    $this.click(function () {
-                                        calendar.navigate($this.data('calendar-nav'));
-                                    });
-                                });
+                $scope.init = function () {
+                    calendarCtrl = $('#calendar').calendar(calendarOptions);
+                    $('.btn-group button[data-calendar-nav]').each(function () {
+                        var $this = $(this);
+                        $this.click(function () {
+                            calendarCtrl.navigate($this.data('calendar-nav'));
+                            refresh(calendarCtrl.options.day, calendarCtrl.options.view);
+                        });
+                    });
+                    $('.btn-group button[data-calendar-view]').each(function () {
+                        var $this = $(this);
+                        $this.click(function () {
+                            calendarCtrl.view($this.data('calendar-view'));
+                            refresh(calendarCtrl.options.day, calendarCtrl.options.view);
+                        });
+                    });
 
-                                $('.btn-group button[data-calendar-view]').each(function () {
-                                    var $this = $(this);
-                                    $this.click(function () {
-                                        calendar.view($this.data('calendar-view'));
-                                    });
-                                });
-
-                                $('#first_day').change(function () {
-                                    var value = $(this).val();
-                                    value = value.length ? parseInt(value) : null;
-                                    calendar.setOptions({ first_day: value });
-                                    calendar.view();
-                                });
-
-                                $('#language').change(function () {
-                                    calendar.setLanguage($(this).val());
-                                    calendar.view();
-                                });
-
-                                $('#events-in-modal').change(function () {
-                                    var val = $(this).is(':checked') ? $(this).val() : null;
-                                    calendar.setOptions({ modal: val });
-                                });
-                                $('#events-modal .modal-header, #events-modal .modal-footer').click(function (e) {
-                                    //e.preventDefault();
-                                    //e.stopPropagation();
-                                });
-
-
-                            }, function (error) {
-                                $log.error(error);
-                            });
-
-
-
+                    var dateString = $routeParams.day;
+                    if (undefined === dateString || 'null' === dateString) {
+                        dateString = dateUtil.formatDateByYMD(new Date());
+                    }
+                    lastMonth = getMonth(dateString);
+                    query(dateString);
                 }
 
             } ])
@@ -161,18 +177,26 @@ define(function (require) {
 
                 $scope.init = function () {
                     $scope.projectId = $routeParams.projectId;
-
                     var timestamp = new Date();
-                    var year = timestamp.getFullYear();
-                    var month = timestamp.getMonth() + 1;
-                    var currentUsername = currentUser.getUsername();
-                    CalendarListService.query({
-                        'user': currentUsername,
-                        'year': year,
-                        'month': month,
-                        'type': '0',
-                        'projectId': '0'
-                    })
+                    $scope.queryModel = {
+                        month: timestamp.getFullYear() + "-" + (timestamp.getMonth() + 1)
+                    };
+
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    if ($scope.queryModel.month !== "") {
+                        var currentUsername = currentUser.getUsername();
+                        var year = $scope.queryModel.month.substr(0, 4);
+                        var month = $scope.queryModel.month.substr(5, 2);
+                        CalendarListService.query({
+                            'user': currentUsername,
+                            'year': year,
+                            'month': month,
+                            'type': '0',
+                            'projectId': $scope.projectId
+                        })
                         .$promise
                             .then(function (result) {
                                 $scope.calendarList = result;
@@ -185,10 +209,10 @@ define(function (require) {
                                                 calendar.textColor = "text-light-blue";
                                                 break;
                                             case 2:
-                                                calendar.textColor = "text-red";
+                                                calendar.textColor = "text-yellow";
                                                 break;
                                             case 3:
-                                                calendar.textColor = "text-purple";
+                                                calendar.textColor = "text-red";
                                                 break;
                                         }
                                         if (currentUsername === calendar.Creator) {
@@ -201,7 +225,7 @@ define(function (require) {
                             }, function (error) {
                                 $log.error(error);
                             });
-
+                    }
                 }
 
             } ])
@@ -224,8 +248,9 @@ define(function (require) {
                     });
 
                     $scope.projectId = $routeParams.projectId;
-                    var id = $routeParams.id;
-                    if (id === '0') {
+                    $scope.id = $routeParams.id;
+                    if ($scope.id === '0') {
+                        //添加日程
                         var timestamp = new Date();
                         var timestampString = dateUtil.formatDateByYMD(timestamp);
                         var hour = (timestamp.getHours() + 1) % 24;
@@ -239,9 +264,10 @@ define(function (require) {
                             isMoreParticipants: false
                         };
                     } else {
+                        //编辑日程
                         CalendarService.get({
                             'user': currentUser.getUsername(),
-                            'id': id
+                            'id': $scope.id
                         })
                         .$promise
                             .then(function (result) {
@@ -264,19 +290,19 @@ define(function (require) {
 
                                 CalendarCautionListService.query({
                                     'user': currentUser.getUsername(),
-                                    'id': id
+                                    'id': $scope.id
                                 })
                                 .$promise
                                     .then(function (result) {
                                         if (result != null) {
                                             var len = result.length;
-                                            $scope.calendar.isMoreParticipants = (len > 0) ? true : false;
+                                            $scope.calendar.isMoreParticipants = (len > 1) ? true : false;
                                             for (var i = 0; i < len; i++) {
                                                 var item = result[i];
                                                 for (var j in $scope.users) {
                                                     if ($scope.users[j].Username === item.Staff) {
                                                         $scope.participants.push($scope.users[j]);
-                                                        $scope.users.splice(j, 1);
+                                                        //$scope.users.splice(j, 1);
                                                         break;
                                                     }
                                                 }
@@ -288,15 +314,56 @@ define(function (require) {
                                     });
 
                             });
+
                     }
                 }
 
                 $scope.addParticipant = function (user) {
-                    listUtil.add($scope.participants, user);
+                    if (listUtil.add($scope.participants, user) && $scope.id !== '0') {
+                        $scope.alertMessage = "";
+                        $scope.isLoading = true;
+                        CalendarCautionService.save({
+                            'user': currentUser.getUsername(),
+                            'calendarId': $scope.calendar.Id,
+                            'participant': user.Username
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessage = "提示：添加成员成功";
+                                $scope.alertMessageColor = "alert-success";
+                            }, function (error) {
+                                $scope.alertMessage = "提示：添加成员失败";
+                                $scope.alertMessageColor = "alert-danger";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
+                    }
                 }
 
                 $scope.removeParticipant = function (user) {
-                    listUtil.remove($scope.participants, user);
+                    if (listUtil.remove($scope.participants, user) && $scope.id !== '0') {
+                        $scope.alertMessage = "";
+                        $scope.isLoading = true;
+                        CalendarCautionService.remove({
+                            'user': currentUser.getUsername(),
+                            'calendarId': $scope.calendar.Id,
+                            'participant': user.Username
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessage = "提示：移除成员成功";
+                                $scope.alertMessageColor = "alert-success";
+                            }, function (error) {
+                                $scope.alertMessage = "提示：移除成员失败";
+                                $scope.alertMessageColor = "alert-danger";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
+                    }
                 }
 
                 $scope.checkOrNotAllParticipant = function () {
@@ -307,57 +374,83 @@ define(function (require) {
                     }
                 }
 
+                $scope.viewCalendar = function () {
+                    $location.path("/calendar-summary/" + $scope.calendar.appointed + "/");
+                }
+
                 $scope.save = function () {
-                    var usernameArray = [];
-                    for (var i = 0; i < $scope.participants.length; i++) {
-                        usernameArray.push($scope.participants[i].Username);
+                    if ($scope.calendar.endAppointed < $scope.calendar.appointed) {
+                        alert("结束日期应大于等于开始日期");
+                        return;
                     }
                     $scope.alertMessage = "";
                     $scope.isLoading = true;
-                    CalendarService.save({
-                        'user': currentUser.getUsername(),
-                        'projectId': $scope.projectId,
-                        'appointed': $scope.calendar.appointed,
-                        'endAppointed': $scope.calendar.endAppointed,
-                        'content': $scope.calendar.Content,
-                        'level': $scope.calendar.Level,
-                        'repeat': $scope.calendar.Repeat,
-                        'caution': $scope.calendar.caution,
-                        'isCaution': $scope.calendar.IsCaution,
-                        'participants': usernameArray
-                    })
+                    if ($scope.id === '0') {
+                        var usernameArray = [];
+                        for (var i = 0; i < $scope.participants.length; i++) {
+                            usernameArray.push($scope.participants[i].Username);
+                        }
+                        CalendarService.save({
+                            'user': currentUser.getUsername(),
+                            'projectId': $scope.projectId,
+                            'appointed': $scope.calendar.appointed,
+                            'endAppointed': $scope.calendar.endAppointed,
+                            'content': $scope.calendar.Content,
+                            'level': $scope.calendar.Level,
+                            'repeat': $scope.calendar.Repeat,
+                            'caution': $scope.calendar.caution,
+                            'isCaution': $scope.calendar.IsCaution,
+                            'participants': usernameArray
+                        })
                         .$promise
                             .then(function (result) {
-                                $location.path('/calendar-summary/' + $scope.calendar.Appointed + '/');
+                                $location.path('/calendar-summary/' + $scope.calendar.appointed + '/');
                             }, function (error) {
-                                $scope.alertMessage = "提示：保存日程失败";
+                                $scope.alertMessage = "提示：添加日程失败";
+                                $scope.alertMessageColor = "alert-danger";
                                 $log.error(error);
                             })
                             .then(function () {
                                 $scope.isLoading = false;
-                            }); ;
+                            });
+                    } else {
+                        CalendarService.update({
+                            'user': currentUser.getUsername(),
+                            'id': $scope.calendar.Id,
+                            'appointed': $scope.calendar.appointed,
+                            'endAppointed': $scope.calendar.endAppointed,
+                            'content': $scope.calendar.Content,
+                            'level': $scope.calendar.Level,
+                            'repeat': $scope.calendar.Repeat,
+                            'caution': $scope.calendar.caution,
+                            'isCaution': $scope.calendar.IsCaution
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessage = "提示：更新日程成功";
+                                $scope.alertMessageColor = "alert-success";
+                            }, function (error) {
+                                $scope.alertMessage = "提示：更新日程失败";
+                                $scope.alertMessageColor = "alert-danger";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
+                    }
                 }
 
             } ])
         .controller('ClockEditCtrl', ['$scope', '$routeParams', '$log', '$location',
-                         'dateUtil', 'currentUser', 'listUtil', 'userCache', 'ClockService',
+                         'dateUtil', 'currentUser', 'listUtil', 'userCache',
+                         'ClockService', 'CalendarService', 'CalendarCautionListService', 'CalendarCautionService',
             function ($scope, $routeParams, $log, $location,
-                         dateUtil, currentUser, listUtil, userCache, ClockService) {
+                         dateUtil, currentUser, listUtil, userCache,
+                         ClockService, CalendarService, CalendarCautionListService, CalendarCautionService) {
 
                 $scope.init = function () {
                     $scope.isLoading = false;
                     $scope.alertMessage = "";
-
-                    $scope.projectId = $routeParams.projectId;
-                    $scope.isBusy = false;
-                    var timestamp = new Date();
-                    var hour = (timestamp.getHours() + 1) % 24;
-                    $scope.calendar = {
-                        Repeat: 0,
-                        caution: (hour < 10 ? '0' + hour : hour) + ':00',
-                        isMoreParticipants: false
-                    };
-
                     $scope.users = [];
                     $scope.participants = [];
                     userCache.list(function (result) {
@@ -365,14 +458,119 @@ define(function (require) {
                             return (e.Username !== currentUser.getUsername() & e.Roles.indexOf('user') > -1);
                         });
                     });
-                };
+
+                    $scope.id = $routeParams.id;
+                    if ($scope.id === '0') {
+                        //添加时钟
+                        var timestamp = new Date();
+                        var hour = (timestamp.getHours() + 1) % 24;
+                        $scope.calendar = {
+                            Repeat: 0,
+                            caution: (hour < 10 ? '0' + hour : hour) + ':00',
+                            isMoreParticipants: false
+                        };
+                    } else {
+                        //编辑时钟
+                        CalendarService.get({
+                            'user': currentUser.getUsername(),
+                            'id': $scope.id
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.calendar = result;
+                                if ($scope.calendar.Repeat > 10) {
+                                    $scope.calendar.customRepeat = $scope.calendar.Repeat;
+                                    $scope.calendar.Repeat = -1;
+                                }
+                                if ($scope.calendar.Caution !== null) {
+                                    var caution = dateUtil.jsonToDate($scope.calendar.Caution);
+                                    var hour = caution.getHours();
+                                    var minute = caution.getMinutes();
+                                    $scope.calendar.caution = (hour < 10 ? '0' + hour : hour) + ":" + (minute < 10 ? '0' + minute : minute);
+                                }
+                            }, function (error) {
+                                $scope.alertMessage = "提示：获取时钟失败";
+                                $log.error(error);
+                            })
+                            .then(function () {
+
+                                CalendarCautionListService.query({
+                                    'user': currentUser.getUsername(),
+                                    'id': $scope.id
+                                })
+                                .$promise
+                                    .then(function (result) {
+                                        if (result != null) {
+                                            var len = result.length;
+                                            $scope.calendar.isMoreParticipants = (len > 1) ? true : false;
+                                            for (var i = 0; i < len; i++) {
+                                                var item = result[i];
+                                                for (var j in $scope.users) {
+                                                    if ($scope.users[j].Username === item.Staff) {
+                                                        $scope.participants.push($scope.users[j]);
+                                                        //$scope.users.splice(j, 1);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }, function (error) {
+                                        $scope.alertMessage = "提示：获取时钟的提醒成员失败";
+                                        $log.error(error);
+                                    });
+
+                            });
+
+                    }
+
+                }
 
                 $scope.addParticipant = function (user) {
-                    listUtil.add($scope.participants, user);
+                    if (listUtil.add($scope.participants, user) && $scope.id !== '0') {
+                        $scope.alertMessage = "";
+                        $scope.isLoading = true;
+                        CalendarCautionService.save({
+                            'user': currentUser.getUsername(),
+                            'calendarId': $scope.calendar.Id,
+                            'participant': user.Username
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessage = "提示：添加成员成功";
+                                $scope.alertMessageColor = "alert-success";
+                            }, function (error) {
+                                $scope.alertMessage = "提示：添加成员失败";
+                                $scope.alertMessageColor = "alert-danger";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
+                    }
                 }
 
                 $scope.removeParticipant = function (user) {
-                    listUtil.remove($scope.participants, user);
+                    if (listUtil.remove($scope.participants, user) && $scope.id !== '0') {
+                        $scope.alertMessage = "";
+                        $scope.isLoading = true;
+                        CalendarCautionService.remove({
+                            'user': currentUser.getUsername(),
+                            'calendarId': $scope.calendar.Id,
+                            'participant': user.Username
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessage = "提示：移除成员成功";
+                                $scope.alertMessageColor = "alert-success";
+                            }, function (error) {
+                                $scope.alertMessage = "提示：移除成员失败";
+                                $scope.alertMessageColor = "alert-danger";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
+                    }
                 }
 
                 $scope.checkOrNotAllParticipant = function () {
@@ -385,33 +583,128 @@ define(function (require) {
 
                 $scope.save = function () {
                     var repeat = $scope.calendar.Repeat;
-                    if (repeat === -1) {
+                    if (repeat === "-1") {
                         repeat = $scope.calendar.customRepeat;
                     }
                     var caution = $scope.calendar.caution;
-                    var usernameArray = [];
-                    for (var i = 0; i < $scope.participants.length; i++) {
-                        usernameArray.push($scope.participants[i].Username);
+                    if ($scope.calendar.endAppointed < $scope.calendar.appointed) {
+                        alert("结束日期应大于等于开始日期");
+                        return;
                     }
                     $scope.alertMessage = "";
                     $scope.isLoading = true;
-                    ClockService.save({
-                        'user': currentUser.getUsername(),
-                        'content': $scope.calendar.Content,
-                        'repeat': repeat,
-                        'caution': $scope.calendar.caution,
-                        'participants': null
-                    })
+                    if ($scope.id === '0') {
+                        var usernameArray = [];
+                        for (var i = 0; i < $scope.participants.length; i++) {
+                            usernameArray.push($scope.participants[i].Username);
+                        }
+                        ClockService.save({
+                            'user': currentUser.getUsername(),
+                            'content': $scope.calendar.Content,
+                            'repeat': repeat,
+                            'caution': $scope.calendar.caution,
+                            'participants': usernameArray
+                        })
                         .$promise
                             .then(function (result) {
-                                console.log(result);
+                                $location.path("/clock-list/");
                             }, function (error) {
                                 $scope.alertMessage = "提示：保存时钟失败";
+                                $scope.alertMessageColor = "alert-danger";
                                 $log.error(error);
                             })
                             .then(function () {
                                 $scope.isLoading = false;
-                            }); ;
+                            });
+                    } else {
+                        ClockService.update({
+                            'user': currentUser.getUsername(),
+                            'id': $scope.id,
+                            'content': $scope.calendar.Content,
+                            'repeat': repeat,
+                            'caution': $scope.calendar.caution,
+                            'isCaution': $scope.calendar.IsCaution
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.alertMessage = "提示：保存时钟成功";
+                                $scope.alertMessageColor = "alert-success";
+                            }, function (error) {
+                                $scope.alertMessage = "提示：保存时钟失败";
+                                $scope.alertMessageColor = "alert-danger";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
+
+                    }
+                }
+
+            } ])
+        .controller('ClockListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'currentUser',
+                                         'CalendarListService', 'CalendarService4UpdateCaution',
+            function ($scope, $routeParams, $log, dateUtil, currentUser,
+                        CalendarListService, CalendarService4UpdateCaution) {
+
+                $scope.init = function () {
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    var currentUsername = currentUser.getUsername();
+                    var timestamp = new Date();
+                    CalendarListService.query({
+                        'user': currentUsername,
+                        'year': timestamp.getFullYear(),
+                        'month': timestamp.getMonth() + 1,
+                        'type': '1',
+                        'projectId': '0'
+                    })
+                    .$promise
+                        .then(function (result) {
+                            $scope.calendarList = result;
+                            if ($scope.calendarList != null) {
+                                var len = $scope.calendarList.length;
+                                for (var i = 0; i < len; i++) {
+                                    var calendar = $scope.calendarList[i];
+                                    switch (calendar.Level) {
+                                        case 1:
+                                            calendar.textColor = "text-light-blue";
+                                            break;
+                                        case 2:
+                                            calendar.textColor = "text-yellow";
+                                            break;
+                                        case 3:
+                                            calendar.textColor = "text-red";
+                                            break;
+                                    }
+                                    if (currentUsername === calendar.Creator) {
+                                        calendar.isEidtable = true;
+                                    } else {
+                                        calendar.isEidtable = false;
+                                    }
+                                }
+                            }
+                        }, function (error) {
+                            $log.error(error);
+                        });
+                }
+
+                $scope.toggleCaution = function (calendar) {
+                    $scope.alertMessage = "";
+                    CalendarService4UpdateCaution.update({
+                        'user': currentUser.getUsername(),
+                        'id': calendar.Id,
+                        'isCaution': !calendar.IsCaution
+                    })
+                    .$promise
+                        .then(function (result) {
+                            calendar.IsCaution = !calendar.IsCaution;
+                        }, function (error) {
+                            $scope.alertMessage = "提示：修改时钟状态失败";
+                            $log.error(error);
+                        });
                 }
 
             } ]);
