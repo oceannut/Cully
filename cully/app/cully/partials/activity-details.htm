@@ -8,10 +8,9 @@
                 </i>&nbsp;详细</a></li>
                 <li><a href="#/participant-list/{{activity.ProjectId}}/"><i class="fa fa-users fa-fw">
                 </i>&nbsp;成员</a></li>
-                <li><a href="#/project-details/{{activity.ProjectId}}/"><i class="fa fa-calendar-o fa-fw">
+                <li><a href="#/calendar-list/{{activity.ProjectId}}/"><i class="fa fa-calendar-o fa-fw">
                 </i>&nbsp;日程</a></li>
-                <li><a href="#/project-details/{{activity.ProjectId}}/"><i class="fa fa-magic fa-fw">
-                </i>&nbsp;记事</a></li>
+                <li><a href="#/log-list/{{activity.ProjectId}}/"><i class="fa fa-magic fa-fw"></i>&nbsp;记事</a></li>
             </ul>
         </li>
         <li class="active">活动</li>
@@ -19,18 +18,15 @@
     <div class="page-header">
         <span class="lead"><i class="{{activity.icon}}"></i>&nbsp;{{activity.Name}}</span>
         <ul class="list-inline pull-right">
-            <!--<li><a href="javascript:void(0)" data-toggle="modal" data-target="#removeActivityDialog">
-                <i class="fa fa-trash-o"></i>&nbsp;删除</a></li>-->
             <li access="supvisor" ng-show="isEditable"><a href="#/activity-edit/{{activity.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
             <li access="user,supvisor"><a href="#/activity-task-delay/{{activity.Id}}/"><i class="fa fa-bar-chart-o">
             </i>&nbsp;延误</a></li>
-            <!--<li><a href="#/project-summary/"><i class="fa fa-list"></i>&nbsp;列表</a></li>-->
         </ul>
     </div>
-    <div class="alert alert-danger {{alertMessageVisible}}">
+    <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
     <blockquote>
         <p>

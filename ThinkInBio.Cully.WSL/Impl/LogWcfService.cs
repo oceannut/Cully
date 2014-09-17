@@ -20,11 +20,20 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal ICommentService CommentService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
-        public Log SaveLog(string user, string date, string title, string content, string category, string tag1, string tag2, string tag3)
+        public Log SaveLog(string user, string projectId, string title, string content, string category, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
                 throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            long projectIdLong;
+            try
+            {
+                projectIdLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
             }
             if (string.IsNullOrWhiteSpace(title))
             {
@@ -33,15 +42,6 @@ namespace ThinkInBio.Cully.WSL.Impl
             if (string.IsNullOrWhiteSpace(content))
             {
                 throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
-            }
-            DateTime d = DateTime.MinValue;
-            try
-            {
-                d = DateTime.Parse(date);
-            }
-            catch
-            {
-                throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
             }
 
             try
@@ -60,7 +60,8 @@ namespace ThinkInBio.Cully.WSL.Impl
                     tags.Add(tag3);
                 }
 
-                Log log = new Log(d, content, user);
+                Log log = new Log(content, user);
+                log.ProjectId = projectIdLong;
                 log.Title = title;
                 log.Category = category;
                 if (tags.Count > 0)
@@ -81,7 +82,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Log UpdateLog(string user, string id, string date, string title, string content, string category, string tag1, string tag2, string tag3)
+        public Log UpdateLog(string user, string id, string title, string content, string category, string tag1, string tag2, string tag3)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -94,15 +95,6 @@ namespace ThinkInBio.Cully.WSL.Impl
             if (string.IsNullOrWhiteSpace(content))
             {
                 throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
-            }
-            DateTime d = DateTime.MinValue;
-            try
-            {
-                d = DateTime.Parse(date);
-            }
-            catch
-            {
-                throw new WebFaultException<string>("date", HttpStatusCode.BadRequest);
             }
             long idLong = 0;
             try
@@ -137,7 +129,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 log.Title = title;
                 log.Category = category;
                 log.Content = content;
-                log.StartTime = d;
                 log.AddTag(tags);
                 log.Update(
                     (e) =>
@@ -229,6 +220,69 @@ namespace ThinkInBio.Cully.WSL.Impl
             try
             {
                 IList<Log> list = LogService.GetLogList(startTime, endTime, creatorInput, categoryInput, startInt, countInt);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public Log[] GetLogList(string year, string month, string projectId)
+        {
+            int yearInt;
+            try
+            {
+                yearInt = Convert.ToInt32(year);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("year", HttpStatusCode.BadRequest);
+            }
+            if (yearInt < 1970)
+            {
+                throw new WebFaultException<string>("year", HttpStatusCode.RequestedRangeNotSatisfiable);
+            }
+            int monthInt;
+            if (!string.IsNullOrWhiteSpace(month) && "null" == month)
+            {
+                monthInt = 0;
+            }
+            else
+            {
+                try
+                {
+                    monthInt = Convert.ToInt32(month);
+                }
+                catch
+                {
+                    throw new WebFaultException<string>("month", HttpStatusCode.BadRequest);
+                }
+                if (monthInt < 1 || monthInt > 12)
+                {
+                    throw new WebFaultException<string>("month", HttpStatusCode.RequestedRangeNotSatisfiable);
+                }
+            }
+            long projectIdLong = 0;
+            try
+            {
+                projectIdLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
+            try
+            {
+                IList<Log> list = LogService.GetLogList(yearInt, monthInt, projectIdLong);
                 if (list != null)
                 {
                     return list.ToArray();

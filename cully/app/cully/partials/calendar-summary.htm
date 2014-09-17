@@ -56,8 +56,7 @@
                 <h4>
                     日程列表</h4>
                 <ol class="list-unstyled">
-                    <li ng-repeat="item in calendarList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
-                        padding-bottom: 0.5em; margin-bottom: 0.5em;">
+                    <li ng-repeat="item in calendarList" class="biz-list-item">
                         <p ng-class="item.textColor">
                             <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}<a
                                 ng-if="item.ProjectId>0" href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i
@@ -69,8 +68,7 @@
                 <h4>
                     时钟列表</h4>
                 <ol class="list-unstyled">
-                    <li ng-repeat="item in clockList" style="padding-bottom: 0.5em; border-bottom: dotted #ccc 1px;
-                        padding-bottom: 0.5em; margin-bottom: 0.5em;">
+                    <li ng-repeat="item in clockList" class="biz-list-item">
                         <p>
                             <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}&nbsp;&middot;&nbsp;[{{item.caution}}]
                         </p>

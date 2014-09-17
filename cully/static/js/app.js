@@ -306,7 +306,7 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
-                    .when('/log-add/', {
+                    .when('/log-add/:projectId/', {
                         templateUrl: 'app/cully/partials/log-add.htm',
                         controller: 'LogAddCtrl',
                         access: {

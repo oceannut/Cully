@@ -26,6 +26,8 @@ namespace ThinkInBio.Cully.BLL
         IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, string category,
             int startRowIndex, int maxRowsCount);
 
+        IList<Log> GetLogList(int year, int month, long? projectId);
+
         void SaveComment(Log log, Comment comment, ICollection<BizNotification> notificationList);
 
         void DeleteComment(Log log, Comment comment, ICollection<BizNotification> notificationList);

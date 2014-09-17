@@ -22,25 +22,42 @@ define(function (require) {
         .controller('ProjectListCtrl', ['$scope', '$log', 'currentUser', 'TopProjectListService', 'ProjectListService', 'dateUtil',
             function ($scope, $log, currentUser, TopProjectListService, ProjectListService, dateUtil) {
 
+                function renderList(list) {
+                    if (list != null && list.length > 0) {
+                        var len = list.length;
+                        for (var i = 0; i < len; i++) {
+                            $scope.projectList.push(list[i]);
+                        }
+                    }
+                }
+
                 $scope.init = function () {
-                    $scope.alertMessageVisible = 'hidden';
+                    $scope.projectList = [];
                     $scope.queryModel = {
                         'month': '',
                         'isSoloInclude': false
                     }
-                    TopProjectListService.query({ 'user': currentUser.getUsername(), 'isSoloInclude': $scope.queryModel.isSoloInclude, 'count': 10 })
-                        .$promise
-                            .then(function (result) {
-                                $scope.projectList = result;
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：项目列表加载失败";
-                            });
+                    $scope.alertMessage = "";
+                    $scope.isLoading = true;
+                    TopProjectListService.query({
+                        'user': currentUser.getUsername(),
+                        'isSoloInclude': $scope.queryModel.isSoloInclude,
+                        'count': 10
+                    })
+                    .$promise
+                        .then(function (result) {
+                            renderList(result);
+                        }, function (error) {
+                            $log.error(error);
+                            $scope.alertMessage = "提示：项目列表加载失败";
+                        })
+                        .then(function () {
+                            $scope.isLoading = false;
+                        });
                 }
 
                 $scope.query = function () {
-                    $scope.alertMessageVisible = 'hidden';
+                    $scope.projectList.length = 0;
                     var startDay, span, d;
                     if ($scope.queryModel.month != '') {
                         var array = $scope.queryModel.month.split('-');
@@ -52,15 +69,26 @@ define(function (require) {
                     startDay = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
                     span = dateUtil.getDaysofMonth(d.getMonth() + 1);
                     if (startDay != undefined && span != undefined) {
-                        ProjectListService.query({ 'user': currentUser.getUsername(), 'isSoloInclude': $scope.queryModel.isSoloInclude, 'date': startDay, 'span': span, 'start': 0, 'count': 1000 })
-                            .$promise
-                                .then(function (result) {
-                                    $scope.projectList = result;
-                                }, function (error) {
-                                    $log.error(error);
-                                    $scope.alertMessageVisible = 'show';
-                                    $scope.alertMessage = "提示：项目列表加载失败";
-                                });
+                        $scope.alertMessage = "";
+                        $scope.isLoading = true;
+                        ProjectListService.query({
+                            'user': currentUser.getUsername(),
+                            'isSoloInclude': $scope.queryModel.isSoloInclude,
+                            'date': startDay,
+                            'span': span,
+                            'start': 0,
+                            'count': 1000
+                        })
+                        .$promise
+                            .then(function (result) {
+                                renderList(result);
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.alertMessage = "提示：项目列表加载失败";
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
                     }
                 }
 

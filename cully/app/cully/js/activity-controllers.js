@@ -3,9 +3,12 @@
 define(function (require) {
 
     require('ng');
+    require('underscore');
     require('../../../static/js/filters');
     require('../../../static/js/utils');
+    require('../../../static/js/face-cache');
     require('./project-services');
+    require('./project-cache');
     require('../../auth/js/auth-models');
     require('../../auth/js/auth-directives');
     require('../../common/js/common-cache');
@@ -14,13 +17,30 @@ define(function (require) {
     require('../../../lib/bs-timeline/css/timeline.css');
     require('../../../static/css/icon.css');
 
-    angular.module('activity.controllers', ['filters', 'utils', 'project.services', 'auth.models', 'auth.directives', 'common.cache', 'common.utils'])
-        .controller('ActivityListCtrl', ['$scope', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'categoryCache', 'userCache',
-            function ($scope, $log, currentUser, dateUtil, ActivityListService, categoryCache, userCache) {
+    angular.module('activity.controllers', ['filters', 'utils', 'project.services', 'auth.models', 'auth.directives', 'common.cache', 'project.cache', 'face.cache', 'common.utils'])
+        .factory('ActivityCommonUtil', ['categoryCache', 'userCache',
+            function (categoryCache, userCache) {
+                return {
+                    buildIcon: function (entity) {
+                        entity.icon = 'fa fa-tasks';
+                        categoryCache.get('activity', entity.Category, function (e) {
+                            entity.icon = e.Icon;
+                        });
+                    },
+                    buildCreatorName: function (entity) {
+                        userCache.get(entity.Creator, function (e) {
+                            entity.creatorName = (e == null) ? entity.Creator : e.Name;
+                        });
+                    }
+                }
+            } ])
+        .controller('ActivityListCtrl', ['$scope', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'ActivityCommonUtil', 'categoryCache', 'activityFace', 'faceCache',
+            function ($scope, $log, currentUser, dateUtil, ActivityListService, ActivityCommonUtil, categoryCache, activityFace, faceCache) {
 
                 var pageSize = 20;
 
-                function getActivityList() {
+                function loadActivityList() {
+                    $scope.activityList.length = 0;
                     var startRowIndex = $scope.currentPage * pageSize;
                     var category = $scope.queryModel.category;
                     var date = $scope.queryModel.date;
@@ -31,7 +51,6 @@ define(function (require) {
                     var startDay, span;
                     if (date != '') {
                         if (date == '-30') {
-                            $scope.monthInputVisible = '';
                             if ($scope.queryModel.month != '') {
                                 var array = $scope.queryModel.month.split('-');
                                 var d = new Date(array[0], parseInt(array[1]) - 1, 1);
@@ -39,30 +58,41 @@ define(function (require) {
                                 span = dateUtil.getDaysofMonth(d.getMonth() + 1);
                             }
                         } else {
-                            $scope.monthInputVisible = 'none';
                             startDay = dateUtil.getDate(date);
                             span = dateUtil.getSpan(date);
                         }
 
                     } else {
-                        $scope.monthInputVisible = 'none';
                         startDay = 'null';
                         span = 'null';
                     }
                     if (startDay != undefined && span != undefined) {
-                        ActivityListService.query3({ 'user': currentUser.getUsername(), 'category': category, 'date': startDay, 'span': span, 'start': startRowIndex, 'count': pageSize })
+                        $scope.queryModel.alertMessage = "";
+                        $scope.queryModel.isLoading = true;
+                        ActivityListService.query3({
+                            'user': currentUser.getUsername(),
+                            'category': category,
+                            'date': startDay,
+                            'span': span,
+                            'start': startRowIndex,
+                            'count': pageSize
+                        })
                             .$promise
                                 .then(function (result) {
+                                    faceCache.sync(activityFace, result);
                                     interceptActivityList(result);
                                 }, function (error) {
                                     $log.error(error);
+                                    $scope.queryModel.alertMessage = "提示：活动列表加载失败";
+                                })
+                                .then(function () {
+                                    $scope.queryModel.isLoading = false;
                                 });
                     }
                 }
 
                 function interceptActivityList(result) {
                     if (result != null && result.length > 0) {
-                        $scope.activityList = [];
                         var temp = new Date();
                         temp.setFullYear(1970, 0, 1);
                         var d = dateUtil.formatDateByYMD(temp);
@@ -85,33 +115,17 @@ define(function (require) {
                                     $scope.activityList.push({ 'isDate': true, 'date': d, 'labelColor': 'bg-maroon' });
                                 }
                             }
-
-                            var icon = 'fa fa-tasks';
-                            categoryCache.get('activity', item.Category, function (e) {
-                                icon = e.Icon;
-                            });
-
-                            userCache.get(item.Creator, function (e) {
-                                item.creatorName = (e == null) ? item.Creator : e.Name;
-                            });
-
-                            $scope.activityList.push({
-                                'id': item.Id,
-                                'icon': icon,
-                                'isDate': false,
-                                'name': item.Name,
-                                'desc': item.Description,
-                                'projectId': item.ProjectId,
-                                'creator': item.creatorName,
-                                'creation': item.Creation
-                            });
+                            item.isDate = false;
+                            ActivityCommonUtil.buildIcon(item);
+                            ActivityCommonUtil.buildCreatorName(item);
+                            $scope.activityList.push(item);
                         }
                         $scope.nextBtnClass = '';
                     } else {
                         if ($scope.currentPage > 0) {
                             $scope.currentPage--;
                         } else {
-                            $scope.activityList = [];
+                            //$scope.activityList = [];
                         }
                         $scope.nextBtnClass = 'disabled';
                     }
@@ -123,8 +137,10 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    $scope.monthInputVisible = 'none';
+                    $scope.activityList = [];
                     $scope.queryModel = {
+                        'isLoading': false,
+                        'alertMessage': '',
                         'category': '',
                         'date': '',
                         'month': ''
@@ -141,7 +157,7 @@ define(function (require) {
 
                 $scope.query = function () {
                     $scope.currentPage = 0;
-                    getActivityList();
+                    loadActivityList();
                 }
 
                 $scope.prevPage = function () {
@@ -150,7 +166,7 @@ define(function (require) {
                     }
                     if ($scope.currentPage > 0) {
                         $scope.currentPage--;
-                        getActivityList();
+                        loadActivityList();
                     }
                 }
 
@@ -159,7 +175,7 @@ define(function (require) {
                         return;
                     }
                     $scope.currentPage++;
-                    getActivityList();
+                    loadActivityList();
                 }
 
             } ])
@@ -302,31 +318,35 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityDetailsCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ActivityService', 'categoryCache', 'userCache',
-            function ($scope, $log, $routeParams, currentUser, ActivityService, categoryCache, userCache) {
+        .controller('ActivityDetailsCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'activityFace', 'faceCache',
+            function ($scope, $log, $routeParams, currentUser, activityFace, faceCache) {
 
                 $scope.init = function () {
-                    $scope.alertMessageVisible = 'hidden';
-                    ActivityService.get({ 'user': currentUser.getUsername(), 'activityId': $routeParams.id })
-                        .$promise
-                            .then(function (result) {
-                                $scope.activity = result;
-                                categoryCache.get('activity', $scope.activity.Category, function (e) {
-                                    var icon = 'fa fa-tasks';
-                                    if (e != null) {
-                                        $scope.activity.icon = e.Icon;
-                                    }
-                                });
-                                userCache.get($scope.activity.Creator, function (e) {
-                                    $scope.activity.creatorName = (e == null) ? $scope.activity.Creator : e.Name;
-                                });
-                                $scope.isEditable = currentUser.getUsername() === $scope.activity.Creator;
-                                $scope.taskListPage = 'app/cully/partials/task-list.htm';
-                            }, function (error) {
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：加载活动详细信息失败";
-                                $log.error(error);
-                            });
+                    //                    $scope.alertMessageVisible = 'hidden';
+                    //                    ActivityService.get({ 'user': currentUser.getUsername(), 'activityId': $routeParams.id })
+                    //                        .$promise
+                    //                            .then(function (result) {
+                    //                                $scope.activity = result;
+                    //                                categoryCache.get('activity', $scope.activity.Category, function (e) {
+                    //                                    var icon = 'fa fa-tasks';
+                    //                                    if (e != null) {
+                    //                                        $scope.activity.icon = e.Icon;
+                    //                                    }
+                    //                                });
+                    //                                userCache.get($scope.activity.Creator, function (e) {
+                    //                                    $scope.activity.creatorName = (e == null) ? $scope.activity.Creator : e.Name;
+                    //                                });
+                    //                                $scope.isEditable = currentUser.getUsername() === $scope.activity.Creator;
+                    //                                $scope.taskListPage = 'app/cully/partials/task-list.htm';
+                    //                            }, function (error) {
+                    //                                $scope.alertMessageVisible = 'show';
+                    //                                $scope.alertMessage = "提示：加载活动详细信息失败";
+                    //                                $log.error(error);
+                    //                            });
+                    $scope.alertMessage = "";
+                    $scope.activity = faceCache.get(activityFace, parseInt($routeParams.id));
+                    $scope.isEditable = currentUser.getUsername() === $scope.activity.Creator;
+                    $scope.taskListPage = 'app/cully/partials/task-list.htm';
                 }
 
             } ]);

@@ -145,27 +145,74 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil',
-            function ($scope, $routeParams, $log, dateUtil) {
+        .controller('LogListCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'dateUtil', 'stringUtil', 'categoryCache', 'userCache', 'LogListService2',
+            function ($scope, $routeParams, $log, currentUser, dateUtil, stringUtil, categoryCache, userCache, LogListService2) {
 
                 $scope.init = function () {
                     $scope.projectId = $routeParams.projectId;
+                    var timestamp = new Date();
+                    $scope.queryModel = {
+                        month: timestamp.getFullYear() + "-" + (timestamp.getMonth() + 1)
+                    };
 
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    if ($scope.queryModel.month !== "") {
+                        var currentUsername = currentUser.getUsername();
+                        var year = $scope.queryModel.month.substr(0, 4);
+                        var month = $scope.queryModel.month.substr(5, 2);
+                        LogListService2.query({
+                            'year': year,
+                            'month': month,
+                            'projectId': $scope.projectId
+                        })
+                        .$promise
+                            .then(function (result) {
+                                $scope.logList = result;
+                                if ($scope.logList != null) {
+                                    var len = $scope.logList.length;
+                                    for (var i = 0; i < len; i++) {
+                                        var log = $scope.logList[i];
+                                        categoryCache.get('log', log.Category, function (e) {
+                                            if (e != null) {
+                                                log.icon = e.Icon;
+                                                log.categoryName = e.Name;
+                                            }
+                                        });
+                                        userCache.get(log.Creator, function (e) {
+                                            log.creatorName = (e == null) ? log.Creator : e.Name;
+                                        });
+                                        var content = stringUtil.removeHTML(log.Content);
+                                        log.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
+                                        if (currentUsername === log.Creator) {
+                                            log.isEidtable = true;
+                                        } else {
+                                            log.isEidtable = false;
+                                        }
+                                    }
+                                }
+                            }, function (error) {
+                                $log.error(error);
+                            });
+                    }
                 }
 
             } ])
-        .controller('LogAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'LogService', 'dateUtil', 'categoryCache', 'CategoryHelper',
-            function ($scope, $location, $log, currentUser, LogService, dateUtil, categoryCache, CategoryHelper) {
+        .controller('LogAddCtrl', ['$scope', '$routeParams', '$location', '$log', 'currentUser', 'LogService', 'categoryCache', 'CategoryHelper',
+            function ($scope, $routeParams, $location, $log, currentUser, LogService, categoryCache, CategoryHelper) {
 
                 $scope.init = function () {
-                    $scope.log = { 'startTime': dateUtil.formatDateByYMD(new Date()) };
+                    $scope.log = { projectId: $routeParams.projectId };
                     categoryCache.list('log', function (e) {
                         $scope.categoryList = e;
                         CategoryHelper.selectCategory($scope.categoryList, 'dairy', function (ee) {
                             $scope.category = ee;
                         });
                     });
-                    $scope.alertMessageVisible = 'hidden';
+                    $scope.isLoading = false;
+                    $scope.alertMessage = "";
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
@@ -175,27 +222,35 @@ define(function (require) {
                 }
 
                 $scope.save = function () {
-                    $scope.alertMessageVisible = 'hidden';
-                    if ($scope.log.startTime != undefined && $scope.log.startTime != ''
-                                            && $scope.log.content != undefined && $scope.log.content != '') {
-                        LogService.save({ 'user': currentUser.getUsername(),
-                            'date': $scope.log.startTime,
-                            'title': $scope.log.title,
-                            'content': $scope.log.content,
-                            'category': $scope.category.Code,
-                            'tag1': $scope.log.tag1,
-                            'tag2': $scope.log.tag2,
-                            'tag3': $scope.log.tag3
-                        })
-                        .$promise
-                            .then(function (result) {
-                                $location.path('/log-summary/');
-                            }, function (error) {
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：保存记录失败";
-                                $log.error(error);
-                            });
+                    $scope.alertMessage = "";
+                    if ($scope.log.content === undefined
+                        || $scope.log.content === null
+                        || $scope.log.content.trim() === '') {
+                        $scope.alertMessageColor = "alert-warning";
+                        $scope.alertMessage = "提示：请填写内容";
+                        return;
                     }
+                    $scope.isLoading = true;
+                    LogService.save({ 'user': currentUser.getUsername(),
+                        'projectId': $scope.log.projectId,
+                        'title': $scope.log.title,
+                        'content': $scope.log.content,
+                        'category': $scope.category.Code,
+                        'tag1': $scope.log.tag1,
+                        'tag2': $scope.log.tag2,
+                        'tag3': $scope.log.tag3
+                    })
+                    .$promise
+                        .then(function (result) {
+                            $location.path('/log-list/' + $scope.log.projectId + '/');
+                        }, function (error) {
+                            $scope.alertMessageColor = "alert-danger";
+                            $scope.alertMessage = "提示：保存记录失败";
+                            $log.error(error);
+                        })
+                        .then(function () {
+                            $scope.isLoading = false;
+                        });
                 }
 
             } ])
@@ -207,10 +262,6 @@ define(function (require) {
                         $scope.category = e;
                     });
                     $scope.log = { 'id': editLog.Id, 'title': editLog.Title, 'content': editLog.Content };
-                    var d = dateUtil.jsonToDate(editLog.StartTime);
-                    if (d != null) {
-                        $scope.log.startTime = dateUtil.formatDateByYMD(d);
-                    }
                     var tags = editLog.Tags;
                     if (tags != undefined && tags != null) {
                         var tagArray = tags.split(',');
@@ -260,7 +311,6 @@ define(function (require) {
                         $scope.alertMessageVisible = 'hidden';
                         LogService.update({ 'user': currentUser.getUsername(),
                             'id': $scope.log.id,
-                            'date': $scope.log.startTime,
                             'title': $scope.log.title,
                             'content': $scope.log.content,
                             'category': $scope.category.Code,

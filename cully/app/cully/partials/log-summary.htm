@@ -2,7 +2,7 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;记事</span>
         <ul class="list-inline pull-right">
-            <li access="supvisor"><a href="#/log-add/"><i class="fa fa-plus"></i>&nbsp;新建</a></li>
+            <li access="user,supvisor"><a href="#/log-add/0/"><i class="fa fa-plus"></i>&nbsp;添加一条</a></li>
         </ul>
     </div>
     <div class="alert alert-danger {{alertMessageVisible}}">
@@ -40,7 +40,7 @@
                         {{item.filterContent}}</p>
                     <ul style="list-style-type: none; float: left; margin-left: -2em; font-size: 10.5pt;">
                         <li style="float: left; margin-right: 1.2em;"><span>{{item.creatorName}}</span></li>
-                        <li style="float: left; margin-right: 1.2em;"><span>{{item.StartTime | jsonDateFormat
+                        <li style="float: left; margin-right: 1.2em;"><span>{{item.Modification | jsonDateFormat
                             | date:'yyyy-MM-dd'}}</span></li>
                         <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in item.TagList"><a
                             href="#"><span class="badge">{{tag}}</span></a></li>

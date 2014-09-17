@@ -30,14 +30,14 @@
             </i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li><a href="#/log-summary/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+            <li><a href="#/log-list/{{log.ProjectId}}/"><i class="fa fa-list"></i>&nbsp;列表</a></li>
         </ul>
     </div>
     <div class="alert alert-danger {{alertMessageVisible}}">
         {{alertMessage}}</div>
     <div class="row" style="margin: 2em 2em 0 2em;">
         <p>
-            分类：{{log.categoryName}}&nbsp;&nbsp;&nbsp;&nbsp;日期：{{log.StartTime | jsonDateFormat
+            分类：{{log.categoryName}}&nbsp;&nbsp;&nbsp;&nbsp;日期：{{log.Modification | jsonDateFormat
             | date:'yyyy-MM-dd'}}&nbsp;&nbsp;&nbsp;&nbsp;评论：{{log.CommentCount}}</p>
         <p>
             <ul style="list-style-type: none; float: left; margin-left: -2em; font-size: 10.5pt;">

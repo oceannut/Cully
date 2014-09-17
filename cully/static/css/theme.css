@@ -79,24 +79,15 @@
     }
 }
 
-/*
- * Main column and sidebar layout
- */
-.blog-main
-{
-    font-size: 15px;
-    line-height: 1.5;
-}
-
 /* Sidebar modules for boxing content */
 .sidebar-module
 {
-    padding: 15px;
-    margin: 0 -15px 15px;
+    padding: 6px;
+    margin: 0 0 6px;
 }
 .sidebar-module-inset
 {
-    padding: 15px;
+    padding: 12px;
     background-color: #f8f8f8;
     border-radius: 4px;
 }
@@ -115,6 +106,6 @@
 .biz-list-item
 {
     border-bottom: dotted #ccc 1px;
-    margin: 8px 0 0 0;
-    padding: 0 0 6px 0;
+    margin: 0.5em 0 0 0;
+    padding: 0 0 0.5em 0;
 }

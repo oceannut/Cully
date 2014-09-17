@@ -65,15 +65,15 @@ namespace ThinkInBio.Cully
         /// </summary>
         public string Category { get; set; }
 
-        /// <summary>
-        /// 起始时间。
-        /// </summary>
-        public DateTime StartTime { get; set; }
+        ///// <summary>
+        ///// 起始时间。
+        ///// </summary>
+        //public DateTime StartTime { get; set; }
 
-        /// <summary>
-        /// 截止时间。
-        /// </summary>
-        public DateTime? EndTime { get; set; }
+        ///// <summary>
+        ///// 截止时间。
+        ///// </summary>
+        //public DateTime? EndTime { get; set; }
 
         /// <summary>
         /// 标签。
@@ -134,12 +134,10 @@ namespace ThinkInBio.Cully
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="timeStamp"></param>
         /// <param name="content"></param>
         /// <param name="user"></param>
-        public Log(DateTime timeStamp, string content, string user)
+        public Log(string content, string user)
         {
-            this.StartTime = timeStamp;
             this.Content = content;
             this.Creator = user;
         }
@@ -154,7 +152,6 @@ namespace ThinkInBio.Cully
         /// <param name="action"></param>
         public void Save(Action<Log> action)
         {
-            JustTimeSpan();
             DateTime now = DateTime.Now;
             this.Creation = now;
             this.Modification = now;
@@ -170,7 +167,6 @@ namespace ThinkInBio.Cully
         /// <param name="action"></param>
         public void Update(Action<Log> action)
         {
-            JustTimeSpan();
             DateTime now = DateTime.Now;
             this.Modification = now;
             if (action != null)
@@ -315,16 +311,6 @@ namespace ThinkInBio.Cully
                     }
                     this.Tags = string.Join(",", tagArray.Concat(col));
                 }
-            }
-        }
-
-        private void JustTimeSpan()
-        {
-            if (this.StartTime != DateTime.MinValue
-                && this.EndTime.HasValue
-                && this.StartTime >= this.EndTime.Value)
-            {
-                throw new InvalidOperationException();
             }
         }
 

@@ -11,14 +11,20 @@ define(function (require) {
         .factory('LogService', ['$resource', 'wcfApp', 'logWcfService',
             function ($resource, wcfApp, logWcfService) {
                 return $resource(wcfApp + logWcfService + '/:user/log/:id/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'date': '@date', 'title': '@title', 'content': '@content', 'category': '@category', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3'} },
-                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'date': '@date', 'title': '@title', 'content': '@content', 'category': '@category', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3'} }
+                    save: { method: 'POST', params: { 'user': '@user', 'id': '0', 'projectId': '@projectId', 'title': '@title', 'content': '@content', 'category': '@category', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3'} },
+                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'title': '@title', 'content': '@content', 'category': '@category', 'tag1': '@tag1', 'tag2': '@tag2', 'tag3': '@tag3'} }
                 });
             } ])
         .factory('LogListService', ['$resource', 'wcfApp', 'logWcfService',
             function ($resource, wcfApp, logWcfService) {
                 return $resource(wcfApp + logWcfService + '/:user/log/time/:date/:span/:creator/:category/range/:start/:count/', {}, {
                     query: { method: 'GET', params: { 'user': '@user', 'date': '@date', 'span': '@span', 'creator': '@creator', 'category': '@category', 'start': '@start', 'count': '@count' }, isArray: true }
+                });
+            } ])
+        .factory('LogListService2', ['$resource', 'wcfApp', 'logWcfService',
+            function ($resource, wcfApp, logWcfService) {
+                return $resource(wcfApp + logWcfService + '/log/:year/:month/:projectId/', {}, {
+                    query: { method: 'GET', params: { 'year': '@year', 'month': '@month', 'projectId': '@projectId' }, isArray: true }
                 });
             } ])
         .factory('Update4CommentLogService', ['$resource', 'wcfApp', 'logWcfService',

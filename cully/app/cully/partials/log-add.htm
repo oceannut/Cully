@@ -1,19 +1,11 @@
 ﻿<div class="story container" ng-init="init()">
     <div class="page-header">
-        <span class="lead"><i class="fa fa-plus"></i>&nbsp;创建新记录</span>
+        <span class="lead"><i class="fa fa-plus"></i>&nbsp;新建记事</span>
         <ul class="list-inline pull-right">
-            <li><a href="#/log-summary/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+            <li><a href="#/log-list/0/"><i class="fa fa-list"></i>&nbsp;记事列表</a></li>
         </ul>
     </div>
-    <form class="form-horizontal css-form" role="form">
-    <div class="form-group">
-        <label for="inputStartTime" class="col-sm-1 control-label">
-            日期</label>
-        <div class="col-sm-3">
-            <input type="date" id="inputStartTime" class="form-control" ng-model="log.startTime"
-                required>
-        </div>
-    </div>
+    <form class="form-horizontal css-form" role="form" name="form">
     <div class="form-group">
         <div class="col-sm-12">
             <input type="text" class="form-control" placeholder="标题" ng-model="log.title" name="title"
@@ -56,13 +48,14 @@
     </div>
     <div class="form-group">
         <div class="col-sm-4">
-            <button type="submit" class="btn btn-primary" ng-click="save()">
-                创建</button>
+            <button type="submit" class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
+                ng-switch="isLoading">
+                <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建记事</span></button>
             <button type="button" class="btn btn-default" ng-click="cancel()">
                 取消</button>
         </div>
     </div>
-    <div class="alert alert-danger {{alertMessageVisible}}">
+    <div class="alert {{alertMessageColor}}" ng-show="alertMessage">
         {{alertMessage}}</div>
     </form>
 </div>
