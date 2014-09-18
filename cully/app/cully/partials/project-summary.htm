@@ -51,7 +51,7 @@
                 <p class="text-red">
                     努力加载中，请等待...</p>
             </div>
-            <div class="alert alert-danger" ng-show="events.alertMessage">
+            <div class="alert {{events.alertMessageColor}}" ng-show="events.alertMessage">
                 {{events.alertMessage}}</div>
             <ul class="timeline">
                 <li ng-repeat="item in events.activityList" ng-switch="item.isDate"><span ng-switch-when="true"
@@ -73,8 +73,10 @@
                 </li>
             </ul>
             <ul class="pager hidden-print" ng-hide="events.isLoading">
-                <li class="{{faceModel.prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
-                <li class="{{faceModel.nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
+                <li class="{{faceModel.prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">
+                    上一页</a></li>
+                <li class="{{faceModel.nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">
+                    下一页</a></li>
             </ul>
         </div>
         <div class="col-sm-3 blog-sidebar">
@@ -84,28 +86,28 @@
                     最新项目</h4>
                 <form class="css-form hidden-print" role="form">
                 <div class="form-group">
-                    <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()"
-                        ng-disabled="isLoading" />
+                    <input type="month" class="form-control input-sm" ng-model="faceModel.month" ng-change="query()"
+                        ng-disabled="events.isLoading" />
                 </div>
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" ng-model="queryModel.isSoloInclude" ng-change="query()" ng-disabled="isLoading" />
+                        <input type="checkbox" ng-model="faceModel.isSoloInclude" ng-change="query()" ng-disabled="events.isLoading" />
                         包括单一活动项目
                     </label>
                 </div>
                 </form>
                 <br />
-                <div ng-show="isLoading" class="text-center">
+                <div ng-show="events.isLoading" class="text-center">
                     <i class="fa fa-spinner fa-spin fa-2x"></i>
                     <p class="text-red">
                         努力加载中，请等待...</p>
                 </div>
-                <div class="alert alert-danger" ng-show="alertMessage">
+                <div class="alert alert-danger" ng-show="events.alertMessage">
                     {{alertMessage}}</div>
                 <ol class="list-unstyled">
-                    <li ng-repeat="item in projectList"><a href="#/project-details/{{item.Id}}/" ng-switch="item.IsSolo">
-                        <i class="fa fa-cube" ng-switch-when="true"></i><i class="fa fa-cubes" ng-switch-when="false">
-                        </i>&nbsp;{{item.Name}}</a></li>
+                    <li ng-repeat="item in events.projectList"><a href="#/project-details/{{item.Id}}/"
+                        ng-switch="item.IsSolo"><i class="fa fa-cube" ng-switch-when="true"></i><i class="fa fa-cubes"
+                            ng-switch-when="false"></i>&nbsp;{{item.Name}}</a></li>
                 </ol>
             </div>
         </div>

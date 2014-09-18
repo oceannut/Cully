@@ -4,40 +4,46 @@
         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">项目 <span
             class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-                <li><a href="#/project-details/{{activity.ProjectId}}/"><i class="fa fa-table fa-fw">
+                <li><a href="#/project-details/{{events.activity.ProjectId}}/"><i class="fa fa-table fa-fw">
                 </i>&nbsp;详细</a></li>
-                <li><a href="#/participant-list/{{activity.ProjectId}}/"><i class="fa fa-users fa-fw">
+                <li><a href="#/participant-list/{{events.activity.ProjectId}}/"><i class="fa fa-users fa-fw">
                 </i>&nbsp;成员</a></li>
-                <li><a href="#/calendar-list/{{activity.ProjectId}}/"><i class="fa fa-calendar-o fa-fw">
+                <li><a href="#/calendar-list/{{events.activity.ProjectId}}/"><i class="fa fa-calendar-o fa-fw">
                 </i>&nbsp;日程</a></li>
-                <li><a href="#/log-list/{{activity.ProjectId}}/"><i class="fa fa-magic fa-fw"></i>&nbsp;记事</a></li>
+                <li><a href="#/log-list/{{events.activity.ProjectId}}/"><i class="fa fa-magic fa-fw">
+                </i>&nbsp;记事</a></li>
             </ul>
         </li>
         <li class="active">活动</li>
     </ul>
     <div class="page-header">
-        <span class="lead"><i class="{{activity.icon}}"></i>&nbsp;{{activity.Name}}</span>
+        <span class="lead"><i class="{{events.activity.icon}}"></i>&nbsp;{{events.activity.Name}}</span>
         <ul class="list-inline pull-right">
-            <li access="supvisor" ng-show="isEditable"><a href="#/activity-edit/{{activity.Id}}/">
+            <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/activity-edit/{{events.activity.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li access="user,supvisor"><a href="#/activity-task-delay/{{activity.Id}}/"><i class="fa fa-bar-chart-o">
-            </i>&nbsp;延误</a></li>
+            <li access="user,supvisor"><a href="#/activity-task-delay/{{events.activity.Id}}/"><i
+                class="fa fa-bar-chart-o"></i>&nbsp;延误</a></li>
             <li access="user,supvisor"><a href="#/project-summary/false/"><i class="fa fa-level-up">
             </i>&nbsp;返回</a></li>
         </ul>
     </div>
-    <div class="alert alert-danger" ng-show="alertMessage">
-        {{alertMessage}}</div>
+    <div ng-show="events.isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="text-red">
+            努力加载中，请等待...</p>
+    </div>
+    <div class="alert alert-danger" ng-show="faceModel.alertMessage">
+        {{faceModel.alertMessage}}</div>
     <blockquote>
         <p>
-            {{activity.Description}}</p>
+            {{events.activity.Description}}</p>
         <footer> 
-            &nbsp; <a>{{activity.creatorName}}</a>&nbsp;于&nbsp;{{activity.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建
+            &nbsp; <a>{{events.activity.creatorName}}</a>&nbsp;于&nbsp;{{events.activity.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建
             &nbsp; <span ng-if="activity.IsCompleted" class="text-success"><i class="fa fa-check-square-o"></i>&nbsp;活动已结束。</span>
         </footer>
     </blockquote>
-    <div ng-include="taskListPage">
+    <div ng-include="faceModel.taskListPage">
     </div>
 </div>

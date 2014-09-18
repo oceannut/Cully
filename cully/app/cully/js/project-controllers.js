@@ -6,12 +6,15 @@ define(function (require) {
     require('../../../static/js/filters');
     require('../../../static/js/utils');
     require('./project-services');
+    require('./project-cache');
+    require('./client-services');
     require('../../auth/js/auth-models');
     require('../../auth/js/auth-directives');
     require('../../common/js/common-cache');
     require('../../common/js/common-utils');
 
-    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'auth.models', 'auth.directives', 'common.cache', 'common.utils'])
+    angular.module('project.controllers', ['configs', 'filters', 'project.services', 'auth.models', 'auth.directives', 'common.cache',
+                                            'common.utils', 'face.cache', 'client.services'])
         .controller('ProjectSummaryCtrl', ['$scope', function ($scope) {
 
             $scope.init = function () {
@@ -19,48 +22,62 @@ define(function (require) {
             }
 
         } ])
-        .controller('ProjectListCtrl', ['$scope', '$log', 'currentUser', 'TopProjectListService', 'ProjectListService', 'dateUtil',
-            function ($scope, $log, currentUser, TopProjectListService, ProjectListService, dateUtil) {
+        .controller('ProjectListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'TopProjectListService', 'ProjectListService', 'dateUtil',
+                                        'projectFace', 'faceCache', 'LocalStorageUtil',
+            function ($scope, $log, $routeParams, currentUser, TopProjectListService, ProjectListService, dateUtil,
+                        projectFace, faceCache, LocalStorageUtil) {
 
                 function renderList(list) {
                     if (list != null && list.length > 0) {
                         var len = list.length;
                         for (var i = 0; i < len; i++) {
-                            $scope.projectList.push(list[i]);
+                            $scope.events.projectList.push(list[i]);
                         }
                     }
                 }
 
                 $scope.init = function () {
-                    $scope.projectList = [];
-                    $scope.queryModel = {
-                        'month': '',
-                        'isSoloInclude': false
-                    }
-                    $scope.alertMessage = "";
-                    $scope.isLoading = true;
-                    TopProjectListService.query({
-                        'user': currentUser.getUsername(),
-                        'isSoloInclude': $scope.queryModel.isSoloInclude,
-                        'count': 10
-                    })
-                    .$promise
-                        .then(function (result) {
-                            renderList(result);
-                        }, function (error) {
-                            $log.error(error);
-                            $scope.alertMessage = "提示：项目列表加载失败";
+                    var reload = $routeParams.reload;
+                    $scope.events = {
+                        isLoading: false,
+                        alertMessage: '',
+                        projectList: []
+                    };
+                    if (reload === 'true') {
+                        $scope.faceModel = {
+                            month: '',
+                            isSoloInclude: false
+                        };
+                        var topCount = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.pageSize, LocalStorageUtil.pageSizeDV, true);
+                        $scope.events.isLoading = true;
+                        TopProjectListService.query({
+                            'user': currentUser.getUsername(),
+                            'isSoloInclude': $scope.faceModel.isSoloInclude,
+                            'count': topCount
                         })
-                        .then(function () {
-                            $scope.isLoading = false;
-                        });
+                        .$promise
+                            .then(function (result) {
+                                faceCache.setModel(projectFace, $scope.faceModel);
+                                faceCache.init(projectFace, result);
+                                renderList(result);
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.events.alertMessage = "提示：项目列表加载失败";
+                            })
+                            .then(function () {
+                                $scope.events.isLoading = false;
+                            });
+                    } else {
+                        $scope.faceModel = faceCache.getModel(projectFace);
+                        faceCache.pull(projectFace, $scope.events.projectList);
+                    }
                 }
 
                 $scope.query = function () {
-                    $scope.projectList.length = 0;
+                    $scope.events.projectList.length = 0;
                     var startDay, span, d;
-                    if ($scope.queryModel.month != '') {
-                        var array = $scope.queryModel.month.split('-');
+                    if ($scope.faceModel.month != '') {
+                        var array = $scope.faceModel.month.split('-');
                         d = new Date(array[0], parseInt(array[1]) - 1, 1);
                     } else {
                         var temp = new Date();
@@ -69,11 +86,11 @@ define(function (require) {
                     startDay = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
                     span = dateUtil.getDaysofMonth(d.getMonth() + 1);
                     if (startDay != undefined && span != undefined) {
-                        $scope.alertMessage = "";
-                        $scope.isLoading = true;
+                        $scope.events.alertMessage = "";
+                        $scope.events.isLoading = true;
                         ProjectListService.query({
                             'user': currentUser.getUsername(),
-                            'isSoloInclude': $scope.queryModel.isSoloInclude,
+                            'isSoloInclude': $scope.faceModel.isSoloInclude,
                             'date': startDay,
                             'span': span,
                             'start': 0,
@@ -81,13 +98,15 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
+                                faceCache.setModel(projectFace, $scope.faceModel);
+                                faceCache.init(projectFace, result);
                                 renderList(result);
                             }, function (error) {
                                 $log.error(error);
-                                $scope.alertMessage = "提示：项目列表加载失败";
+                                $scope.events.alertMessage = "提示：项目列表加载失败";
                             })
                             .then(function () {
-                                $scope.isLoading = false;
+                                $scope.events.isLoading = false;
                             });
                     }
                 }

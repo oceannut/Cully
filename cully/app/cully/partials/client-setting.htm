@@ -10,11 +10,13 @@
                 <ul class="nav">
                     <li><a ng-click="gotoAnchor('signin')">登录</a></li>
                     <li><a ng-click="gotoAnchor('ui')">界面</a></li>
+                    <li><a ng-click="gotoAnchor('pagination')">分页</a></li>
                     <li><a ng-click="gotoAnchor('caution')">提醒</a></li>
                 </ul>
             </div>
         </div>
         <div class="col-md-10" role="main">
+            <!--signin-->
             <h1 id="signin" class="page-header">
                 登录</h1>
             <div class="checkbox">
@@ -29,6 +31,7 @@
                     自动登录（不建议）
                 </label>
             </div>
+            <!--ui-->
             <h1 id="ui" class="page-header">
                 界面</h1>
             <div class="checkbox">
@@ -37,6 +40,15 @@
                     使用动画效果
                 </label>
             </div>
+            <!--pagination-->
+            <h1 id="pagination" class="page-header">
+                分页</h1>
+            <div class="form-inline">
+                <label>
+                    每页显示记录个数</label>
+                <input type="number" class="form-control input-sm" ng-model="userData.pageSize" />
+            </div>
+            <!--caution-->
             <h1 id="caution" class="page-header">
                 提醒</h1>
             <div>

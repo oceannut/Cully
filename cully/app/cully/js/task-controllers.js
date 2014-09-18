@@ -85,7 +85,7 @@ define(function (require) {
                 function renderTask(task) {
                     var parentScope = $scope.$parent.$parent;
                     var currentUsername = currentUser.getUsername();
-                    if (currentUsername === parentScope.activity.Creator) {
+                    if (currentUsername === parentScope.events.activity.Creator) {
                         task.editButtonDisabled = false;
                     } else {
                         task.editButtonDisabled = true;
@@ -192,7 +192,7 @@ define(function (require) {
 
                 function load() {
                     var parentScope = $scope.$parent.$parent;
-                    TaskListService.query({ 'user': currentUser.getUsername(), 'activityId': parentScope.activity.Id })
+                    TaskListService.query({ 'user': currentUser.getUsername(), 'activityId': parentScope.events.activity.Id })
                         .$promise
                             .then(function (result) {
                                 if (result != null) {
@@ -219,14 +219,14 @@ define(function (require) {
                     $scope.taskPanelDisplay = 'none'
                     clear();
                     var parentScope = $scope.$parent.$parent;
-                    if (currentUser.getUsername() == parentScope.activity.Creator) {
+                    if (currentUser.getUsername() == parentScope.events.activity.Creator) {
                         $scope.addTaskButtonVisible = true;
                         $scope.resumeButtonVisible = '';
                     } else {
                         $scope.addTaskButtonVisible = false;
                         $scope.resumeButtonVisible = 'none';
                     }
-                    ParticipantOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': parentScope.activity.ProjectId })
+                    ParticipantOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': parentScope.events.activity.ProjectId })
                         .$promise
                             .then(function (result) {
                                 $scope.participants = result;

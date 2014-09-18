@@ -2,8 +2,14 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑活动</span>
         <ul class="list-inline pull-right">
-            <li><a href="#/activity-details/{{activity.Id}}/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+            <li><a href="#/activity-details/{{events.activity.Id}}/"><i class="fa fa-level-up"></i>
+                &nbsp;返回</a></li>
         </ul>
+    </div>
+    <div ng-show="events.isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="text-red">
+            努力加载中，请等待...</p>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
     <div class="form-group">
@@ -12,7 +18,7 @@
         <div class="col-sm-5">
             <div class="bs-glyphicons">
                 <ul class="bs-glyphicons-list">
-                    <li ng-repeat="item in categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)"
+                    <li ng-repeat="item in faceModel.categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)"
                         class="{{item.active}}"><span class="{{item.Icon}} fa-2x"></span><span class="glyphicon-class">
                             {{item.Name}}</span></li>
                 </ul>
@@ -21,7 +27,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="activity.Name"
+            <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="events.activity.Name"
                 ng-maxlength="32" required autofocus>
             <p class="help-block">
                 （<span class="text-info">文本长度限制在32个字符内</span>）</p>
@@ -30,7 +36,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="activity.Description"
+            <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="events.activity.Description"
                 ng-maxlength="255" rows="3"></textarea>
             <p class="help-block">
                 （<span class="text-info">文本长度限制在255个字符内</span>）</p>
@@ -39,12 +45,12 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
-                ng-switch="isLoading">
+            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || events.isBusy"
+                ng-switch="events.isBusy">
                 <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存修改</span></button>
         </div>
     </div>
-    <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
-        {{alertMessage}}</div>
+    <div class="alert {{events.alertMessageColor}}" ng-show="events.alertMessage">
+        {{events.alertMessage}}</div>
     </form>
 </div>

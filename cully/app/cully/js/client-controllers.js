@@ -33,6 +33,7 @@ define(function (require) {
 
                     $scope.userData = {};
                     LocalStorageUtil.loadUserData(username, LocalStorageUtil.animation, LocalStorageUtil.animationDV, true, load);
+                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.pageSize, LocalStorageUtil.pageSizeDV, true, load);
                     LocalStorageUtil.loadUserData(username, LocalStorageUtil.caution, LocalStorageUtil.cautionDV, false, load);
                     LocalStorageUtil.loadUserData(username, LocalStorageUtil.cautionByMusic, LocalStorageUtil.cautionByMusicDV, false, load);
                     LocalStorageUtil.loadUserData(username, LocalStorageUtil.caution4Task, LocalStorageUtil.caution4TaskDV, false, load);
@@ -46,6 +47,7 @@ define(function (require) {
                 $scope.save = function () {
                     $scope.alertMessage = "";
                     set(LocalStorageUtil.animation);
+                    set(LocalStorageUtil.pageSize);
                     set(LocalStorageUtil.caution);
                     set(LocalStorageUtil.cautionByMusic);
                     set(LocalStorageUtil.caution4Task);

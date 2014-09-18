@@ -15,6 +15,8 @@ define(function (require) {
             return {
                 animation: 'animation',
                 animationDV: false,
+                pageSize: 'pageSize',
+                pageSizeDV: 10,
                 caution: 'caution',
                 cautionDV: 60,
                 cautionByMusic: 'cautionByMusic',
