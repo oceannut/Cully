@@ -34,25 +34,25 @@ define(function (require) {
                     }
                 }
             } ])
-        .controller('ActivityListCtrl', ['$scope', '$log', 'currentUser', 'dateUtil', 'ActivityListService', 'ActivityCommonUtil', 'categoryCache', 'activityFace', 'faceCache',
-            function ($scope, $log, currentUser, dateUtil, ActivityListService, ActivityCommonUtil, categoryCache, activityFace, faceCache) {
+        .controller('ActivityListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'dateUtil', 'ActivityListService', 'ActivityCommonUtil', 'categoryCache', 'activityFace', 'faceCache',
+            function ($scope, $log, $routeParams, currentUser, dateUtil, ActivityListService, ActivityCommonUtil, categoryCache, activityFace, faceCache) {
 
                 var pageSize = 20;
 
                 function loadActivityList() {
-                    $scope.activityList.length = 0;
-                    var startRowIndex = $scope.currentPage * pageSize;
-                    var category = $scope.queryModel.category;
-                    var date = $scope.queryModel.date;
+                    $scope.events.activityList.length = 0;
 
-                    if (category == '') {
+                    var category = $scope.faceModel.category;
+                    var date = $scope.faceModel.date;
+
+                    if (category === '') {
                         category = 'null';
                     }
                     var startDay, span;
-                    if (date != '') {
-                        if (date == '-30') {
-                            if ($scope.queryModel.month != '') {
-                                var array = $scope.queryModel.month.split('-');
+                    if (date !== '') {
+                        if (date === '-30') {
+                            if ($scope.faceModel.month !== '') {
+                                var array = $scope.faceModel.month.split('-');
                                 var d = new Date(array[0], parseInt(array[1]) - 1, 1);
                                 startDay = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
                                 span = dateUtil.getDaysofMonth(d.getMonth() + 1);
@@ -67,8 +67,9 @@ define(function (require) {
                         span = 'null';
                     }
                     if (startDay != undefined && span != undefined) {
-                        $scope.queryModel.alertMessage = "";
-                        $scope.queryModel.isLoading = true;
+                        $scope.events.alertMessage = "";
+                        $scope.events.isLoading = true;
+                        var startRowIndex = $scope.faceModel.currentPage * pageSize;
                         ActivityListService.query3({
                             'user': currentUser.getUsername(),
                             'category': category,
@@ -83,10 +84,10 @@ define(function (require) {
                                     interceptActivityList(result);
                                 }, function (error) {
                                     $log.error(error);
-                                    $scope.queryModel.alertMessage = "提示：活动列表加载失败";
+                                    $scope.events.alertMessage = "提示：活动列表加载失败";
                                 })
                                 .then(function () {
-                                    $scope.queryModel.isLoading = false;
+                                    $scope.events.isLoading = false;
                                 });
                     }
                 }
@@ -106,75 +107,85 @@ define(function (require) {
                                 if (now.getFullYear() === creationDate.getFullYear()
                                         && now.getMonth() === creationDate.getMonth()
                                         && now.getDate() === creationDate.getDate()) {
-                                    $scope.activityList.push({ 'isDate': true, 'date': '今日（' + creationDate.getDate() + '日）', 'labelColor': 'bg-red' });
+                                    $scope.events.activityList.push({ 'isDate': true, 'date': '今日（' + creationDate.getDate() + '日）', 'labelColor': 'bg-red' });
                                 } else if (now.getFullYear() === creationDate.getFullYear()
                                         && now.getMonth() === creationDate.getMonth()
                                         && (now.getDate() - 1) === creationDate.getDate()) {
-                                    $scope.activityList.push({ 'isDate': true, 'date': '昨日（' + creationDate.getDate() + '日）', 'labelColor': 'bg-green' });
+                                    $scope.events.activityList.push({ 'isDate': true, 'date': '昨日（' + creationDate.getDate() + '日）', 'labelColor': 'bg-green' });
                                 } else {
-                                    $scope.activityList.push({ 'isDate': true, 'date': d, 'labelColor': 'bg-maroon' });
+                                    $scope.events.activityList.push({ 'isDate': true, 'date': d, 'labelColor': 'bg-maroon' });
                                 }
                             }
                             item.isDate = false;
                             ActivityCommonUtil.buildIcon(item);
                             ActivityCommonUtil.buildCreatorName(item);
-                            $scope.activityList.push(item);
+                            $scope.events.activityList.push(item);
                         }
-                        $scope.nextBtnClass = '';
+                        $scope.faceModel.nextBtnClass = '';
                     } else {
-                        if ($scope.currentPage > 0) {
-                            $scope.currentPage--;
-                        } else {
-                            //$scope.activityList = [];
+                        if ($scope.faceModel.currentPage > 0) {
+                            $scope.faceModel.currentPage--;
+                            loadActivityList();
                         }
-                        $scope.nextBtnClass = 'disabled';
+                        $scope.faceModel.nextBtnClass = 'disabled';
                     }
-                    if ($scope.currentPage == 0) {
-                        $scope.prevBtnClass = 'disabled';
+                    if ($scope.faceModel.currentPage == 0) {
+                        $scope.faceModel.prevBtnClass = 'disabled';
                     } else {
-                        $scope.prevBtnClass = '';
+                        $scope.faceModel.prevBtnClass = '';
                     }
                 }
 
                 $scope.init = function () {
-                    $scope.activityList = [];
-                    $scope.queryModel = {
-                        'isLoading': false,
-                        'alertMessage': '',
-                        'category': '',
-                        'date': '',
-                        'month': ''
-                    }
-                    $scope.prevBtnClass = 'disabled';
-                    $scope.nextBtnClass = '';
-                    $scope.currentPage = -1;
+                    var reload = $routeParams.reload;
+                    console.log(reload);
+                    $scope.events = {
+                        isLoading: false,
+                        alertMessage: '',
+                        activityList: null
+                    };
+                    if (reload === 'true') {
+                        $scope.faceModel = {
+                            categoryList: null,
+                            category: '',
+                            date: '',
+                            month: '',
+                            currentPage: -1,
+                            prevBtnClass: 'disabled',
+                            nextBtnClass: ''
+                        };
+                        categoryCache.list('activity', function (result) {
+                            $scope.faceModel.categoryList = result;
+                        });
+                        $scope.events.activityList = [];
 
-                    categoryCache.list('activity', function (result) {
-                        $scope.categoryList = result;
-                    });
-                    $scope.query();
+                        $scope.query();
+                    } else {
+                        $scope.faceModel = faceCache.getModel(activityFace);
+                        $scope.events.activityList = faceCache.list(activityFace);
+                    }
                 }
 
                 $scope.query = function () {
-                    $scope.currentPage = 0;
+                    $scope.faceModel.currentPage = 0;
                     loadActivityList();
                 }
 
                 $scope.prevPage = function () {
-                    if ($scope.prevBtnClass == 'disabled') {
+                    if ($scope.faceModel.prevBtnClass == 'disabled') {
                         return;
                     }
-                    if ($scope.currentPage > 0) {
-                        $scope.currentPage--;
+                    if ($scope.faceModel.currentPage > 0) {
+                        $scope.faceModel.currentPage--;
                         loadActivityList();
                     }
                 }
 
                 $scope.nextPage = function () {
-                    if ($scope.nextBtnClass == 'disabled') {
+                    if ($scope.faceModel.nextBtnClass == 'disabled') {
                         return;
                     }
-                    $scope.currentPage++;
+                    $scope.faceModel.currentPage++;
                     loadActivityList();
                 }
 

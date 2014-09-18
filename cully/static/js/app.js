@@ -198,7 +198,7 @@ define(function (require) {
                             loginRequired: true
                         }
                     })
-                    .when('/project-summary/', {
+                    .when('/project-summary/:reload/', {
                         templateUrl: 'app/cully/partials/project-summary.htm',
                         controller: 'ProjectSummaryCtrl',
                         access: {

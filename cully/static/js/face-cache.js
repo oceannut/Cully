@@ -16,6 +16,7 @@ define(function (require) {
                     if (face === undefined || face === null) {
                         face = {
                             id: faceId,
+                            faceModel: null,
                             list: []
                         }
                         faces.push(face);
@@ -29,17 +30,8 @@ define(function (require) {
                     return face;
                 }
 
-                function sync(faceId, source) {
-                    var face = clear(faceId);
-                    _.each(source, function (item) {
-                        face.list.push(item);
-                    });
-                    $log.info(face.list.length + " objects of " + faceId + " cached");
-                }
-
-                function add(faceId, entity) {
+                function _add(face, entity) {
                     var added = false;
-                    var face = getFace(faceId);
                     var list = face.list;
                     if (entity !== undefined
                             && entity !== null
@@ -51,12 +43,54 @@ define(function (require) {
                     return added;
                 }
 
+                function setModel(faceId, model) {
+                    var face = clear(faceId);
+                    face.faceModel = model;
+                }
+
+                function getModel(faceId) {
+                    var face = clear(faceId);
+                    return face.faceModel;
+                }
+
+                function sync(faceId, source) {
+                    var face = clear(faceId);
+                    _.each(source, function (item) {
+                        face.list.push(item);
+                    });
+                    $log.info(face.list.length + " objects of " + faceId + " cached");
+                }
+
+                function add(faceId, entity) {
+                    var face = getFace(faceId);
+                    if (_.isArray(entity)) {
+                        var count = 0;
+                        _.each(entity, function (item) {
+                            if (_add(face, item)) {
+                                count++;
+                            }
+                        });
+                        return count;
+                    } else {
+                        return _add(face, entity);
+                    }
+                }
+
                 function remove(faceId, id) {
                     var removed = false;
-                    if (_.isNumber(id)) {
-                        var face = getFace(faceId);
-                        var list = face.list;
-                        var len = list.length;
+                    var face = getFace(faceId);
+                    var list = face.list;
+                    var len = list.length;
+                    if (_.isFunction(id)) {
+                        for (var i = 0; i < len; i++) {
+                            if (id(list[i])) {
+                                list.splice(i, 1);
+                                removed = true;
+                                break;
+                            }
+                        }
+                    }
+                    else if (_.isNumber(id)) {
                         for (var i = 0; i < len; i++) {
                             if (list[i].Id === id) {
                                 list.splice(i, 1);
@@ -69,11 +103,20 @@ define(function (require) {
                 }
 
                 function get(faceId, id) {
-                    if (!_.isNumber(id)) {
+                    var face = getFace(faceId);
+                    if (_.isFunction(id)) {
+                        return _.find(face.list, function (item) { return id(item); });
+                    }
+                    else if (_.isNumber(id)) {
+                        return _.find(face.list, function (item) { return item.Id === id; });
+                    } else {
                         return null;
                     }
+                }
+
+                function list(faceId) {
                     var face = getFace(faceId);
-                    return _.find(face.list, function (item) { return item.Id === id; });
+                    return face.list;
                 }
 
                 function info(faceId) {
@@ -82,10 +125,13 @@ define(function (require) {
                 }
 
                 return {
+                    setModel: setModel,
+                    getModel: getModel,
                     sync: sync,
                     add: add,
                     remove: remove,
                     get: get,
+                    list: list,
                     info: info
                 }
 

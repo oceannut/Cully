@@ -14,23 +14,23 @@
                     <button type="button" class="btn btn-default" onclick="window.print()" title="打印">
                         <i class="fa fa-print"></i>
                     </button>
-                    <button type="button" class="btn btn-default" ng-click="query()" title="刷新" ng-disabled="queryModel.isLoading">
+                    <button type="button" class="btn btn-default" ng-click="query()" title="刷新" ng-disabled="events.isLoading">
                         <i class="fa fa-refresh"></i>
                     </button>
                 </div>
                 <label class="control-label">
                     筛选:</label>
                 <div class="form-group">
-                    <select class="form-control input-sm" ng-model="queryModel.category" ng-change="query()"
-                        ng-disabled="queryModel.isLoading">
+                    <select class="form-control input-sm" ng-model="faceModel.category" ng-change="query()"
+                        ng-disabled="events.isLoading">
                         <option value="">所有类型</option>
-                        <option ng-repeat="item in categoryList | orderBy : 'Sequence'" value="{{item.Code}}">
+                        <option ng-repeat="item in faceModel.categoryList | orderBy : 'Sequence'" value="{{item.Code}}">
                             {{item.Name}}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <select class="form-control input-sm" ng-model="queryModel.date" ng-change="query()"
-                        ng-disabled="queryModel.isLoading">
+                    <select class="form-control input-sm" ng-model="faceModel.date" ng-change="query()"
+                        ng-disabled="events.isLoading">
                         <option value="">所有时间</option>
                         <option value="-30">按月查询</option>
                         <option value="0">今天</option>
@@ -39,22 +39,22 @@
                         <option value="-7">上周</option>
                     </select>
                 </div>
-                <div class="form-group" ng-show="queryModel.date==='-30'">
-                    <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()"
-                        ng-disabled="queryModel.isLoading" />
+                <div class="form-group" ng-show="faceModel.date==='-30'">
+                    <input type="month" class="form-control input-sm" ng-model="faceModel.month" ng-change="query()"
+                        ng-disabled="events.isLoading" />
                 </div>
                 </form>
             </div>
             <br />
-            <div ng-show="queryModel.isLoading" class="text-center">
+            <div ng-show="events.isLoading" class="text-center">
                 <i class="fa fa-spinner fa-spin fa-3x"></i>
                 <p class="text-red">
                     努力加载中，请等待...</p>
             </div>
-            <div class="alert alert-danger" ng-show="queryModel.alertMessage">
-                {{queryModel.alertMessage}}</div>
+            <div class="alert alert-danger" ng-show="events.alertMessage">
+                {{events.alertMessage}}</div>
             <ul class="timeline">
-                <li ng-repeat="item in activityList" ng-switch="item.isDate"><span ng-switch-when="true"
+                <li ng-repeat="item in events.activityList" ng-switch="item.isDate"><span ng-switch-when="true"
                     class="{{item.labelColor}} time-label">{{item.date}}</span> <i ng-switch-when="false"
                         class="{{item.icon}} bg-blue"></i>
                     <div ng-switch-when="false" class="timeline-item">
@@ -72,9 +72,9 @@
                     </div>
                 </li>
             </ul>
-            <ul class="pager hidden-print" ng-hide="queryModel.isLoading">
-                <li class="{{prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
-                <li class="{{nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
+            <ul class="pager hidden-print" ng-hide="events.isLoading">
+                <li class="{{faceModel.prevBtnClass}}"><a href="javascript:void(0);" ng-click="prevPage()">上一页</a></li>
+                <li class="{{faceModel.nextBtnClass}}"><a href="javascript:void(0);" ng-click="nextPage()">下一页</a></li>
             </ul>
         </div>
         <div class="col-sm-3 blog-sidebar">

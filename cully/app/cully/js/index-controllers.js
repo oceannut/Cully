@@ -20,7 +20,7 @@ define(function (require) {
                 };
                 var activityNav = {
                     "name": "活动/项目",
-                    "url": "/project-summary/",
+                    "url": "/project-summary/true/",
                     "active": ""
                 };
                 var calendarNav = {
