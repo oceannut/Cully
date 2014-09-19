@@ -326,7 +326,7 @@ define(function (require) {
                     var parentScope = $scope.$parent.$parent;
                     if ($scope.task.id == null) {
                         TaskService.save({ 'user': currentUser.getUsername(),
-                            'activityId': parentScope.activity.Id,
+                            'activityId': parentScope.events.activity.Id,
                             'content': $scope.task.content,
                             'staff': $scope.task.staff,
                             'appointedDay': $scope.task.appointedDay

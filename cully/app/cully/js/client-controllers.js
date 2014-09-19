@@ -3,15 +3,14 @@
 define(function (require) {
 
     require('ng');
-    //require('jquery');
-    //require('bootstrap');
+
     require('../../../static/js/events');
     require('../../auth/js/auth-models');
     require('./client-services');
 
     angular.module('client.controllers', ['events', 'auth.models', 'client.services'])
-        .controller('ClientSettingCtrl', ['$scope', '$location', '$log', '$anchorScroll', 'eventbus', 'currentUser', 'LocalStorageUtil',
-            function ($scope, $location, $log, $anchorScroll, eventbus, currentUser, LocalStorageUtil) {
+        .controller('ClientSettingCtrl', ['$scope', '$location', '$log', '$anchorScroll', 'eventbus', 'currentUser', 'localStorageUtil',
+            function ($scope, $location, $log, $anchorScroll, eventbus, currentUser, localStorageUtil) {
 
                 var username;
 
@@ -20,8 +19,7 @@ define(function (require) {
                 }
 
                 function set(name) {
-
-                    LocalStorageUtil.setUserData(username, name, $scope.userData[name]);
+                    localStorageUtil.setUserData(username, name, $scope.userData[name]);
                 }
 
                 $scope.init = function () {
@@ -32,11 +30,11 @@ define(function (require) {
                     username = currentUser.getUsername();
 
                     $scope.userData = {};
-                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.animation, LocalStorageUtil.animationDV, true, load);
-                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.pageSize, LocalStorageUtil.pageSizeDV, true, load);
-                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.caution, LocalStorageUtil.cautionDV, false, load);
-                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.cautionByMusic, LocalStorageUtil.cautionByMusicDV, false, load);
-                    LocalStorageUtil.loadUserData(username, LocalStorageUtil.caution4Task, LocalStorageUtil.caution4TaskDV, false, load);
+                    localStorageUtil.loadUserData(username, localStorageUtil.animation, localStorageUtil.animationDV, true, load);
+                    localStorageUtil.loadUserData(username, localStorageUtil.pageSize, localStorageUtil.pageSizeDV, true, load);
+                    localStorageUtil.loadUserData(username, localStorageUtil.caution, localStorageUtil.cautionDV, false, load);
+                    localStorageUtil.loadUserData(username, localStorageUtil.cautionByMusic, localStorageUtil.cautionByMusicDV, false, load);
+                    localStorageUtil.loadUserData(username, localStorageUtil.caution4Task, localStorageUtil.caution4TaskDV, false, load);
                 }
 
                 $scope.gotoAnchor = function (anchor) {
@@ -46,11 +44,11 @@ define(function (require) {
 
                 $scope.save = function () {
                     $scope.alertMessage = "";
-                    set(LocalStorageUtil.animation);
-                    set(LocalStorageUtil.pageSize);
-                    set(LocalStorageUtil.caution);
-                    set(LocalStorageUtil.cautionByMusic);
-                    set(LocalStorageUtil.caution4Task);
+                    set(localStorageUtil.animation);
+                    set(localStorageUtil.pageSize);
+                    set(localStorageUtil.caution);
+                    set(localStorageUtil.cautionByMusic);
+                    set(localStorageUtil.caution4Task);
                     eventbus.broadcast("clientUserDataChanged");
                     $scope.alertMessage = "提示：保存成功";
                 }

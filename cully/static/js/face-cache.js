@@ -92,25 +92,30 @@ define(function (require) {
                                 break;
                             }
                         }
+                        if (!update) {
+                            list.unshift(entity);
+                        }
                     }
                     return update;
                 }
 
                 function remove(faceId, id) {
-                    var removed = false;
+                    var removed;
                     var face = getFace(faceId);
                     var list = face.list;
-                    var len = list.length;
                     if (_.isFunction(id)) {
-                        for (var i = 0; i < len; i++) {
+                        removed = 0;
+                        for (var i = 0; i < list.length; i++) {
                             if (id(list[i])) {
                                 list.splice(i, 1);
-                                removed = true;
-                                break;
+                                removed++;
+                                i--;
                             }
                         }
                     }
                     else if (_.isNumber(id)) {
+                        removed = false;
+                        var len = list.length;
                         for (var i = 0; i < len; i++) {
                             if (list[i].Id === id) {
                                 list.splice(i, 1);
@@ -132,6 +137,17 @@ define(function (require) {
                     } else {
                         return null;
                     }
+                }
+
+                function query(faceId, predicate) {
+                    var face = getFace(faceId);
+                    if (!_.isFunction(predicate)) {
+                        $log.warning("The predicate shoud be the function");
+                        return [];
+                    }
+                    return _.filter(face.list, function (item) {
+                        return predicate(item);
+                    });
                 }
 
                 function init(faceId, source) {
@@ -166,6 +182,7 @@ define(function (require) {
                     replace: replace,
                     remove: remove,
                     get: get,
+                    query: query,
                     init: init,
                     pull: pull,
                     info: info

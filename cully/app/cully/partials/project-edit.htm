@@ -2,13 +2,14 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-edit"></i>&nbsp;编辑项目</span>
         <ul class="list-inline pull-right">
-            <li><a href="#/project-details/{{project.Id}}/"><i class="fa fa-level-up"></i>&nbsp;返回</a></li>
+            <li><a href="#/project-details/{{events.project.Id}}/"><i class="fa fa-level-up"></i>
+                &nbsp;返回</a></li>
         </ul>
     </div>
     <form class="form-horizontal css-form" role="form" name="form">
     <div class="form-group">
         <div class="col-sm-6">
-            <input type="text" class="form-control" placeholder="项目名" name="name" ng-model="project.Name"
+            <input type="text" class="form-control" placeholder="项目名" name="name" ng-model="events.project.Name"
                 ng-maxlength="32" required autofocus>
             <p class="help-block">
                 （<span class="text-info">文本长度限制在32个字符内</span>）</p>
@@ -17,7 +18,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <textarea class="form-control" placeholder="项目的概要介绍" name="desc" ng-model="project.Description"
+            <textarea class="form-control" placeholder="项目的概要介绍" name="desc" ng-model="events.project.Description"
                 ng-maxlength="255" rows="3"></textarea>
             <p class="help-block">
                 （<span class="text-info">文本长度限制在255个字符内</span>）</p>
@@ -26,12 +27,12 @@
     </div>
     <div class="form-group">
         <div class="col-sm-6">
-            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || isLoading"
-                ng-switch="isLoading">
+            <button class="btn btn-primary" ng-click="save()" ng-disabled="form.$invalid || events.isLoading"
+                ng-switch="events.isLoading">
                 <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存修改</span></button>
         </div>
     </div>
-    <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
-        {{alertMessage}}</div>
+    <div class="alert {{alertMessageColor}}" ng-show="events.alertMessage">
+        {{events.alertMessage}}</div>
     </form>
 </div>

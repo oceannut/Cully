@@ -29,9 +29,9 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
-            if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
+            if (!string.IsNullOrWhiteSpace(description) && description.Length > 255)
             {
-                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
+                throw new WebFaultException<string>("The length of description should be less than 255.", HttpStatusCode.BadRequest);
             }
             bool createSameNameActivityBool = false;
             try
@@ -90,9 +90,9 @@ namespace ThinkInBio.Cully.WSL.Impl
             {
                 throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
             }
-            if (!string.IsNullOrWhiteSpace(description) && description.Length > 120)
+            if (!string.IsNullOrWhiteSpace(description) && description.Length > 255)
             {
-                throw new WebFaultException<string>("The length of description should be less than 120.", HttpStatusCode.BadRequest);
+                throw new WebFaultException<string>("The length of description should be less than 255.", HttpStatusCode.BadRequest);
             }
             long idLong = 0;
             try

@@ -4,25 +4,28 @@
         <li class="active">项目</li>
     </ul>
     <div class="page-header">
-        <span class="lead" ng-switch="project.IsSolo"><i ng-switch-when="true" class="fa fa-cube">
-        </i><i ng-switch-when="false" class="fa fa-cubes"></i>&nbsp;{{project.Name}}</span>
+        <span class="lead" ng-switch="events.project.IsSolo"><i ng-switch-when="true" class="fa fa-cube">
+        </i><i ng-switch-when="false" class="fa fa-cubes"></i>&nbsp;{{events.project.Name}}</span>
         <ul class="list-inline pull-right hidden-print">
-            <li access="supvisor" ng-show="isEditable"><a href="#/project-edit/{{project.Id}}/">
+            <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/project-edit/{{events.project.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li access="supvisor" ng-show="isEditable"><a href="#/participant-list/{{project.Id}}/">
+            <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/participant-list/{{events.project.Id}}/">
                 <i class="fa fa-users"></i>&nbsp;成员</a></li>
-            <li><a href="#/calendar-list/{{project.Id}}/"><i class="fa fa-calendar-o"></i>&nbsp;日程</a></li>
-            <li><a href="#/log-list/{{project.Id}}/"><i class="fa fa-magic"></i>&nbsp;记事</a></li>
+            <li><a href="#/calendar-list/{{events.project.Id}}/"><i class="fa fa-calendar-o"></i>
+                &nbsp;日程</a></li>
+            <li><a href="#/log-list/{{events.project.Id}}/"><i class="fa fa-magic"></i>&nbsp;记事</a></li>
+            <li access="user,supvisor"><a href="#/project-summary/false/"><i class="fa fa-level-up">
+            </i>&nbsp;返回</a></li>
         </ul>
     </div>
-    <div class="alert alert-danger" ng-show="alertMessage">
-        {{alertMessage}}</div>
+    <div class="alert alert-danger" ng-show="events.alertMessage">
+        {{events.alertMessage}}</div>
     <blockquote>
         <p>
-            {{project.Description}}</p>
-        <footer> &nbsp; <a>{{project.creatorName}}</a>&nbsp;于&nbsp;{{project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建</footer>
+            {{events.project.Description}}</p>
+        <footer> &nbsp; <a>{{events.project.creatorName}}</a>&nbsp;于&nbsp;{{events.project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建</footer>
     </blockquote>
     <div>
         <ul class="list-inline pull-right hidden-print">
@@ -34,7 +37,7 @@
     </div>
     <div class="clearfix">
     </div>
-    <div class="well well-sm" style="display: {{addActivityPanelDisplay}};">
+    <div class="well well-sm" ng-show="faceModel.addActivityPanelVisible">
         <form class="form-horizontal css-form" role="form" name="form">
         <div class="form-group">
             <label class="col-sm-1 control-label" style="margin-top: 24px;">
@@ -42,7 +45,7 @@
             <div class="col-sm-5">
                 <div class="bs-glyphicons">
                     <ul class="bs-glyphicons-list">
-                        <li ng-repeat="item in categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)"
+                        <li ng-repeat="item in faceModel.categoryList | orderBy : 'Sequence'" ng-click="selectCategory(item)"
                             class="{{item.active}}"><span class="{{item.Icon}} fa-2x"></span><span class="glyphicon-class">
                                 {{item.Name}}</span></li>
                     </ul>
@@ -51,7 +54,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="activity.name"
+                <input type="text" class="form-control" placeholder="活动名" name="name" ng-model="faceModel.name"
                     ng-maxlength="32" required autofocus>
                 <p class="help-block">
                     （<span class="text-info">文本长度限制在32个字符内</span>）</p>
@@ -60,7 +63,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="activity.description"
+                <textarea class="form-control" placeholder="活动的概要介绍" name="desc" ng-model="faceModel.description"
                     ng-maxlength="255" rows="3"></textarea>
                 <p class="help-block">
                     （<span class="text-info">文本长度限制在255个字符内</span>）</p>
@@ -69,8 +72,8 @@
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                <button class="btn btn-primary" ng-click="saveActivity()" ng-disabled="form.$invalid || isLoading"
-                    ng-switch="isLoading">
+                <button class="btn btn-primary" ng-click="saveActivity()" ng-disabled="form.$invalid || events.isBusy"
+                    ng-switch="events.isBusy">
                     <span ng-switch-when="true">正在创建中...</span> <span ng-switch-when="false">创建活动</span></button>&nbsp;&nbsp;
                 <a href="javascript:void(0)" ng-click="cancel()">取消</a>
             </div>
@@ -78,15 +81,12 @@
         </form>
     </div>
     <ol class="list-group">
-        <li class="list-group-item" ng-repeat="activity in activityList">
-            <mark class="pull-right" ng-click="toggleDescVisible(activity)">[活动{{activity.index}}]&nbsp;<i class="fa" ng-class="{true:'fa-angle-double-up',false:'fa-angle-double-down'}[activity.isDescVisible]"></i></mark>
-            <a href="#/activity-details/{{activity.Id}}/"><i class="{{activity.icon}} fa-fw"></i>&nbsp;
-                {{activity.Name}}</a>
-            <div class="clearfix" ng-show="activity.isDescVisible">
+        <li class="list-group-item" ng-repeat="item in events.activityList"><span class="pull-right">
+            {{item.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span> <a href="#/activity-details/{{item.Id}}/">
+                <i class="{{item.icon}} fa-fw"></i>&nbsp; {{item.Name}}</a>
+            <div class="clearfix">
                 <p>
-                    {{activity.Description}}</p>
-                <!--<div ng-include="'app/cully/partials/task-list.htm'">
-                </div>-->
+                    {{item.Description}}</p>
             </div>
         </li>
     </ol>

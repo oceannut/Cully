@@ -3,53 +3,28 @@
 define(function (require) {
 
     require('ng');
-    require('underscore');
+
     require('../../../static/js/filters');
     require('../../../static/js/utils');
     require('../../../static/js/face-cache');
-    require('./project-services');
-    require('./project-cache');
-    require('./client-services');
     require('../../auth/js/auth-models');
     require('../../auth/js/auth-directives');
-    require('../../common/js/common-cache');
     require('../../common/js/common-utils');
+    require('./client-services');
+    require('./project-services');
+    require('./cully-constants');
 
     require('../../../lib/bs-timeline/css/timeline.css');
     require('../../../static/css/icon.css');
 
-    angular.module('activity.controllers', ['filters', 'utils', 'project.services', 'auth.models', 'auth.directives', 'common.cache',
-                                            'project.cache', 'face.cache', 'common.utils', 'client.services'])
-        .factory('ActivityCommonUtil', ['categoryCache', 'userCache',
-            function (categoryCache, userCache) {
-                function buildIcon(entity) {
-                    entity.icon = 'fa fa-tasks';
-                    categoryCache.get('activity', entity.Category, function (e) {
-                        entity.icon = e.Icon;
-                    });
-                }
-                function buildCreatorName(entity) {
-                    userCache.get(entity.Creator, function (e) {
-                        entity.creatorName = (e == null) ? entity.Creator : e.Name;
-                    });
-                }
-                function buildActivity(entity) {
-                    entity.isDate = false;
-                    buildIcon(entity);
-                    buildCreatorName(entity);
-                }
-                return {
-                    buildIcon: buildIcon,
-                    buildCreatorName: buildCreatorName,
-                    buildActivity: buildActivity
-                }
-            } ])
-        .controller('ActivityListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'dateUtil', 'ActivityListService',
-                                            'ActivityCommonUtil', 'categoryCache', 'activityFace', 'faceCache', 'LocalStorageUtil',
-            function ($scope, $log, $routeParams, currentUser, dateUtil, ActivityListService,
-                        ActivityCommonUtil, categoryCache, activityFace, faceCache, LocalStorageUtil) {
+    angular.module('activity.controllers', ['filters', 'utils', 'auth.models', 'auth.directives', 'face.cache',
+                                            'common.utils', 'client.services', 'project.services', 'cully.constants'])
+        .controller('ActivityListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'dateUtil', 'commonUtil',
+                                            'activityFace', 'faceCache', 'localStorageUtil', 'ActivityListService',
+            function ($scope, $log, $routeParams, currentUser, dateUtil, commonUtil,
+                        activityFace, faceCache, localStorageUtil, ActivityListService) {
 
-                var pageSize = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.pageSize, LocalStorageUtil.pageSizeDV, true);
+                var pageSize = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.pageSize, localStorageUtil.pageSizeDV, true);
                 var faceModel = {
                     categoryList: null,
                     category: '',
@@ -143,7 +118,9 @@ define(function (require) {
                                     $scope.events.activityList.push({ 'isDate': true, 'date': d, 'labelColor': 'bg-maroon' });
                                 }
                             }
-                            ActivityCommonUtil.buildActivity(item);
+                            item.isDate = false;
+                            commonUtil.buildCategoryIcon(item, 'activity', 'fa fa-bug');
+                            commonUtil.buildCreatorName(item);
                             $scope.events.activityList.push(item);
                         }
                         $scope.faceModel.nextBtnClass = '';
@@ -171,9 +148,7 @@ define(function (require) {
                     };
                     if (reload === 'true') {
                         $scope.faceModel = faceModel;
-                        categoryCache.list('activity', function (result) {
-                            $scope.faceModel.categoryList = result;
-                        });
+                        commonUtil.bindCategoryList($scope.faceModel.categoryList, 'activity');
 
                         $scope.query();
                     } else {
@@ -209,10 +184,10 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityAddCtrl', ['$scope', '$location', '$log', 'currentUser', 'ActivityService', 'ActivityCommonUtil', 'userCache', 'categoryCache',
-                                        'listUtil', 'CategoryHelper', 'activityFace', 'faceCache',
-            function ($scope, $location, $log, currentUser, ActivityService, ActivityCommonUtil, userCache, categoryCache,
-                        listUtil, CategoryHelper, activityFace, faceCache) {
+        .controller('ActivityAddCtrl', ['$scope', '$location', '$log', 'listUtil', 'currentUser', 'commonUtil',
+                                        'activityFace', 'faceCache', 'ActivityService',
+            function ($scope, $location, $log, listUtil, currentUser, commonUtil,
+                        activityFace, faceCache, ActivityService) {
 
                 $scope.init = function () {
                     $scope.events = {
@@ -225,21 +200,14 @@ define(function (require) {
                         participants: [],
                         allParticipantChecked: false
                     };
-                    userCache.list(function (result) {
-                        listUtil.shallowCopyList($scope.faceModel.users, result, false, function (e) {
-                            return (e.Username !== currentUser.getUsername() & e.Roles.indexOf('user') > -1);
-                        });
-                    });
-                    categoryCache.list('activity', function (result) {
-                        listUtil.shallowCopyList($scope.faceModel.categoryList, result, false);
-                        CategoryHelper.selectCategory($scope.faceModel.categoryList, 'normal', function (e) {
-                            $scope.faceModel.category = e;
-                        });
+                    commonUtil.bindUserList($scope.faceModel.users);
+                    commonUtil.bindCategoryList($scope.faceModel.categoryList, 'activity', 'normal', function (e) {
+                        $scope.faceModel.category = e;
                     });
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    CategoryHelper.selectCategory($scope.faceModel.categoryList, selectedCategory.Code, function (e) {
+                    commonUtil.selectCategory($scope.faceModel.categoryList, selectedCategory.Code, function (e) {
                         $scope.faceModel.category = e;
                     });
                 }
@@ -277,7 +245,9 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                ActivityCommonUtil.buildActivity(result);
+                                result.isDate = false;
+                                commonUtil.buildCategoryIcon(result, 'activity');
+                                commonUtil.buildCreatorName(result);
                                 faceCache.insertFirst(activityFace, result);
                                 $location.path('/activity-details/' + result.Id + '/');
                             }, function (error) {
@@ -291,10 +261,10 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityEditCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ActivityCommonUtil', 'ActivityService', 'categoryCache', 'userCache',
-                                            'listUtil', 'CategoryHelper', 'activityFace', 'faceCache',
-            function ($scope, $log, $routeParams, currentUser, ActivityCommonUtil, ActivityService, categoryCache, userCache,
-                        listUtil, CategoryHelper, activityFace, faceCache) {
+        .controller('ActivityEditCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'commonUtil',
+                                            'activityFace', 'faceCache', 'ActivityService',
+            function ($scope, $log, $routeParams, currentUser, commonUtil,
+                         activityFace, faceCache, ActivityService) {
 
                 $scope.init = function () {
                     $scope.events = {
@@ -305,11 +275,8 @@ define(function (require) {
                     };
                     $scope.faceModel = {
                         categoryList: []
-
                     };
-                    categoryCache.list('activity', function (result) {
-                        listUtil.shallowCopyList($scope.faceModel.categoryList, result, false);
-                    });
+                    commonUtil.bindCategoryList($scope.faceModel.categoryList, 'activity');
 
                     $scope.events.alertMessage = "";
                     $scope.events.isLoading = true;
@@ -320,7 +287,7 @@ define(function (require) {
                     .$promise
                         .then(function (result) {
                             $scope.events.activity = result;
-                            CategoryHelper.selectCategory($scope.faceModel.categoryList, $scope.events.activity.Category, function (e) {
+                            commonUtil.selectCategory($scope.faceModel.categoryList, $scope.events.activity.Category, function (e) {
                                 $scope.faceModel.category = e;
                             });
                         }, function (error) {
@@ -333,7 +300,7 @@ define(function (require) {
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
+                    commonUtil.selectCategory($scope.faceModel.categoryList, selectedCategory.Code, function (e) {
                         $scope.faceModel.category = e;
                     });
                 }
@@ -350,7 +317,9 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                ActivityCommonUtil.buildActivity(result);
+                                result.isDate = false;
+                                commonUtil.buildCategoryIcon(result, 'activity');
+                                commonUtil.buildCreatorName(result);
                                 faceCache.replace(activityFace, result);
                                 $scope.events.activity = result;
                                 $scope.events.alertMessageColor = 'alert-success';
@@ -367,8 +336,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('ActivityDetailsCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ActivityCommonUtil', 'ActivityService', 'activityFace', 'faceCache',
-            function ($scope, $log, $routeParams, currentUser, ActivityCommonUtil, ActivityService, activityFace, faceCache) {
+        .controller('ActivityDetailsCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'commonUtil', 'ActivityService', 'activityFace', 'faceCache',
+            function ($scope, $log, $routeParams, currentUser, commonUtil, ActivityService, activityFace, faceCache) {
 
                 $scope.init = function () {
                     $scope.faceModel = {
@@ -389,7 +358,9 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                ActivityCommonUtil.buildActivity(result);
+                                result.isDate = false;
+                                commonUtil.buildCategoryIcon(result, 'activity');
+                                commonUtil.buildCreatorName(result);
                                 faceCache.insertFirst(activityFace, result);
                                 $scope.events.activity = result;
                                 $scope.faceModel.taskListPage = 'app/cully/partials/task-list.htm';

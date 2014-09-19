@@ -6,7 +6,7 @@ define(function (require) {
     require('ng-local-storage');
 
     angular.module('client.services', ['LocalStorageModule'])
-        .factory("LocalStorageUtil", ['localStorageService', function (localStorageService) {
+        .factory("localStorageUtil", ['localStorageService', function (localStorageService) {
 
             function get(username, key) {
                 return localStorageService.get(username + '.' + key);

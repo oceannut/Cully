@@ -3,6 +3,7 @@
 define(function (require) {
 
     require('ng');
+
     require('../../../static/js/configs');
     require('../../../static/js/events');
     require('../../common/js/biz-notification-services');
@@ -10,8 +11,8 @@ define(function (require) {
     require('./client-services');
 
     angular.module('index.controllers', ['configs', 'events', 'auth.models', 'bizNotification.services', 'client.services'])
-        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName', 'UntreatedBizNotificationListService', 'LocalStorageUtil',
-            function ($scope, $location, $log, $interval, currentUser, eventbus, appName, UntreatedBizNotificationListService, LocalStorageUtil) {
+        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName', 'UntreatedBizNotificationListService', 'localStorageUtil',
+            function ($scope, $location, $log, $interval, currentUser, eventbus, appName, UntreatedBizNotificationListService, localStorageUtil) {
 
                 var homeNav = {
                     "name": "首页",
@@ -45,7 +46,7 @@ define(function (require) {
                     UntreatedBizNotificationListService.count(currentUser.getUsername())
                                 .then(function (response) {
                                     $scope.untreatedNotificationCount = response.data;
-                                    var cautionByMusic = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.cautionByMusic, LocalStorageUtil.cautionByMusicDV, true);
+                                    var cautionByMusic = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.cautionByMusic, localStorageUtil.cautionByMusicDV, true);
                                     if (cautionByMusic && $scope.untreatedNotificationCount > 0) {
                                         var audio = document.getElementById("untreatedNotificationAudio");
                                         if (audio !== undefined && audio !== null) {
@@ -78,7 +79,7 @@ define(function (require) {
                         }
 
                         loadUntreatedNotificationCount();
-                        cautionInterval = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.caution, LocalStorageUtil.cautionDV, true);
+                        cautionInterval = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.caution, localStorageUtil.cautionDV, true);
                         if (cautionInterval > 0) {
                             untreatedBizNotificationCountTimer = $interval(function () {
                                 loadUntreatedNotificationCount();
@@ -102,7 +103,7 @@ define(function (require) {
                         $scope.untreatedNotificationCount = data;
                     });
                     eventbus.subscribe("clientUserDataChanged", function (e, data) {
-                        var interval = LocalStorageUtil.getUserData(currentUser.getUsername(), LocalStorageUtil.caution, LocalStorageUtil.cautionDV, true);
+                        var interval = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.caution, localStorageUtil.cautionDV, true);
                         if (cautionInterval != interval && untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {
                             cautionInterval = interval;
                             $interval.cancel(untreatedBizNotificationCountTimer);
