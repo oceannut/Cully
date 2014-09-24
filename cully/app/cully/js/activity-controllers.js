@@ -3,6 +3,7 @@
 define(function (require) {
 
     require('ng');
+    require('underscore');
 
     require('../../../static/js/filters');
     require('../../../static/js/utils');
@@ -26,7 +27,7 @@ define(function (require) {
 
                 var pageSize = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.pageSize, localStorageUtil.pageSizeDV, true);
                 var faceModel = {
-                    categoryList: null,
+                    categoryList: [],
                     category: '',
                     date: '',
                     month: '',
@@ -152,9 +153,11 @@ define(function (require) {
 
                         $scope.query();
                     } else {
-                        $scope.faceModel = faceCache.getModel(activityFace);
-                        if ($scope.faceModel === null) {
+                        var fm = faceCache.getModel(activityFace);
+                        if (fm === undefined || fm === null) {
                             $scope.faceModel = faceModel;
+                        } else {
+                            $scope.faceModel = fm;
                         }
                         faceCache.pull(activityFace, $scope.events.activityList);
                     }

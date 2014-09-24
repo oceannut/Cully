@@ -2,22 +2,24 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;活动/项目</span>
         <ul class="list-inline pull-right hidden-print">
-            <li access="supvisor"><a href="#/activity-add/"><i class="fa fa-share-alt"></i>&nbsp;创建新活动</a></li>
-            <li access="supvisor"><a href="#/project-add/"><i class="fa fa-cube"></i>&nbsp;创建新项目</a></li>
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+            <li access="supvisor"><a href="#/activity-add/"><i class="fa fa-share-alt"></i>&nbsp;创建活动</a></li>
+            <li access="supvisor"><a href="#/project-add/"><i class="fa fa-cube"></i>&nbsp;创建项目</a></li>
         </ul>
     </div>
     <div class="row">
         <div class="col-sm-9" ng-controller="ActivityListCtrl" ng-init="init()">
             <div style="margin: 0 0 0 48px;" class="hidden-print">
                 <form class="form-inline" role="form">
-                <div class="btn-group btn-group-sm pull-right" style="margin: 0 8px 0 0;">
-                    <button type="button" class="btn btn-default" onclick="window.print()" title="打印">
-                        <i class="fa fa-print"></i>
-                    </button>
-                    <button type="button" class="btn btn-default" ng-click="query()" title="刷新" ng-disabled="events.isLoading">
-                        <i class="fa fa-refresh"></i>
-                    </button>
-                </div>
+                <ul class="list-inline pull-right hidden-print" style="margin: 0 8px 0 0;">
+                    <li>
+                        <button type="button" class="btn btn-default btn-xs btn-link" ng-click="query()"
+                            title="刷新" ng-disabled="events.isLoading">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                    </li>
+                </ul>
                 <label class="control-label">
                     筛选:</label>
                 <div class="form-group">
@@ -82,6 +84,14 @@
         <div class="col-sm-3 blog-sidebar">
             <div class="sidebar-module sidebar-module-inset" ng-controller="ProjectListCtrl"
                 ng-init="init()">
+                <ul class="list-inline pull-right hidden-print">
+                    <li>
+                        <button type="button" class="btn btn-default btn-xs btn-link" ng-click="query()"
+                            title="刷新" ng-disabled="events.isLoading">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                    </li>
+                </ul>
                 <h4>
                     最新项目</h4>
                 <form class="css-form hidden-print" role="form">
