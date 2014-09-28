@@ -11,8 +11,9 @@ define(function (require) {
     require('../../auth/js/auth-models');
     require('../../auth/js/auth-directives');
     require('../../common/js/common-cache');
+    require('../../common/js/common-utils');
 
-    angular.module('log.controllers', ['textAngular', 'filters', 'utils', 'log.services', 'auth.models', 'auth.directives', 'common.cache'])
+    angular.module('log.controllers', ['textAngular', 'filters', 'utils', 'log.services', 'auth.models', 'auth.directives', 'common.cache', 'common.utils'])
         .value('logCache', { 'logList': [] })
         .controller('LogSummaryCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'stringUtil',
             'LogListService', 'userCache', 'categoryCache', 'logCache',
@@ -79,7 +80,7 @@ define(function (require) {
                     }
 
                     $scope.alertMessageVisible = 'hidden';
-                    LogListService.query({ 'user': currentUser.getUsername(),
+                    LogListService.query({
                         'date': dateInput,
                         'span': spanInput,
                         'creator': staff,
@@ -87,14 +88,14 @@ define(function (require) {
                         'start': startRowIndex,
                         'count': pageSize
                     })
-                        .$promise
-                            .then(function (result) {
-                                interceptLogList(result);
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：项目列表加载失败";
-                            });
+                    .$promise
+                        .then(function (result) {
+                            interceptLogList(result);
+                        }, function (error) {
+                            $log.error(error);
+                            $scope.alertMessageVisible = 'show';
+                            $scope.alertMessage = "提示：项目列表加载失败";
+                        });
                 }
 
                 function interceptLogList(result) {
@@ -200,23 +201,21 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogAddCtrl', ['$scope', '$routeParams', '$location', '$log', 'currentUser', 'LogService', 'categoryCache', 'CategoryHelper',
-            function ($scope, $routeParams, $location, $log, currentUser, LogService, categoryCache, CategoryHelper) {
+        .controller('LogAddCtrl', ['$scope', '$routeParams', '$location', '$log', 'currentUser', 'LogService', 'commonUtil',
+            function ($scope, $routeParams, $location, $log, currentUser, LogService, commonUtil) {
 
                 $scope.init = function () {
+                    $scope.categoryList = [];
                     $scope.log = { projectId: $routeParams.projectId };
-                    categoryCache.list('log', function (e) {
-                        $scope.categoryList = e;
-                        CategoryHelper.selectCategory($scope.categoryList, 'dairy', function (ee) {
-                            $scope.category = ee;
-                        });
+                    commonUtil.bindCategoryList($scope.categoryList, 'log', 'dairy', function (e) {
+                        $scope.category = e;
                     });
                     $scope.isLoading = false;
                     $scope.alertMessage = "";
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
+                    commonUtil.selectCategory($scope.faceModel.categoryList, selectedCategory.Code, function (e) {
                         $scope.category = e;
                     });
                 }
@@ -231,7 +230,8 @@ define(function (require) {
                         return;
                     }
                     $scope.isLoading = true;
-                    LogService.save({ 'user': currentUser.getUsername(),
+                    LogService.save({
+                        'user': currentUser.getUsername(),
                         'projectId': $scope.log.projectId,
                         'title': $scope.log.title,
                         'content': $scope.log.content,
@@ -254,11 +254,11 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogEditCtrl', ['$scope', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'categoryCache', 'CategoryHelper',
-            function ($scope, $routeParams, currentUser, dateUtil, LogService, logCache, categoryCache, CategoryHelper) {
+        .controller('LogEditCtrl', ['$scope', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'commonUtil',
+            function ($scope, $routeParams, currentUser, dateUtil, LogService, logCache, commonUtil) {
 
                 function renderLog(editLog) {
-                    CategoryHelper.selectCategory($scope.categoryList, editLog.Category, function (e) {
+                    commonUtil.selectCategory($scope.categoryList, editLog.Category, function (e) {
                         $scope.category = e;
                     });
                     $scope.log = { 'id': editLog.Id, 'title': editLog.Title, 'content': editLog.Content };
@@ -278,38 +278,40 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
+                    $scope.categoryList = [];
                     $scope.isLoading = false;
                     $scope.alertMessageVisible = 'hidden';
-                    categoryCache.list('log', function (e) {
-                        $scope.categoryList = e;
+                    commonUtil.bindCategoryList($scope.categoryList, 'log');
 
-                        var editLog = null;
-                        if (logCache.logList != null) {
-                            for (var i in logCache.logList) {
-                                if ($routeParams.id == logCache.logList[i].Id) {
-                                    editLog = logCache.logList[i];
-                                    break;
-                                }
+                    var editLog = null;
+                    if (logCache.logList != null) {
+                        for (var i in logCache.logList) {
+                            if ($routeParams.id == logCache.logList[i].Id) {
+                                editLog = logCache.logList[i];
+                                break;
                             }
                         }
-                        if (editLog != null) {
-                            renderLog(editLog);
-                        }
+                    }
+                    commonUtil.selectCategory($scope.categoryList, editLog.Category, function (e) {
+                        $scope.category = e;
                     });
+                    if (editLog != null) {
+                        renderLog(editLog);
+                    }
+
                 }
 
                 $scope.selectCategory = function (selectedCategory) {
-                    CategoryHelper.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
+                    commonUtil.selectCategory($scope.categoryList, selectedCategory.Code, function (e) {
                         $scope.category = e;
                     });
                 }
 
                 $scope.save = function () {
-                    if ($scope.log.startTime != undefined && $scope.log.startTime != ''
-                        && $scope.log.content != undefined && $scope.log.content != '') {
+                    if ($scope.log.content != undefined && $scope.log.content != '') {
                         $scope.isLoading = true;
                         $scope.alertMessageVisible = 'hidden';
-                        LogService.update({ 'user': currentUser.getUsername(),
+                        LogService.update({
                             'id': $scope.log.id,
                             'title': $scope.log.title,
                             'content': $scope.log.content,
@@ -318,37 +320,37 @@ define(function (require) {
                             'tag2': $scope.log.tag2,
                             'tag3': $scope.log.tag3
                         })
-                            .$promise
-                                .then(function (result) {
-                                    if (logCache.logList != null) {
-                                        for (var i in logCache.logList) {
-                                            if ($routeParams.id == logCache.logList[i].Id) {
-                                                logCache.logList[i] = result;
-                                                break;
-                                            }
+                        .$promise
+                            .then(function (result) {
+                                if (logCache.logList != null) {
+                                    for (var i in logCache.logList) {
+                                        if ($routeParams.id == logCache.logList[i].Id) {
+                                            logCache.logList[i] = result;
+                                            break;
                                         }
                                     }
-                                    renderLog(result);
-                                    $scope.alertMessageVisible = 'show';
-                                    $scope.alertMessageColor = 'alert-success';
-                                    $scope.alertMessage = "提示：修改记录成功";
-                                }, function (error) {
-                                    $scope.alertMessageVisible = 'show';
-                                    $scope.alertMessageColor = 'alert-danger';
-                                    $scope.alertMessage = "提示：修改记录失败";
-                                    $log.error(error);
-                                })
-                                .then(function () {
-                                    $scope.isLoading = false;
-                                });
+                                }
+                                renderLog(result);
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-success';
+                                $scope.alertMessage = "提示：修改记录成功";
+                            }, function (error) {
+                                $scope.alertMessageVisible = 'show';
+                                $scope.alertMessageColor = 'alert-danger';
+                                $scope.alertMessage = "提示：修改记录失败";
+                                $log.error(error);
+                            })
+                            .then(function () {
+                                $scope.isLoading = false;
+                            });
                     }
                 }
 
             } ])
         .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'LogService', 'CommentService',
-                    'CommentListService', 'Update4CommentLogService', 'userCache', 'logCache',
+                    'CommentListService', 'CommentOfLogService', 'userCache', 'logCache',
             function ($scope, $location, $routeParams, $log, currentUser, LogService, CommentService,
-                    CommentListService, Update4CommentLogService, userCache, logCache) {
+                    CommentListService, CommentOfLogService, userCache, logCache) {
 
                 function render(comment, i) {
                     comment.index = (parseInt(i) + 1);
@@ -379,28 +381,28 @@ define(function (require) {
                         $scope.alertMessage = "提示：工作记录已被移除";
                         return;
                     }
-                    CommentListService.query({ 'user': currentUser.getUsername(),
+                    CommentListService.query({
                         'commentTarget': 'log',
                         'targetId': $scope.log.Id
                     })
-                        .$promise
-                            .then(function (result) {
-                                $scope.commentList = result;
-                                for (var i in $scope.commentList) {
-                                    var comment = $scope.commentList[i];
-                                    render(comment, i);
-                                }
-                            }, function (error) {
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：加载评论列表失败";
-                            });
+                    .$promise
+                        .then(function (result) {
+                            $scope.commentList = result;
+                            for (var i in $scope.commentList) {
+                                var comment = $scope.commentList[i];
+                                render(comment, i);
+                            }
+                        }, function (error) {
+                            $log.error(error);
+                            $scope.alertMessageVisible = 'show';
+                            $scope.alertMessage = "提示：加载评论列表失败";
+                        });
                 }
 
                 $scope.saveComment = function () {
                     if ($scope.comment.content != undefined && $scope.comment.content != '') {
                         if ($scope.comment.id != undefined && $scope.comment.id != null) {
-                            CommentService.update({ 'user': currentUser.getUsername(),
+                            CommentService.update({
                                 'id': $scope.comment.id,
                                 'content': $scope.comment.content
                             })
@@ -419,8 +421,9 @@ define(function (require) {
                                     $scope.alertMessage = "提示：修改评论失败";
                                 });
                         } else {
-                            Update4CommentLogService.save({ 'user': currentUser.getUsername(),
+                            CommentOfLogService.save({
                                 'id': $scope.log.Id,
+                                'user': currentUser.getUsername(),
                                 'content': $scope.comment.content
                             })
                             .$promise
@@ -454,26 +457,26 @@ define(function (require) {
                 }
 
                 $scope.deleteComment = function () {
-                    Update4CommentLogService.remove({ 'user': currentUser.getUsername(),
+                    CommentOfLogService.remove({
                         'id': $scope.log.Id,
                         'commentId': $scope.comment.id
                     })
-                        .$promise
-                            .then(function (result) {
-                                $('#removeCommentDialog').modal('hide');
-                                for (var i in $scope.commentList) {
-                                    if ($scope.comment.id == $scope.commentList[i].Id) {
-                                        $scope.commentList.splice(i, 1);
-                                        break;
-                                    }
+                    .$promise
+                        .then(function (result) {
+                            $('#removeCommentDialog').modal('hide');
+                            for (var i in $scope.commentList) {
+                                if ($scope.comment.id == $scope.commentList[i].Id) {
+                                    $scope.commentList.splice(i, 1);
+                                    break;
                                 }
-                                $scope.clearComment();
-                            }, function (error) {
-                                $('#removeCommentDialog').modal('hide');
-                                $log.error(error);
-                                $scope.alertMessageVisible = 'show';
-                                $scope.alertMessage = "提示：删除评论失败";
-                            });
+                            }
+                            $scope.clearComment();
+                        }, function (error) {
+                            $('#removeCommentDialog').modal('hide');
+                            $log.error(error);
+                            $scope.alertMessageVisible = 'show';
+                            $scope.alertMessage = "提示：删除评论失败";
+                        });
                 }
 
             } ]);

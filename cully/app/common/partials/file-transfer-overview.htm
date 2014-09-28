@@ -1,0 +1,143 @@
+﻿<div class="story container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="uploadDialog" tabindex="-1" role="dialog" aria-labelledby="uploadDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="uploadDialogLabel">
+                        <i class="fa fa-upload"></i>&nbsp;文件上传对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- The fileinput-button span is used to style the file input field as button -->
+                    <span class="btn btn-primary fileinput-button"><i class="fa fa-plus"></i>&nbsp;选取文件
+                        <!-- The file input field used as target for the file upload widget -->
+                        <input id="fileupload" type="file" name="files[]" multiple>
+                    </span>
+                    <br />
+                    <br />
+                    <!-- The global progress bar -->
+                    <div id="progress" class="progress" ng-show="events.isBusy">
+                        <div class="progress-bar progress-bar-success">
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="file in events.fileList"><i class="fa fa-trash-o pull-right"
+                            ng-click="removeFile(file)"></i>
+                            <h4 class="list-group-item-heading">
+                                <a href="{{file.Path}}" target="_blank">{{file.Name}}&nbsp;({{file.fileSize}}&nbsp;{{file.fileSizeUnit}})</a></h4>
+                            <p class="list-group-item-text" ng-show="file.Error" style="color: Red;">
+                                上传失败：{{file.Error}}</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <div class="alert alert-danger" ng-show="events.alertMessage4upload">
+                        {{events.alertMessage4upload}}</div>
+                    <button type="button" class="btn btn-primary" ng-click="saveUpload()" ng-disabled="events.fileList.length===0"
+                        ng-switch="events.isBusy">
+                        <span ng-switch-when="true">正在提交上传...</span><span ng-switch-when="false">提交</span></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="removeDialog" tabindex="-1" role="dialog" aria-labelledby="removeDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="removeDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;文件删除对话框</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="lead text-danger">
+                        确定要删除这个文件吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="removeLog()">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-bookmark-o"></i>&nbsp;文件上传</span>
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
+            <li><a data-toggle="modal" data-target="#uploadDialog" ng-hide="events.isLoading"><i
+                class="fa fa-plus"></i>&nbsp;上传文件</a></li>
+        </ul>
+    </div>
+    <form class="form-inline hidden-print" role="form">
+    <ul class="list-inline pull-right hidden-print" style="margin: 0 8px 0 0;">
+        <li>
+            <button type="button" class="btn btn-default btn-xs btn-link" ng-click="query()"
+                title="刷新" ng-disabled="events.isLoading">
+                <i class="fa fa-refresh"></i>
+            </button>
+        </li>
+    </ul>
+    <label class="control-label">
+        记录筛选</label>
+    <div class="form-group">
+        <select class="form-control input-sm" ng-model="faceModel.staff" ng-change="query()"
+            ng-disabled="events.isLoading">
+            <option value="">所有成员</option>
+            <option ng-repeat="item in faceModel.users" value="{{item.Username}}">{{item.Name}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <select class="form-control input-sm" ng-model="faceModel.date" ng-change="query()"
+            ng-disabled="events.isLoading">
+            <option value="">所有时间</option>
+            <option value="-30">按月查询</option>
+            <option value="0">今天</option>
+            <option value="-1">昨天</option>
+            <option value="7">本周</option>
+            <option value="-7">上周</option>
+        </select>
+    </div>
+    <div class="form-group" style="display: {{faceModel.monthInputVisible}};">
+        <input type="month" class="form-control input-sm" ng-model="faceModel.month" ng-change="query()"
+            ng-disabled="events.isLoading" />
+    </div>
+    </form>
+    <div ng-show="events.isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="text-red">
+            {{events.loadText}}</p>
+    </div>
+    <div class="alert alert-danger" ng-show="events.alertMessage">
+        {{events.alertMessage}}</div>
+    <br />
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="log in events.logList">
+            <ul class="list-inline pull-right">
+                <li>{{log.userName}}于{{log.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}上传</li>
+                <li ng-switch="log.Id>0 && !log.IsRemoved">&nbsp;<i ng-switch-when="true" class="fa fa-trash-o hidden-print"
+                    ng-click="removeLog(log)"> </i><span ng-switch-when="false">&nbsp;&nbsp;&nbsp;&nbsp;</span></li>
+            </ul>
+            <h4 class="list-group-item-heading" ng-switch="log.IsRemoved">
+                <s ng-switch-when="true">{{log.Title}}</s><span ng-switch-when="false">{{log.Title}}&nbsp;({{log.fileSize}}&nbsp;{{log.fileSizeUnit}})</span></h4>
+            <p class="list-group-item-text text-nowrap" ng-hide="log.IsRemoved">
+                <a href="{{log.url}}" target="_blank">{{log.url}}</a>
+            </p>
+        </li>
+    </ul>
+    <ul class="pager hidden-print">
+        <li class="{{faceModel.prevBtnClass}}" ng-hide="events.isLoading"><a href="javascript:void(0);"
+            ng-click="prevPage()">上一页</a></li>
+        <li class="{{faceModel.nextBtnClass}}" ng-hide="events.isLoading"><a href="javascript:void(0);"
+            ng-click="nextPage()">下一页</a></li>
+    </ul>
+</div>

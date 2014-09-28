@@ -197,13 +197,9 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar UpdateCalendar(string user, string id, string appointed, string endAppointed, string content,
+        public Calendar UpdateCalendar(string id, string appointed, string endAppointed, string content,
             string level, string repeat, string caution, string isCaution)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong;
             try
             {
@@ -291,10 +287,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 {
                     throw new WebFaultException(HttpStatusCode.NotFound);
                 }
-                if (user != calendar.Creator)
-                {
-                    throw new WebFaultException(HttpStatusCode.Forbidden);
-                }
                 calendar.Appointed = appointedDate;
                 calendar.EndAppointed = endAppointedDate;
                 calendar.Content = content;
@@ -321,12 +313,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar UpdateCalendar4ToggleCaution(string user, string id, string isCaution)
+        public Calendar UpdateCalendar4ToggleCaution(string id, string isCaution)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong;
             try
             {
@@ -356,10 +344,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 {
                     throw new WebFaultException(HttpStatusCode.NotFound);
                 }
-                if (user != calendar.Creator)
-                {
-                    throw new WebFaultException(HttpStatusCode.Forbidden);
-                }
                 calendar.IsCaution = isCautionBool;
 
                 calendar.Update((e) =>
@@ -380,12 +364,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar UpdateClock(string user, string id, string content, string repeat, string caution, string isCaution)
+        public Calendar UpdateClock(string id, string content, string repeat, string caution, string isCaution)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong;
             try
             {
@@ -443,10 +423,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 {
                     throw new WebFaultException(HttpStatusCode.NotFound);
                 }
-                if (user != calendar.Creator)
-                {
-                    throw new WebFaultException(HttpStatusCode.Forbidden);
-                }
                 calendar.Content = content;
                 calendar.Repeat = affairRepeat;
                 calendar.Caution = cautionTime;
@@ -470,12 +446,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteCalendar(string user, string id)
+        public void DeleteCalendar(string id)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong;
             try
             {
@@ -492,10 +464,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 if (calendar == null)
                 {
                     throw new WebFaultException(HttpStatusCode.NotFound);
-                }
-                if (user != calendar.Creator)
-                {
-                    throw new WebFaultException(HttpStatusCode.Forbidden);
                 }
                 calendar.Delete(
                     (e) =>
@@ -518,12 +486,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar GetCalendar(string user, string id)
+        public Calendar GetCalendar(string id)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong;
             try
             {
@@ -545,7 +509,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar[] GetCalendarList(string user, string year, string month, string type, string projectId)
+        public Calendar[] GetCalendarList(string year, string month, string type, string user)
         {
             int yearInt;
             try
@@ -592,18 +556,9 @@ namespace ThinkInBio.Cully.WSL.Impl
                     throw new WebFaultException<string>("type", HttpStatusCode.BadRequest);
                 }
             }
-            long projectIdLong = 0;
             try
             {
-                projectIdLong = Convert.ToInt64(projectId);
-            }
-            catch
-            {
-                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
-            }
-            try
-            {
-                IList<Calendar> list = CalendarService.GetCalendarList(yearInt, monthInt, typeEnum, projectIdLong, user);
+                IList<Calendar> list = CalendarService.GetCalendarList(yearInt, monthInt, typeEnum, null, user);
                 if (list != null)
                 {
                     return list.ToArray();
@@ -620,9 +575,14 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Calendar[] GetCalendarList(string year, string month, string type, string projectId)
+        public Calendar[] GetCalendarList(string year, string month, string type)
         {
-            return GetCalendarList(null, year, month, type, projectId);
+            return GetCalendarList(null, year, month, type);
+        }
+
+        public Calendar[] GetCalendarList4Project(string projectId)
+        {
+            throw new NotImplementedException();
         }
 
         public CalendarCaution SaveCalendarCaution(string user, string calendarId, string participant)

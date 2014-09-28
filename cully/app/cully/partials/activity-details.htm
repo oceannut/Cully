@@ -1,7 +1,7 @@
 ﻿<div class="story container" ng-init="init()">
     <ul class="breadcrumb">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
-        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">项目 <span
+        <!--<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">项目 <span
             class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
                 <li><a href="#/project-details/{{events.activity.ProjectId}}/"><i class="fa fa-table fa-fw">
@@ -13,6 +13,14 @@
                 <li><a href="#/log-list/{{events.activity.ProjectId}}/"><i class="fa fa-magic fa-fw">
                 </i>&nbsp;记事</a></li>
             </ul>
+        </li>-->
+        <li><a href="#/project-details/{{events.activity.ProjectId}}/">项目</a>&nbsp;&nbsp;[&nbsp;<a
+            href="#/participant-list/{{events.activity.ProjectId}}/" class="text-light-gray"><i
+                class="fa fa-users fa-fw"> </i>&nbsp;成员</a>&nbsp;&middot&nbsp;<a href="#/calendar-list/{{events.activity.ProjectId}}/"
+                    class="text-light-gray"><i class="fa fa-calendar-o fa-fw"> </i>&nbsp;日程</a>&nbsp;&middot&nbsp;<a
+                        href="#/log-list/{{events.activity.ProjectId}}/" class="text-light-gray"><i class="fa fa-magic fa-fw">
+                        </i>&nbsp;记事</a>&nbsp;&middot&nbsp;<a href="#/log-list/{{events.activity.ProjectId}}/"
+                            class="text-light-gray"><i class="fa fa-upload fa-fw"> </i>&nbsp;文件</a>&nbsp;]
         </li>
         <li class="active">活动</li>
     </ul>

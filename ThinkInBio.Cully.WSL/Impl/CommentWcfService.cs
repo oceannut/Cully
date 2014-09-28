@@ -19,12 +19,8 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal ICommentService CommentService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
-        public Comment UpdateComment(string user, string id, string content)
+        public Comment UpdateComment(string id, string content)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             if (string.IsNullOrWhiteSpace(content))
             {
                 throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
@@ -65,12 +61,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Comment[] GetCommentList(string user, string commentTarget, string targetId)
+        public Comment[] GetCommentList(string commentTarget, string targetId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             if (string.IsNullOrWhiteSpace(commentTarget))
             {
                 throw new WebFaultException<string>("commentTarget", HttpStatusCode.BadRequest);

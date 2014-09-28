@@ -65,16 +65,6 @@ namespace ThinkInBio.Cully
         /// </summary>
         public string Category { get; set; }
 
-        ///// <summary>
-        ///// 起始时间。
-        ///// </summary>
-        //public DateTime StartTime { get; set; }
-
-        ///// <summary>
-        ///// 截止时间。
-        ///// </summary>
-        //public DateTime? EndTime { get; set; }
-
         /// <summary>
         /// 标签。
         /// </summary>
@@ -84,11 +74,6 @@ namespace ThinkInBio.Cully
         /// 评论次数。
         /// </summary>
         public int CommentCount { get; set; }
-
-        /// <summary>
-        /// 附件。
-        /// </summary>
-        public IList<string> Attachments { get; set; }
 
         /// <summary>
         /// 可见范围。

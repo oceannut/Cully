@@ -82,12 +82,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Log UpdateLog(string user, string id, string title, string content, string category, string tag1, string tag2, string tag3)
+        public Log UpdateLog(string id, string title, string content, string category, string tag1, string tag2, string tag3)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             if (string.IsNullOrWhiteSpace(title))
             {
                 throw new WebFaultException<string>("title", HttpStatusCode.BadRequest);
@@ -148,12 +144,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Log[] GetLogList(string user, string date, string span, string creator, string category, string start, string count)
+        public Log[] GetLogList(string date, string span, string creator, string category, string start, string count)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             if (string.IsNullOrWhiteSpace(creator))
             {
                 throw new WebFaultException<string>("creator", HttpStatusCode.BadRequest);
@@ -299,7 +291,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Comment SaveComment(string user, string logId, string content)
+        public Comment SaveComment(string logId, string user, string content)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -343,12 +335,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteComment(string user, string logId, string commentId)
+        public void DeleteComment(string logId, string commentId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long logIdLong = 0;
             try
             {

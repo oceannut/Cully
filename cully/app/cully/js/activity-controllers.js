@@ -239,7 +239,7 @@ define(function (require) {
                         }
                         $scope.events.alertMessage = '';
                         $scope.events.isLoading = true;
-                        ActivityService.saveSolo({
+                        ActivityService.save({
                             'user': currentUser.getUsername(),
                             'category': $scope.faceModel.category.Code,
                             'name': $scope.faceModel.name,
@@ -284,7 +284,6 @@ define(function (require) {
                     $scope.events.alertMessage = "";
                     $scope.events.isLoading = true;
                     ActivityService.get({
-                        'user': currentUser.getUsername(),
                         'activityId': $routeParams.id
                     })
                     .$promise
@@ -312,7 +311,6 @@ define(function (require) {
                     if ($scope.events.activity.Name != undefined && $scope.events.activity.Name != null) {
                         $scope.events.isBusy = true;
                         ActivityService.update({
-                            'user': currentUser.getUsername(),
                             'activityId': $scope.events.activity.Id,
                             'category': $scope.faceModel.category.Code,
                             'name': $scope.events.activity.Name,
@@ -356,7 +354,6 @@ define(function (require) {
                         $scope.events.alertMessage = "";
                         $scope.events.isLoading = true;
                         ActivityService.get({
-                            'user': currentUser.getUsername(),
                             'activityId': $routeParams.id
                         })
                         .$promise

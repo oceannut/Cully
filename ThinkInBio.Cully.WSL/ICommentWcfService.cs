@@ -17,16 +17,16 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/comment/{id}/",
+            UriTemplate = "/comment/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Comment UpdateComment(string user, string id, string content);
+        Comment UpdateComment(string id, string content);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/comment/{commentTarget}/{targetId}/",
+        [WebGet(UriTemplate = "/comment/{commentTarget}/{targetId}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Comment[] GetCommentList(string user, string commentTarget, string targetId);
+        Comment[] GetCommentList(string commentTarget, string targetId);
 
     }
 

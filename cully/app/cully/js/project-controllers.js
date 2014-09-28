@@ -200,7 +200,6 @@ define(function (require) {
                         project: null
                     };
                     ProjectService.get({
-                        'user': currentUser.getUsername(),
                         'projectId': $routeParams.id
                     })
                     .$promise
@@ -218,7 +217,6 @@ define(function (require) {
                         $scope.events.alertMessage = '';
                         $scope.events.isLoading = true;
                         ProjectService.update({
-                            'user': currentUser.getUsername(),
                             'projectId': $scope.events.project.Id,
                             'name': $scope.events.project.Name,
                             'description': $scope.events.project.Description
@@ -242,16 +240,15 @@ define(function (require) {
 
             } ])
         .controller('ProjectDetailsCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'commonUtil', 'projectFace', 'activityFace', 'faceCache',
-                                             'ProjectService', 'ActivityService', 'ActivityOfProjectService',
+                                             'ProjectService', 'ActivityOfProjectService',
             function ($scope, $log, $routeParams, currentUser, commonUtil, projectFace, activityFace, faceCache,
-                        ProjectService, ActivityService, ActivityOfProjectService) {
+                        ProjectService, ActivityOfProjectService) {
 
                 function loadActivityList() {
                     $scope.events.activityList.length = 0;
                     $scope.events.alertMessage = "";
                     $scope.events.isLoading = true;
                     ActivityOfProjectService.query({
-                        'user': currentUser.getUsername(),
                         'projectId': $scope.faceModel.projectId
                     })
                     .$promise
@@ -296,7 +293,6 @@ define(function (require) {
                         $scope.events.alertMessage = '';
                         $scope.events.isLoading = true;
                         ProjectService.get({
-                            'user': currentUser.getUsername(),
                             'projectId': $scope.faceModel.projectId
                         })
                         .$promise
@@ -350,9 +346,9 @@ define(function (require) {
                     if ($scope.faceModel.name != undefined && $scope.faceModel.name != null) {
                         $scope.events.alertMessage = "";
                         $scope.events.isBusy = true;
-                        ActivityService.save({
-                            'user': currentUser.getUsername(),
+                        ActivityOfProjectService.save({
                             'projectId': $routeParams.id,
+                            'user': currentUser.getUsername(),
                             'category': $scope.faceModel.category.Code,
                             'name': $scope.faceModel.name,
                             'description': $scope.faceModel.description

@@ -11,6 +11,7 @@ define(function (require) {
     require('../../app/common/js/notice-controllers');
     require('../../app/common/js/idiom-controllers');
     require('../../app/common/js/schedule-controllers');
+    require('../../app/common/js/file-transfer-controllers');
     require('../../app/cully/js/client-controllers');
     require('../../app/cully/js/biz-notification-controllers');
     require('../../app/cully/js/index-controllers');
@@ -30,6 +31,7 @@ define(function (require) {
             'notice.controllers',
             'idiom.controllers',
             'schedule.controllers',
+            'fileTransfer.controllers',
             'client.controllers',
             'bizNotification.controllers',
             'index.controllers',
@@ -182,6 +184,14 @@ define(function (require) {
                         access: {
                             loginRequired: true,
                             roles: ['admin']
+                        }
+                    })
+                    .when('/file-transfer-overview/', {
+                        templateUrl: 'app/common/partials/file-transfer-overview.htm',
+                        controller: 'FileTransferOverviewCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor', 'admin']
                         }
                     })
                     .when('/client-setting/:username/', {

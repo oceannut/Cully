@@ -10,36 +10,36 @@ define(function (require) {
         .constant("taskWcfService", "/wcf/TaskWcfService.svc")
         .factory('TaskService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
-                return $resource(wcfApp + taskWcfService + '/:user/task/:activityId/:id/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'activityId': '@activityId', 'id': '0', 'content': '@content', 'staff': '@staff', 'appointedDay': '@appointedDay'} },
-                    update: { method: 'PUT', params: { 'user': '@user', 'activityId': '0', 'id': '@id', 'content': '@content', 'staff': '@staff', 'appointedDay': '@appointedDay'} },
-                    remove: { method: 'DELETE', params: { 'user': '@user', 'activityId': '0', 'id': '@id' } },
-                    get: { method: 'GET', params: { 'user': '@user', 'activityId': '0', 'id': '@id' }, isArray: false }
+                return $resource(wcfApp + taskWcfService + '/task/:id/', {}, {
+                    update: { method: 'PUT', params: { 'id': '@id', 'user': '@user', 'content': '@content', 'staff': '@staff', 'appointedDay': '@appointedDay'} },
+                    remove: { method: 'DELETE', params: { 'id': '@id' } },
+                    get: { method: 'GET', params: { 'id': '@id' }, isArray: false }
                 });
             } ])
-        .factory('TaskListService', ['$resource', 'wcfApp', 'taskWcfService',
+        .factory('TaskOfActivityService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
-                return $resource(wcfApp + taskWcfService + '/:user/task/:activityId/', {}, {
-                    query: { method: 'GET', params: { 'user': '@user', 'activityId': '@activityId' }, isArray: true }
+                return $resource(wcfApp + taskWcfService + '/activity/:activityId/task/', {}, {
+                    save: { method: 'POST', params: { 'activityId': '@activityId', 'user': '@user', 'content': '@content', 'staff': '@staff', 'appointedDay': '@appointedDay'} },
+                    query: { method: 'GET', params: { 'activityId': '@activityId' }, isArray: true }
                 });
             } ])
         .factory('Update4IsUnderwayTaskService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
-                return $resource(wcfApp + taskWcfService + '/:user/task/0/:id/isUnderway/:isUnderway/', {}, {
-                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'isUnderway': '@isUnderway'} }
+                return $resource(wcfApp + taskWcfService + '/task/:id/isUnderway/:isUnderway/', {}, {
+                    update: { method: 'PUT', params: { 'id': '@id', 'isUnderway': '@isUnderway'} }
                 });
             } ])
         .factory('Update4IsCompletedTaskService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
-                return $resource(wcfApp + taskWcfService + '/:user/task/0/:id/isCompleted/:isCompleted/', {}, {
-                    update: { method: 'PUT', params: { 'user': '@user', 'id': '@id', 'isCompleted': '@isCompleted'} }
+                return $resource(wcfApp + taskWcfService + '/task/:id/isCompleted/:isCompleted/', {}, {
+                    update: { method: 'PUT', params: { 'id': '@id', 'isCompleted': '@isCompleted'} }
                 });
             } ])
-        .factory('Update4CommentTaskService', ['$resource', 'wcfApp', 'taskWcfService',
+        .factory('CommentOfTaskService', ['$resource', 'wcfApp', 'taskWcfService',
             function ($resource, wcfApp, taskWcfService) {
-                return $resource(wcfApp + taskWcfService + '/:user/task/0/:id/comment/:commentId/', {}, {
-                    save: { method: 'POST', params: { 'user': '@user', 'id': '@id', 'commentId': '0', 'content': '@content', 'observers': '@observers' } },
-                    remove: { method: 'DELETE', params: { 'user': '@user', 'id': '@id', 'commentId': '@commentId', 'observers': '@observers'} }
+                return $resource(wcfApp + taskWcfService + '/task/:id/comment/:commentId/', {}, {
+                    save: { method: 'POST', params: { 'id': '@id', 'commentId': '0', 'user': '@user', 'content': '@content', 'observers': '@observers'} },
+                    remove: { method: 'DELETE', params: { 'id': '@id', 'commentId': '@commentId', 'observers': '@observers'} }
                 });
             } ])
         .factory('ActivityTaskDelayListService', ['$resource', 'wcfApp', 'taskWcfService',

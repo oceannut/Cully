@@ -34,6 +34,11 @@ define(function (require) {
                     "url": "/log-summary/",
                     "active": ""
                 };
+                var fileTransferNav = {
+                    "name": "文件",
+                    "url": "/file-transfer-overview/",
+                    "active": ""
+                };
                 var statNav = {
                     "name": "统计",
                     "url": "/#/",
@@ -118,7 +123,7 @@ define(function (require) {
                     //初始化导航条。
                     $scope.appName = appName;
                     $scope.makeNavbarVisible();
-                    $scope.navList = [homeNav, activityNav, calendarNav, logNav, statNav];
+                    $scope.navList = [homeNav, activityNav, calendarNav, logNav, fileTransferNav, statNav];
 
                     $scope.$on("$destroy", function (event) {
                         if (untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {

@@ -20,7 +20,9 @@ define(function (require) {
                 function loadParticpantList() {
                     $scope.isParticipantLoading = true;
                     $scope.alertMessage = '';
-                    ParticipantOfProjectService.query({ 'user': currentUser.getUsername(), 'projectId': $scope.projectId })
+                    ParticipantOfProjectService.query({
+                        'projectId': $scope.projectId
+                    })
                         .$promise
                             .then(function (result) {
                                 if (result != null) {
@@ -81,7 +83,10 @@ define(function (require) {
 
                 $scope.addParticipant = function (user) {
                     $scope.alertMessage = '';
-                    ParticipantService.save({ 'user': currentUser.getUsername(), 'projectId': $scope.projectId, 'participant': user.Username })
+                    ParticipantService.save({
+                        'projectId': $scope.projectId,
+                        'participant': user.Username
+                    })
                         .$promise
                             .then(function (result) {
                                 for (var i in $scope.users) {
@@ -100,7 +105,10 @@ define(function (require) {
 
                 $scope.removeParticipant = function (participant) {
                     $scope.alertMessage = '';
-                    ParticipantService.remove({ 'user': currentUser.getUsername(), 'projectId': $scope.projectId, 'participant': participant.Staff })
+                    ParticipantService.remove({
+                        'projectId': $scope.projectId,
+                        'participant': participant.Staff
+                    })
                         .$promise
                             .then(function () {
                                 for (var i in $scope.participantList) {

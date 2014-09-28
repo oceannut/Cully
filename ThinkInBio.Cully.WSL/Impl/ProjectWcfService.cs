@@ -19,7 +19,10 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal IProjectService ProjectService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
-        public Project SaveProject(string user, string name, string description, string[] participants, string createSameNameActivity, string category)
+        #region project
+
+        public Project SaveProject(string user, string name, string description, string[] participants, 
+            string createSameNameActivity, string category)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -80,12 +83,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Project UpdateProject(string user, string projectId, string name, string description)
+        public Project UpdateProject(string projectId, string name, string description)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new WebFaultException<string>("name", HttpStatusCode.BadRequest);
@@ -130,17 +129,13 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteProject(string user, string projectId)
+        public void DeleteProject(string projectId)
         {
             throw new NotImplementedException();
         }
 
-        public Project GetProject(string user, string projectId)
+        public Project GetProject(string projectId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -300,6 +295,10 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
+        #endregion
+
+        #region activity
+
         public Activity SaveActivity(string user, string category, string name, string description, string[] participants)
         {
             if (string.IsNullOrWhiteSpace(user))
@@ -339,7 +338,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Activity SaveActivity(string user, string projectId, string category, string name, string description)
+        public Activity SaveActivity(string projectId, string user, string category, string name, string description)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -401,12 +400,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Activity UpdateActivity(string user, string activityId, string category, string name, string description)
+        public Activity UpdateActivity(string activityId, string category, string name, string description)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -453,12 +448,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Activity GetActivity(string user, string activityId)
+        public Activity GetActivity(string activityId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -581,12 +572,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Activity[] GetActivityList(string user, string projectId)
+        public Activity[] GetActivityList(string projectId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -616,12 +603,12 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Participant SaveParticipant(string user, string projectId, string participant)
+        #endregion
+
+        #region participant
+
+        public Participant SaveParticipant(string projectId, string participant)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -659,12 +646,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteParticipant(string user, string projectId, string participant)
+        public void DeleteParticipant(string projectId, string participant)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -707,12 +690,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Participant[] GetParticipantList(string user, string projectId)
+        public Participant[] GetParticipantList(string projectId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -741,6 +720,8 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
         }
+
+        #endregion
 
     }
 

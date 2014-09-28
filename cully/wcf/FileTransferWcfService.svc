@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Factory="Spring.ServiceModel.Activation.WebServiceHostFactory" Service="FileTransferWcfService" %>

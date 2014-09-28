@@ -17,7 +17,7 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/calendar/0/",
+            UriTemplate = "/calendar/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Calendar SaveCalendar(string user, string projectId, string appointed, string endAppointed, string content, 
@@ -26,7 +26,7 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/clock/0/",
+            UriTemplate = "/clock/0/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Calendar SaveClock(string user, string content, string repeat, string caution, string[] participants);
@@ -34,53 +34,59 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/calendar/{id}/",
+            UriTemplate = "/calendar/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar UpdateCalendar(string user, string id, string appointed, string endAppointed, string content,
+        Calendar UpdateCalendar(string id, string appointed, string endAppointed, string content,
             string level, string repeat, string caution, string isCaution);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/calendar/{id}/caution/{isCaution}/",
+            UriTemplate = "/calendar/{id}/caution/{isCaution}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar UpdateCalendar4ToggleCaution(string user, string id, string isCaution);
+        Calendar UpdateCalendar4ToggleCaution(string id, string isCaution);
 
         [OperationContract]
         [WebInvoke(Method = "PUT",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/clock/{id}/",
+            UriTemplate = "/clock/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar UpdateClock(string user, string id, string content, string repeat, string caution, string isCaution);
+        Calendar UpdateClock(string id, string content, string repeat, string caution, string isCaution);
 
         [OperationContract]
         [WebInvoke(Method = "DELETE",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/calendar/{id}/",
+            UriTemplate = "/calendar/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        void DeleteCalendar(string user, string id);
+        void DeleteCalendar(string id);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/calendar/{id}/",
+        [WebGet(UriTemplate = "/calendar/{id}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar GetCalendar(string user, string id);
+        Calendar GetCalendar(string id);
 
         [OperationContract(Name = "GetCalendarList4User")]
-        [WebGet(UriTemplate = "/{user}/calendar/{year}/{month}/{type}/{projectId}/",
+        [WebGet(UriTemplate = "/calendar/{year}/{month}/{type}/{user}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar[] GetCalendarList(string user, string year, string month, string type, string projectId);
+        Calendar[] GetCalendarList(string year, string month, string type, string user);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/calendar/{year}/{month}/{type}/{projectId}/",
+        [WebGet(UriTemplate = "/calendar/{year}/{month}/{type}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Calendar[] GetCalendarList(string year, string month, string type, string projectId);
+        Calendar[] GetCalendarList(string year, string month, string type);
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/project/{projectId}/calendar/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Calendar[] GetCalendarList4Project(string projectId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

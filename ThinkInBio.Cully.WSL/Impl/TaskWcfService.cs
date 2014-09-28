@@ -20,20 +20,8 @@ namespace ThinkInBio.Cully.WSL.Impl
         internal ICommentService CommentService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
-        public Task SaveTask(string user, string activityId, string content, string staff, string appointedDay)
+        public Task SaveTask(string activityId, string user, string content, string staff, string appointedDay)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
-            if (string.IsNullOrWhiteSpace(staff))
-            {
-                throw new WebFaultException<string>("staff", HttpStatusCode.BadRequest);
-            }
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
-            }
             long activityIdLong = 0;
             try
             {
@@ -42,6 +30,18 @@ namespace ThinkInBio.Cully.WSL.Impl
             catch
             {
                 throw new WebFaultException<string>("activityId", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(staff))
+            {
+                throw new WebFaultException<string>("staff", HttpStatusCode.BadRequest);
             }
 
             try
@@ -68,7 +68,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Task UpdateTask(string user, string id, string content, string staff, string appointedDay)
+        public Task UpdateTask(string id, string user, string content, string staff, string appointedDay)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -119,12 +119,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Task UpdateTask4IsUnderway(string user, string id, string isUnderway)
+        public Task UpdateTask4IsUnderway(string id, string isUnderway)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -178,12 +174,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Task UpdateTask4IsCompleted(string user, string id, string isCompleted)
+        public Task UpdateTask4IsCompleted(string id, string isCompleted)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -241,12 +233,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteTask(string user, string id)
+        public void DeleteTask(string id)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -283,12 +271,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Task GetTask(string user, string id)
+        public Task GetTask(string id)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {
@@ -310,12 +294,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Task[] GetTaskList(string user, string activityId)
+        public Task[] GetTaskList(string activityId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long activityIdLong = 0;
             try
             {
@@ -345,7 +325,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Comment SaveComment(string user, string id, string content, string[] observers)
+        public Comment SaveComment(string id, string user, string content, string[] observers)
         {
             if (string.IsNullOrWhiteSpace(user))
             {
@@ -389,12 +369,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteComment(string user, string id, string commentId, string[] observers)
+        public void DeleteComment(string id, string commentId, string[] observers)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong = 0;
             try
             {

@@ -6,10 +6,11 @@ delete from cyTask;
 delete from cyTaskDelay;
 delete from cyTaskReport;
 delete from cyLog;
-delete from cyLogVisibleUser;
 delete from cyComment;
 delete from cyCalendar;
 delete from cyCalendarCaution;
+delete from cyAttachment;
+commit;
 
 
 drop table cyProject;
@@ -19,10 +20,10 @@ drop table cyTask;
 drop table cyTaskDelay;
 drop table cyTaskReport;
 drop table cyLog;
-drop table cyLogVisibleUser;
 drop table cyComment;
 drop table cyCalendar;
 drop table cyCalendarCaution;
+drop table cyAttachment;
 
 
 create table cyProject
@@ -46,7 +47,7 @@ create table cyParticipant
 	creation				DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
-ALTER TABLE cyParticipant ADD INDEX creation_index  (creation);
+ALTER TABLE cyParticipant ADD INDEX project_id_index  (projectId);
 
 create table cyActivity
 (
@@ -62,6 +63,7 @@ create table cyActivity
 	PRIMARY KEY (id)
 );
 ALTER TABLE cyActivity ADD INDEX modification_index  (modification);
+ALTER TABLE cyActivity ADD INDEX project_id_index  (projectId);
 
 create table cyTask
 (
@@ -109,39 +111,35 @@ create table cyTaskReport
 	PRIMARY KEY (id)
 );
 ALTER TABLE cyTaskReport ADD INDEX timestamp_index  (year,month,day);
+ALTER TABLE cyTaskReport ADD INDEX activity_id_index  (activityId);
 
 create table cyLog
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
-	projectId				BIGINT,
-	title					VARCHAR(255)      NOT NULL,
-	content					VARCHAR(10240)    NOT NULL,
-	category				VARCHAR(32)		NOT NULL,
+	projectId				BIGINT				NOT NULL default 0,
+	title					VARCHAR(255)		NOT NULL,
+	content					VARCHAR(10240)		NOT NULL,
+	category				VARCHAR(32)			NOT NULL,
 	tags					VARCHAR(128),
-	commentCount			INT				NOT NULL default 0,
-	visibility				TINYINT			NOT NULL default 0,
-	creator					VARCHAR(32)		NOT NULL,
-	creation				DATETIME		NOT NULL,
-	modification			DATETIME		NOT NULL,
+	commentCount			INT					NOT NULL default 0,
+	visibility				TINYINT				NOT NULL default 0,
+	creator					VARCHAR(32)			NOT NULL,
+	creation				DATETIME			NOT NULL,
+	modification			DATETIME			NOT NULL,
 	PRIMARY KEY (id)
 );
-
-create table cyLogVisibleUser
-(
-	logId					BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
-	username				VARCHAR(32)		NOT NULL,
-	PRIMARY KEY (logId,username)
-);
+ALTER TABLE cyLog ADD INDEX modification_index  (modification);
+ALTER TABLE cyLog ADD INDEX project_id_index  (projectId);
 
 create table cyComment
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
-	target					TINYINT			NOT NULL,
-	targetId				BIGINT			NOT NULL,
-	content					VARCHAR(1024)    NOT NULL,
-	creator					VARCHAR(32)		NOT NULL,
-	creation				DATETIME		NOT NULL,
-	modification			DATETIME		NOT NULL,
+	target					TINYINT				NOT NULL,
+	targetId				BIGINT				NOT NULL,
+	content					VARCHAR(1024)		NOT NULL,
+	creator					VARCHAR(32)			NOT NULL,
+	creation				DATETIME			NOT NULL,
+	modification			DATETIME			NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -149,7 +147,7 @@ create table cyCalendar
 (
 	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
 	type					TINYINT				NOT NULL,
-	projectId				BIGINT,
+	projectId				BIGINT				NOT NULL default 0,
 	content					VARCHAR(255)		NOT NULL,
 	appointed				DATETIME,
 	endAppointed			DATETIME,
@@ -162,6 +160,8 @@ create table cyCalendar
 	modification			DATETIME			NOT NULL,
 	PRIMARY KEY (id)
 );
+ALTER TABLE cyCalendar ADD INDEX modification_index  (modification);
+ALTER TABLE cyCalendar ADD INDEX project_id_index  (projectId);
 
 create table cyCalendarCaution
 (
@@ -171,3 +171,15 @@ create table cyCalendarCaution
 	creation				DATETIME		NOT NULL,
 	PRIMARY KEY (id)
 );
+ALTER TABLE cyCalendarCaution ADD INDEX calendar_id_index  (calendarId);
+
+create table cyAttachment
+(
+	id						BIGINT	unsigned	NOT NULL AUTO_INCREMENT,
+	projectId				BIGINT				NOT NULL default 0,
+	title					VARCHAR(255)		NOT NULL,
+	path					VARCHAR(255)		NOT NULL,
+	creation				DATETIME			NOT NULL,
+	PRIMARY KEY (id)
+);
+ALTER TABLE cyAttachment ADD INDEX project_id_index  (projectId);
