@@ -20,6 +20,7 @@ define(function (require) {
     require('../../app/cully/js/activity-controllers');
     require('../../app/cully/js/task-controllers');
     require('../../app/cully/js/participant-controllers');
+    require('../../app/cully/js/attachment-controllers');
     require('../../app/cully/js/log-controllers');
     require('../../app/cully/js/calendar-controllers');
 
@@ -40,6 +41,7 @@ define(function (require) {
             'activity.controllers',
             'task.controllers',
             'participant.controllers',
+            'attachment.controllers',
             'log.controllers',
             'calendar.controllers'
         ])
@@ -240,12 +242,20 @@ define(function (require) {
                             roles: ['supvisor']
                         }
                     })
-                    .when('/participant-list/:projectId/', {
-                        templateUrl: 'app/cully/partials/participant-list.htm',
+                    .when('/project-participant-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/project-participant-list.htm',
                         controller: 'ParticipantListCtrl',
                         access: {
                             loginRequired: true,
                             roles: ['supvisor']
+                        }
+                    })
+                    .when('/project-attachment-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/project-attachment-list.htm',
+                        controller: 'AttachmentListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
                         }
                     })
                     .when('/activity-add/', {
@@ -308,14 +318,6 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
-                    .when('/log-list/:projectId/', {
-                        templateUrl: 'app/cully/partials/log-list.htm',
-                        controller: 'LogListCtrl',
-                        access: {
-                            loginRequired: true,
-                            roles: ['user', 'supvisor']
-                        }
-                    })
                     .when('/log-add/:projectId/', {
                         templateUrl: 'app/cully/partials/log-add.htm',
                         controller: 'LogAddCtrl',
@@ -338,6 +340,14 @@ define(function (require) {
                         access: {
                             loginRequired: true,
                             roles: ['user']
+                        }
+                    })
+                    .when('/project-log-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/project-log-list.htm',
+                        controller: 'ProjectLogListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
                         }
                     })
                     .when('/calendar-summary/:day/', {

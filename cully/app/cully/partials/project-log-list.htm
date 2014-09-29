@@ -13,15 +13,6 @@
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
-    <div style="margin: 0 0 1em 0;">
-        <form class="form-inline" role="form">
-        <label class="control-label">
-            筛选:</label>
-        <div class="form-group">
-            <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
-        </div>
-        </form>
-    </div>
     <ol class="list-unstyled">
         <li ng-repeat="item in logList" class="biz-list-item">
             <h4>

@@ -71,28 +71,9 @@ namespace ThinkInBio.Cully.BLL.Impl
             return LogDao.GetList(startTime, endTime, creator, category, null, startRowIndex, maxRowsCount);
         }
 
-        public IList<Log> GetLogList(int year, int month, long? projectId)
+        public IList<Log> GetLogList(long projectId)
         {
-            if (year < 1970)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            if (month < 0 || month > 12)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            DateTime startTime, endTime;
-            if (month > 0)
-            {
-                startTime = new DateTime(year, month, 1);
-                endTime = startTime.AddMonths(1);
-            }
-            else
-            {
-                startTime = new DateTime(year, 1, 1);
-                endTime = startTime.AddYears(1);
-            }
-            return LogDao.GetList(startTime, endTime, null, null, projectId, 0, int.MaxValue);
+            return LogDao.GetList(null, null, null, null, projectId, 0, int.MaxValue);
         }
 
         public void SaveComment(Log log, Comment comment, ICollection<BizNotification> notificationList)

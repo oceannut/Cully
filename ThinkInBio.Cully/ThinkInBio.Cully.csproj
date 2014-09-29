@@ -65,6 +65,10 @@
       <Project>{5F6BF361-0265-433F-990E-351BBFA9EA1D}</Project>
       <Name>ThinkInBio.CommonApp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.FileTransfer\ThinkInBio.FileTransfer.csproj">
+      <Project>{FDEC10BF-1C8A-4C0E-9CDD-AF09181908B5}</Project>
+      <Name>ThinkInBio.FileTransfer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CommonApp\ThinkInBio.Scheduling\ThinkInBio.Scheduling.csproj">
       <Project>{BDD23A46-E9AB-470F-89CD-B6058D29EF36}</Project>
       <Name>ThinkInBio.Scheduling</Name>

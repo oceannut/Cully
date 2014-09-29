@@ -63,6 +63,10 @@
       <Project>{375D399D-647F-4C17-A152-1A8F54EED356}</Project>
       <Name>ThinkInBio.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.FileTransfer\ThinkInBio.FileTransfer.csproj">
+      <Project>{FDEC10BF-1C8A-4C0E-9CDD-AF09181908B5}</Project>
+      <Name>ThinkInBio.FileTransfer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ThinkInBio.Cully.BLL\ThinkInBio.Cully.BLL.csproj">
       <Project>{F20B436E-8C19-498A-BC48-F27FF6AE11A0}</Project>
       <Name>ThinkInBio.Cully.BLL</Name>

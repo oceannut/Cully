@@ -12,7 +12,7 @@ namespace ThinkInBio.Cully.DAL
     {
 
         IList<Calendar> GetList(string participant, long? projectId, CalendarType? type,
-            DateTime startTime, DateTime endTime, bool asc,
+            DateTime? startTime, DateTime? endTime, bool asc,
             int startRowIndex, int maxRowsCount);
 
     }

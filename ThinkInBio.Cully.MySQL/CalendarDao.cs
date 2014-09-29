@@ -98,7 +98,8 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public IList<Calendar> GetList(string participant, long? projectId, CalendarType? type, DateTime startTime, DateTime endTime, bool asc, int startRowIndex, int maxRowsCount)
+        public IList<Calendar> GetList(string participant, long? projectId, CalendarType? type, DateTime? startTime, DateTime? endTime, 
+            bool asc, int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetList<Calendar>(dataSource,
@@ -130,16 +131,16 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string participant, long? projectId, CalendarType? type, DateTime startTime, DateTime endTime)
+            string participant, long? projectId, CalendarType? type, DateTime? startTime, DateTime? endTime)
         {
-            if (startTime != DateTime.MinValue
-                    && endTime != DateTime.MinValue
-                    && endTime > startTime)
+            if (startTime.HasValue && startTime.Value != DateTime.MinValue
+                    && endTime.HasValue && endTime.Value != DateTime.MinValue
+                    && endTime.Value > startTime.Value)
             {
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" ((t.appointed <= @startTime and t.endAppointed > @startTime) or (t.appointed > @startTime and t.appointed < @endTime)) ");
-                parameters.Add(new KeyValuePair<string, object>("startTime", startTime));
-                parameters.Add(new KeyValuePair<string, object>("endTime", endTime));
+                parameters.Add(new KeyValuePair<string, object>("startTime", startTime.Value));
+                parameters.Add(new KeyValuePair<string, object>("endTime", endTime.Value));
             }
             if (!string.IsNullOrWhiteSpace(participant))
             {

@@ -37,10 +37,10 @@ namespace ThinkInBio.Cully.WSL
         Log[] GetLogList(string date, string span, string creator, string category, string start, string count);
 
         [OperationContract(Name = "GetLogList4Project")]
-        [WebGet(UriTemplate = "/log/{year}/{month}/{projectId}/",
+        [WebGet(UriTemplate = "/project/{projectId}/log/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        Log[] GetLogList(string year, string month, string projectId);
+        Log[] GetLogList(string projectId);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

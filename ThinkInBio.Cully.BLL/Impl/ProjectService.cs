@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
+using ThinkInBio.CommonApp.BLL;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.DAL;
 
@@ -15,6 +17,8 @@ namespace ThinkInBio.Cully.BLL.Impl
         internal IProjectDao ProjectDao { get; set; }
         internal IActivityDao ActivityDao { get; set; }
         internal IParticipantDao ParticipantDao { get; set; }
+        internal IAttachmentDao AttachmentDao { get; set; }
+        internal IFileTransferLogService FileTransferLogService { get; set; }
 
         public void SaveProject(Project project,
             ICollection<Participant> participants)
@@ -215,6 +219,37 @@ namespace ThinkInBio.Cully.BLL.Impl
             return ParticipantDao.GetList(projectId);
         }
 
+        public void SaveAttachment(Attachment attachment, FileTransferLog log)
+        {
+            if (attachment == null)
+            {
+                throw new ArgumentNullException();
+            }
+            AttachmentDao.Save(attachment);
+            if (log != null)
+            {
+                FileTransferLogService.SaveFileTransferLog(log);
+            }
+        }
+
+        public void DeleteAttachment(Attachment attachment)
+        {
+            if (attachment == null)
+            {
+                throw new ArgumentNullException();
+            }
+            AttachmentDao.Delete(attachment);
+        }
+
+        public IList<Attachment> GetAttachmentList(long projectId)
+        {
+            if (projectId == 0)
+            {
+                throw new ArgumentException();
+            }
+
+            return AttachmentDao.GetList(projectId);
+        }
 
     }
 

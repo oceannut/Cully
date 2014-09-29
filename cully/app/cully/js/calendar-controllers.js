@@ -76,11 +76,10 @@ define(function (require) {
                         month = lastMonth.substr(5, 2);
                     }
                     CalendarListService.query({
-                        'user': currentUser.getUsername(),
                         'year': year,
                         'month': month,
                         'type': 'null',
-                        'projectId': '0'
+                        'user': currentUser.getUsername()
                     })
                     .$promise
                         .then(function (result) {
@@ -172,8 +171,33 @@ define(function (require) {
                 }
 
             } ])
-        .controller('CalendarListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'currentUser', 'CalendarListService',
-            function ($scope, $routeParams, $log, dateUtil, currentUser, CalendarListService) {
+        .controller('CalendarListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'currentUser', 'CalendarListService', 'CalendarOfProjectService',
+            function ($scope, $routeParams, $log, dateUtil, currentUser, CalendarListService, CalendarOfProjectService) {
+
+                function renderList() {
+                    if ($scope.calendarList != null) {
+                        var len = $scope.calendarList.length;
+                        for (var i = 0; i < len; i++) {
+                            var calendar = $scope.calendarList[i];
+                            switch (calendar.Level) {
+                                case 1:
+                                    calendar.textColor = "text-light-blue";
+                                    break;
+                                case 2:
+                                    calendar.textColor = "text-yellow";
+                                    break;
+                                case 3:
+                                    calendar.textColor = "text-red";
+                                    break;
+                            }
+                            if (currentUser.getUsername() === calendar.Creator) {
+                                calendar.isEidtable = true;
+                            } else {
+                                calendar.isEidtable = false;
+                            }
+                        }
+                    }
+                }
 
                 $scope.init = function () {
                     $scope.projectId = $routeParams.projectId;
@@ -186,42 +210,32 @@ define(function (require) {
                 }
 
                 $scope.query = function () {
-                    if ($scope.queryModel.month !== "") {
-                        var currentUsername = currentUser.getUsername();
-                        var year = $scope.queryModel.month.substr(0, 4);
-                        var month = $scope.queryModel.month.substr(5, 2);
-                        CalendarListService.query({
-                            'user': currentUsername,
-                            'year': year,
-                            'month': month,
-                            'type': '0',
+                    if ($scope.projectId === 0) {
+                        if ($scope.queryModel.month !== "") {
+                            var year = $scope.queryModel.month.substr(0, 4);
+                            var month = $scope.queryModel.month.substr(5, 2);
+                            CalendarListService.query({
+                                'year': year,
+                                'month': month,
+                                'type': '0',
+                                'user': currentUsername
+                            })
+                            .$promise
+                                .then(function (result) {
+                                    $scope.calendarList = result;
+                                    renderList();
+                                }, function (error) {
+                                    $log.error(error);
+                                });
+                        }
+                    } else {
+                        CalendarOfProjectService.query({
                             'projectId': $scope.projectId
                         })
                         .$promise
                             .then(function (result) {
                                 $scope.calendarList = result;
-                                if ($scope.calendarList != null) {
-                                    var len = $scope.calendarList.length;
-                                    for (var i = 0; i < len; i++) {
-                                        var calendar = $scope.calendarList[i];
-                                        switch (calendar.Level) {
-                                            case 1:
-                                                calendar.textColor = "text-light-blue";
-                                                break;
-                                            case 2:
-                                                calendar.textColor = "text-yellow";
-                                                break;
-                                            case 3:
-                                                calendar.textColor = "text-red";
-                                                break;
-                                        }
-                                        if (currentUsername === calendar.Creator) {
-                                            calendar.isEidtable = true;
-                                        } else {
-                                            calendar.isEidtable = false;
-                                        }
-                                    }
-                                }
+                                renderList();
                             }, function (error) {
                                 $log.error(error);
                             });
@@ -266,7 +280,6 @@ define(function (require) {
                     } else {
                         //编辑日程
                         CalendarService.get({
-                            'user': currentUser.getUsername(),
                             'id': $scope.id
                         })
                         .$promise
@@ -289,8 +302,7 @@ define(function (require) {
                             .then(function () {
 
                                 CalendarCautionListService.query({
-                                    'user': currentUser.getUsername(),
-                                    'id': $scope.id
+                                    'calendarId': $scope.id
                                 })
                                 .$promise
                                     .then(function (result) {
@@ -323,7 +335,6 @@ define(function (require) {
                         $scope.alertMessage = "";
                         $scope.isLoading = true;
                         CalendarCautionService.save({
-                            'user': currentUser.getUsername(),
                             'calendarId': $scope.calendar.Id,
                             'participant': user.Username
                         })
@@ -347,7 +358,6 @@ define(function (require) {
                         $scope.alertMessage = "";
                         $scope.isLoading = true;
                         CalendarCautionService.remove({
-                            'user': currentUser.getUsername(),
                             'calendarId': $scope.calendar.Id,
                             'participant': user.Username
                         })
@@ -404,7 +414,7 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                $location.path('/calendar-summary/' + $scope.calendar.appointed + '/');
+                                $location.path('/calendar-list/' + $scope.projectId + '/');
                             }, function (error) {
                                 $scope.alertMessage = "提示：添加日程失败";
                                 $scope.alertMessageColor = "alert-danger";
@@ -415,7 +425,6 @@ define(function (require) {
                             });
                     } else {
                         CalendarService.update({
-                            'user': currentUser.getUsername(),
                             'id': $scope.calendar.Id,
                             'appointed': $scope.calendar.appointed,
                             'endAppointed': $scope.calendar.endAppointed,
@@ -472,7 +481,6 @@ define(function (require) {
                     } else {
                         //编辑时钟
                         CalendarService.get({
-                            'user': currentUser.getUsername(),
                             'id': $scope.id
                         })
                         .$promise
@@ -495,8 +503,7 @@ define(function (require) {
                             .then(function () {
 
                                 CalendarCautionListService.query({
-                                    'user': currentUser.getUsername(),
-                                    'id': $scope.id
+                                    'calendarId': $scope.id
                                 })
                                 .$promise
                                     .then(function (result) {
@@ -530,7 +537,6 @@ define(function (require) {
                         $scope.alertMessage = "";
                         $scope.isLoading = true;
                         CalendarCautionService.save({
-                            'user': currentUser.getUsername(),
                             'calendarId': $scope.calendar.Id,
                             'participant': user.Username
                         })
@@ -554,7 +560,6 @@ define(function (require) {
                         $scope.alertMessage = "";
                         $scope.isLoading = true;
                         CalendarCautionService.remove({
-                            'user': currentUser.getUsername(),
                             'calendarId': $scope.calendar.Id,
                             'participant': user.Username
                         })
@@ -618,7 +623,6 @@ define(function (require) {
                             });
                     } else {
                         ClockService.update({
-                            'user': currentUser.getUsername(),
                             'id': $scope.id,
                             'content': $scope.calendar.Content,
                             'repeat': repeat,
@@ -655,11 +659,10 @@ define(function (require) {
                     var currentUsername = currentUser.getUsername();
                     var timestamp = new Date();
                     CalendarListService.query({
-                        'user': currentUsername,
                         'year': timestamp.getFullYear(),
                         'month': timestamp.getMonth() + 1,
                         'type': '1',
-                        'projectId': '0'
+                        'user': currentUsername
                     })
                     .$promise
                         .then(function (result) {
@@ -694,7 +697,6 @@ define(function (require) {
                 $scope.toggleCaution = function (calendar) {
                     $scope.alertMessage = "";
                     CalendarService4UpdateCaution.update({
-                        'user': currentUser.getUsername(),
                         'id': calendar.Id,
                         'isCaution': !calendar.IsCaution
                     })

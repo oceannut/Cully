@@ -5,6 +5,8 @@
     <property name="ProjectDao" ref="ProjectDao" />
     <property name="ParticipantDao" ref="ParticipantDao" />
     <property name="ActivityDao" ref="ActivityDao" />
+    <property name="AttachmentDao" ref="AttachmentDao" />
+    <property name="FileTransferLogService" ref="FileTransferLogService" />
   </object>
   <object id="ProjectService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="ProjectServiceTarget"/>

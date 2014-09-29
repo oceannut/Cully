@@ -1,0 +1,26 @@
+﻿<div class="story container" ng-init="init()">
+    <ul class="breadcrumb">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li><a href="#/project-details/{{faceModel.projectId}}/">项目</a></li>
+        <li class="active">文件</li>
+    </ul>
+    <div class="page-header">
+        <span class="lead"><i class="fa fa-upload"></i>&nbsp;文件</span>
+        <ul class="list-inline pull-right">
+            <li><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;刷新</a></li>
+        </ul>
+    </div>
+    <div class="alert alert-danger" ng-show="alertMessage">
+        {{alertMessage}}</div>
+    <span class="btn btn-primary fileinput-button"><i class="fa fa-plus"></i>&nbsp;上传文件
+        <!-- The file input field used as target for the file upload widget -->
+        <input id="fileupload" type="file" name="files[]" multiple>
+    </span>
+    <br />
+    <br />
+    <!-- The global progress bar -->
+    <div id="progress" class="progress" ng-show="events.isBusy">
+        <div class="progress-bar progress-bar-success">
+        </div>
+    </div>
+</div>

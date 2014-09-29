@@ -21,10 +21,10 @@ define(function (require) {
                     query: { method: 'GET', params: { 'date': '@date', 'span': '@span', 'creator': '@creator', 'category': '@category', 'start': '@start', 'count': '@count' }, isArray: true }
                 });
             } ])
-        .factory('LogListService2', ['$resource', 'wcfApp', 'logWcfService',
+        .factory('LogOfProjectService', ['$resource', 'wcfApp', 'logWcfService',
             function ($resource, wcfApp, logWcfService) {
-                return $resource(wcfApp + logWcfService + '/log/:year/:month/:projectId/', {}, {
-                    query: { method: 'GET', params: { 'year': '@year', 'month': '@month', 'projectId': '@projectId' }, isArray: true }
+                return $resource(wcfApp + logWcfService + '/project/:projectId/log/', {}, {
+                    query: { method: 'GET', params: { 'projectId': '@projectId' }, isArray: true }
                 });
             } ])
         .factory('CommentOfLogService', ['$resource', 'wcfApp', 'logWcfService',

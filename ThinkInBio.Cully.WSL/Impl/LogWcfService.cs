@@ -228,41 +228,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public Log[] GetLogList(string year, string month, string projectId)
+        public Log[] GetLogList(string projectId)
         {
-            int yearInt;
-            try
-            {
-                yearInt = Convert.ToInt32(year);
-            }
-            catch
-            {
-                throw new WebFaultException<string>("year", HttpStatusCode.BadRequest);
-            }
-            if (yearInt < 1970)
-            {
-                throw new WebFaultException<string>("year", HttpStatusCode.RequestedRangeNotSatisfiable);
-            }
-            int monthInt;
-            if (!string.IsNullOrWhiteSpace(month) && "null" == month)
-            {
-                monthInt = 0;
-            }
-            else
-            {
-                try
-                {
-                    monthInt = Convert.ToInt32(month);
-                }
-                catch
-                {
-                    throw new WebFaultException<string>("month", HttpStatusCode.BadRequest);
-                }
-                if (monthInt < 1 || monthInt > 12)
-                {
-                    throw new WebFaultException<string>("month", HttpStatusCode.RequestedRangeNotSatisfiable);
-                }
-            }
             long projectIdLong = 0;
             try
             {
@@ -274,7 +241,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
             try
             {
-                IList<Log> list = LogService.GetLogList(yearInt, monthInt, projectIdLong);
+                IList<Log> list = LogService.GetLogList(projectIdLong);
                 if (list != null)
                 {
                     return list.ToArray();

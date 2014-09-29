@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.CommonApp;
 using ThinkInBio.Cully;
 
 namespace ThinkInBio.Cully.BLL
@@ -168,6 +169,12 @@ namespace ThinkInBio.Cully.BLL
         /// <param name="projectId"></param>
         /// <returns></returns>
         IList<Participant> GetParticipantList(long projectId);
+
+        void SaveAttachment(Attachment attachment, FileTransferLog log);
+
+        void DeleteAttachment(Attachment attachment);
+
+        IList<Attachment> GetAttachmentList(long projectId);
 
     }
 

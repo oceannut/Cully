@@ -558,7 +558,7 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
             try
             {
-                IList<Calendar> list = CalendarService.GetCalendarList(yearInt, monthInt, typeEnum, null, user);
+                IList<Calendar> list = CalendarService.GetCalendarList(yearInt, monthInt, typeEnum, user);
                 if (list != null)
                 {
                     return list.ToArray();
@@ -582,15 +582,36 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         public Calendar[] GetCalendarList4Project(string projectId)
         {
-            throw new NotImplementedException();
+            long projectIdLong = 0;
+            try
+            {
+                projectIdLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
+            try
+            {
+                IList<Calendar> list = CalendarService.GetCalendarList(projectIdLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
-        public CalendarCaution SaveCalendarCaution(string user, string calendarId, string participant)
+        public CalendarCaution SaveCalendarCaution(string calendarId, string participant)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long calendarIdLong;
             try
             {
@@ -610,10 +631,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 if (calendar == null)
                 {
                     throw new WebFaultException(HttpStatusCode.NotFound);
-                }
-                if (user != calendar.Creator)
-                {
-                    throw new WebFaultException(HttpStatusCode.Forbidden);
                 }
                 return calendar.AddParticipant(participant,
                     (e) =>
@@ -636,12 +653,8 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteCalendarCaution(string user, string calendarId, string participant)
+        public void DeleteCalendarCaution(string calendarId, string participant)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long calendarIdLong;
             try
             {
@@ -661,10 +674,6 @@ namespace ThinkInBio.Cully.WSL.Impl
                 if (calendar == null)
                 {
                     throw new WebFaultException(HttpStatusCode.NotFound);
-                }
-                if (user != calendar.Creator)
-                {
-                    throw new WebFaultException(HttpStatusCode.Forbidden);
                 }
                 calendar.RemoveParticipant(participant,
                     (e) =>
@@ -687,16 +696,12 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public CalendarCaution[] GetCalendarCautionList(string user, string id)
+        public CalendarCaution[] GetCalendarCautionList(string calendarId)
         {
-            if (string.IsNullOrWhiteSpace(user))
-            {
-                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
-            }
             long idLong;
             try
             {
-                idLong = Convert.ToInt64(id);
+                idLong = Convert.ToInt64(calendarId);
             }
             catch
             {

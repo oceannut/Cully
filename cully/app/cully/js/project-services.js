@@ -62,6 +62,13 @@ define(function (require) {
                 return $resource(wcfApp + projectWcfService + '/project/:projectId/participant/', {}, {
                     query: { method: 'GET', params: { 'projectId': '@projectId' }, isArray: true }
                 });
+            } ])
+        .factory('AttachmentService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/project/:projectId/attachment/:attachment/', {}, {
+                    save: { method: 'POST', params: { 'projectId': '@projectId', 'attachment': '0', 'user': '@user', 'uploadFile': '@uploadFile'} },
+                    remove: { method: 'DELETE', params: { 'projectId': '@projectId', 'attachment': '@attachment'} }
+                });
             } ]);
 
 });

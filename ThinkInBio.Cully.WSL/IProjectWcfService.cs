@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 
+using ThinkInBio.FileTransfer;
 using ThinkInBio.Cully;
 
 namespace ThinkInBio.Cully.WSL
@@ -144,6 +145,32 @@ namespace ThinkInBio.Cully.WSL
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
         Participant[] GetParticipantList(string projectId);
+
+        #endregion
+
+        #region attachment
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/project/{projectId}/attachment/0/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Attachment SaveAttachment(string projectId, string user, UploadFile uploadFile);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/project/{projectId}/attachment/{attachment}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteAttachment(string projectId, string attachment);
+
+        [OperationContract(Name = "GetAttachmentListByProject")]
+        [WebGet(UriTemplate = "/project/{projectId}/attachment/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Attachment[] GetAttachmentList(string projectId);
 
         #endregion
 

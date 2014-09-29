@@ -91,24 +91,24 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "POST",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/calendar/{calendarId}/caution/{participant}/",
+            UriTemplate = "/calendar/{calendarId}/caution/{participant}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        CalendarCaution SaveCalendarCaution(string user, string calendarId, string participant);
+        CalendarCaution SaveCalendarCaution(string calendarId, string participant);
 
         [OperationContract]
         [WebInvoke(Method = "DELETE",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/{user}/calendar/{calendarId}/caution/{participant}/",
+            UriTemplate = "/calendar/{calendarId}/caution/{participant}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        void DeleteCalendarCaution(string user, string calendarId, string participant);
+        void DeleteCalendarCaution(string calendarId, string participant);
 
         [OperationContract]
-        [WebGet(UriTemplate = "/{user}/calendar/{id}/caution/",
+        [WebGet(UriTemplate = "/calendar/{calendarId}/caution/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        CalendarCaution[] GetCalendarCautionList(string user, string id);
+        CalendarCaution[] GetCalendarCautionList(string calendarId);
 
     }
 }

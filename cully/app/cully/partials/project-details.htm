@@ -11,12 +11,12 @@
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/participant-list/{{events.project.Id}}/">
+            <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/project-participant-list/{{events.project.Id}}/">
                 <i class="fa fa-users"></i>&nbsp;成员</a></li>
             <li><a href="#/calendar-list/{{events.project.Id}}/"><i class="fa fa-calendar-o"></i>
                 &nbsp;日程</a></li>
-            <li><a href="#/log-list/{{events.project.Id}}/"><i class="fa fa-magic"></i>&nbsp;记事</a></li>
-            <li><a href="#/log-list/{{events.project.Id}}/"><i class="fa fa-upload"></i>&nbsp;文件</a></li>
+            <li><a href="#/project-log-list/{{events.project.Id}}/"><i class="fa fa-magic"></i>&nbsp;记事</a></li>
+            <li><a href="#/project-attachment-list/{{events.project.Id}}/"><i class="fa fa-upload"></i>&nbsp;文件</a></li>
             <li access="user,supvisor"><a href="#/project-summary/false/"><i class="fa fa-level-up">
             </i>&nbsp;返回</a></li>
         </ul>

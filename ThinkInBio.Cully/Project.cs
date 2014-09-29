@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ThinkInBio.FileTransfer;
+using ThinkInBio.CommonApp;
+
 namespace ThinkInBio.Cully
 {
 
@@ -258,6 +261,38 @@ namespace ThinkInBio.Cully
                 action(p);
             }
             return p;
+        }
+
+        public Attachment AddAttachment(string user, UploadFile uploadFile,
+            Action<Attachment, FileTransferLog> action)
+        {
+            if (string.IsNullOrWhiteSpace(user)
+                || uploadFile == null)
+            {
+                throw new ArgumentException();
+            }
+            if (this.Id == 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            FileTransferLog log = new FileTransferLog(user,
+                            uploadFile.Name, uploadFile.Size, uploadFile.Path,
+                            uploadFile.TimeStamp.HasValue ? uploadFile.TimeStamp.Value : DateTime.Now);
+            log.Direction = FileTransferDirection.Upload;
+
+            Attachment attachment = new Attachment();
+            attachment.ProjectId = this.Id;
+            attachment.Title = uploadFile.Name;
+            attachment.Path = uploadFile.Path;
+            attachment.Creation = uploadFile.TimeStamp.HasValue ? uploadFile.TimeStamp.Value : DateTime.Now;
+
+            if (action != null)
+            {
+                action(attachment, log);
+            }
+
+            return attachment;
         }
 
         public override bool Equals(object obj)

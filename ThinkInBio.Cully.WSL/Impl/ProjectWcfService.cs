@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.ServiceModel.Web;
 
+using ThinkInBio.FileTransfer;
 using ThinkInBio.Common.Exceptions;
 using ThinkInBio.Common.ExceptionHandling;
 using ThinkInBio.Cully;
@@ -719,6 +720,63 @@ namespace ThinkInBio.Cully.WSL.Impl
                 ExceptionHandler.HandleException(ex);
                 throw new WebFaultException(HttpStatusCode.InternalServerError);
             }
+        }
+
+        #endregion
+
+        #region attachment
+
+        public Attachment SaveAttachment(string projectId, string user, UploadFile uploadFile)
+        {
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            if (uploadFile == null)
+            {
+                throw new WebFaultException<string>("uploadFile", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                Project project = ProjectService.GetProject(idLong);
+                if (project == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                return project.AddAttachment(user, uploadFile,
+                    (e1, e2) =>
+                    {
+                    });
+            }
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public void DeleteAttachment(string projectId, string attachment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Attachment[] GetAttachmentList(string projectId)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
