@@ -232,13 +232,26 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
         }
 
-        public void DeleteAttachment(Attachment attachment)
+        public void DeleteAttachment(Attachment attachment, FileTransferLog log)
         {
             if (attachment == null)
             {
                 throw new ArgumentNullException();
             }
             AttachmentDao.Delete(attachment);
+            if (log != null)
+            {
+                FileTransferLogService.UpdateFileTransferLog4DeleteFile(log);
+            }
+        }
+
+        public Attachment GetAttachment(long attachmentId)
+        {
+            if (attachmentId == 0)
+            {
+                throw new ArgumentNullException();
+            }
+            return AttachmentDao.Get(attachmentId);
         }
 
         public IList<Attachment> GetAttachmentList(long projectId)

@@ -55,6 +55,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CommonApp\ThinkInBio.CommonApp.BLL\ThinkInBio.CommonApp.BLL.csproj">
+      <Project>{21CE46DC-33F9-4C44-8B69-D3A61B3F643B}</Project>
+      <Name>ThinkInBio.CommonApp.BLL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CommonApp\ThinkInBio.CommonApp\ThinkInBio.CommonApp.csproj">
       <Project>{5F6BF361-0265-433F-990E-351BBFA9EA1D}</Project>
       <Name>ThinkInBio.CommonApp</Name>

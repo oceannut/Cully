@@ -9,6 +9,7 @@ define(function (require) {
     require('../../../lib/jquery-file-upload/js/vendor/jquery.ui.widget');
     require('../../../lib/jquery-file-upload/js/jquery.iframe-transport');
     require('../../../lib/jquery-file-upload/js/jquery.fileupload');
+    require('../../../static/js/configs');
     require('../../auth/js/auth-models');
     require('../../common/js/file-transfer-services');
     require('./project-services');
@@ -16,9 +17,9 @@ define(function (require) {
     require('../../../lib/jquery-file-upload/css/style.css');
     require('../../../lib/jquery-file-upload/css/jquery.fileupload.css');
 
-    angular.module('attachment.controllers', ['project.services', 'auth.models'])
-        .controller('AttachmentListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'AttachmentService',
-            function ($scope, $log, $routeParams, currentUser, AttachmentService) {
+    angular.module('attachment.controllers', ['configs', 'project.services', 'auth.models'])
+        .controller('AttachmentListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'fileApp', 'AttachmentService', 'AttachmentOfProjectService',
+            function ($scope, $log, $routeParams, currentUser, fileApp, AttachmentService, AttachmentOfProjectService) {
 
                 $scope.init = function () {
 
@@ -29,7 +30,8 @@ define(function (require) {
                     $scope.events = {
                         alertMessage: '',
                         isBusy: false,
-                        uploadFiles: []
+                        uploadFiles: [],
+                        attachmentList: []
                     };
 
                     $('#fileupload').fileupload({
@@ -53,6 +55,7 @@ define(function (require) {
                                     $scope.events.uploadFiles.push(item);
                                 });
                                 if ($scope.events.uploadFiles.length > 0) {
+                                    $scope.alertMessage = "";
                                     AttachmentService.save({
                                         'projectId': $scope.faceModel.projectId,
                                         'user': currentUser.getUsername(),
@@ -60,7 +63,8 @@ define(function (require) {
                                     })
                                     .$promise
                                         .then(function (result) {
-                                            console.log(result);
+                                            result.url = fileApp + '/' + result.Path.replace(/\\/g, '\/');
+                                            $scope.events.attachmentList.push(result);
                                         }, function (error) {
                                             $log.error(error);
                                             $scope.alertMessage = "提示：文件上传失败";
@@ -84,6 +88,46 @@ define(function (require) {
                     }).prop('disabled', !$.support.fileInput)
                                         .parent().addClass($.support.fileInput ? undefined : 'disabled');
 
+                    $scope.query();
+                }
+
+                $scope.query = function () {
+                    $scope.alertMessage = "";
+                    AttachmentOfProjectService.query({
+                        'projectId': $scope.faceModel.projectId
+                    })
+                    .$promise
+                        .then(function (result) {
+                            if (angular.isArray(result)) {
+                                _.each(result, function (item) {
+                                    item.url = fileApp + '/' + item.Path.replace(/\\/g, '\/');
+                                    $scope.events.attachmentList.push(item);
+                                });
+                            }
+                        }, function (error) {
+                            $log.error(error);
+                            $scope.alertMessage = "提示：加载文件失败";
+                        });
+                }
+
+                $scope.remove = function (attachment) {
+                    $scope.alertMessage = "";
+                    AttachmentService.remove({
+                        'projectId': $scope.faceModel.projectId,
+                        'attachmentId': attachment.Id
+                    })
+                    .$promise
+                        .then(function (result) {
+                            for (var i in $scope.events.attachmentList) {
+                                if (attachment.Id === $scope.events.attachmentList[i].Id) {
+                                    $scope.events.attachmentList.splice(i, 1);
+                                    break;
+                                }
+                            }
+                        }, function (error) {
+                            $log.error(error);
+                            $scope.alertMessage = "提示：删除文件失败";
+                        });
                 }
 
             } ]);

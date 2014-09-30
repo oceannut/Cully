@@ -295,6 +295,27 @@ namespace ThinkInBio.Cully
             return attachment;
         }
 
+        public void RemoveAttachment(Attachment attachment,
+            Func<Attachment, FileTransferLog> logFactory,
+            Action<Attachment, FileTransferLog> action)
+        {
+            if (attachment == null 
+                || attachment.Id == 0 
+                || string.IsNullOrWhiteSpace(attachment.Path))
+            {
+                throw new ArgumentException();
+            }
+            FileTransferLog log = logFactory == null ? null : logFactory(attachment);
+            if (log != null)
+            {
+                log.DeleteFile(null);
+            }
+            if (action != null)
+            {
+                action(attachment, log);
+            }
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null)

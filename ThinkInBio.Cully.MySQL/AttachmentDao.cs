@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 
 using ThinkInBio.Common.Data;
 using ThinkInBio.Cully;
@@ -57,6 +58,21 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public override Attachment Get(object id)
+        {
+            return DbTemplate.Get<Attachment>(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"select id,projectId,title,path,creation from cyAttachment 
+                                                where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+                },
+                (reader) =>
+                {
+                    return Populate(reader);
+                });
+        }
+
         public IList<Attachment> GetList(long projectId)
         {
             return DbTemplate.GetList<Attachment>(dataSource,
@@ -68,14 +84,19 @@ namespace ThinkInBio.Cully.MySQL
                 },
                 (reader) =>
                 {
-                    Attachment entity = new Attachment();
-                    entity.Id = reader.GetInt64(0);
-                    entity.ProjectId = reader.GetInt64(1);
-                    entity.Title = reader.GetString(2);
-                    entity.Path = reader.GetString(3);
-                    entity.Creation = reader.GetDateTime(4);
-                    return entity;
+                    return Populate(reader);
                 });
+        }
+
+        private Attachment Populate(IDataReader reader)
+        {
+            Attachment entity = new Attachment();
+            entity.Id = reader.GetInt64(0);
+            entity.ProjectId = reader.GetInt64(1);
+            entity.Title = reader.GetString(2);
+            entity.Path = reader.GetString(3);
+            entity.Creation = reader.GetDateTime(4);
+            return entity;
         }
 
     }

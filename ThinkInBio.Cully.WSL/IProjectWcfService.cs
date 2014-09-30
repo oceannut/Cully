@@ -161,10 +161,10 @@ namespace ThinkInBio.Cully.WSL
         [OperationContract]
         [WebInvoke(Method = "DELETE",
             BodyStyle = WebMessageBodyStyle.WrappedRequest,
-            UriTemplate = "/project/{projectId}/attachment/{attachment}/",
+            UriTemplate = "/project/{projectId}/attachment/{attachmentId}/",
             RequestFormat = WebMessageFormat.Json,
             ResponseFormat = WebMessageFormat.Json)]
-        void DeleteAttachment(string projectId, string attachment);
+        void DeleteAttachment(string projectId, string attachmentId);
 
         [OperationContract(Name = "GetAttachmentListByProject")]
         [WebGet(UriTemplate = "/project/{projectId}/attachment/",

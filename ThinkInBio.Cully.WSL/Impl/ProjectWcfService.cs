@@ -8,6 +8,7 @@ using System.ServiceModel.Web;
 using ThinkInBio.FileTransfer;
 using ThinkInBio.Common.Exceptions;
 using ThinkInBio.Common.ExceptionHandling;
+using ThinkInBio.CommonApp.BLL;
 using ThinkInBio.Cully;
 using ThinkInBio.Cully.BLL;
 
@@ -18,11 +19,12 @@ namespace ThinkInBio.Cully.WSL.Impl
     {
 
         internal IProjectService ProjectService { get; set; }
+        internal IFileTransferLogService FileTransferLogService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
         #region project
 
-        public Project SaveProject(string user, string name, string description, string[] participants, 
+        public Project SaveProject(string user, string name, string description, string[] participants,
             string createSameNameActivity, string category)
         {
             if (string.IsNullOrWhiteSpace(user))
@@ -379,11 +381,11 @@ namespace ThinkInBio.Cully.WSL.Impl
                 activity.Name = name;
                 activity.Description = description;
                 activity.Creator = user;
-                activity.Save(project, 
+                activity.Save(project,
                     (e) =>
                     {
                         return ProjectService.IsAnyActivityExisted(e);
-                    }, 
+                    },
                     (e1, e2, e3) =>
                     {
                         ProjectService.SaveActivity(e1, e2, e3);
@@ -756,6 +758,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 return project.AddAttachment(user, uploadFile,
                     (e1, e2) =>
                     {
+                        ProjectService.SaveAttachment(e1, e2);
                     });
             }
             catch (WebFaultException ex)
@@ -769,14 +772,88 @@ namespace ThinkInBio.Cully.WSL.Impl
             }
         }
 
-        public void DeleteAttachment(string projectId, string attachment)
+        public void DeleteAttachment(string projectId, string attachmentId)
         {
-            throw new NotImplementedException();
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
+            long attachmentIdLong = 0;
+            try
+            {
+                attachmentIdLong = Convert.ToInt64(attachmentId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("attachmentId", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                Project project = ProjectService.GetProject(idLong);
+                if (project == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                Attachment attachment = ProjectService.GetAttachment(attachmentIdLong);
+                if (attachment == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                project.RemoveAttachment(attachment,
+                    (e) =>
+                    {
+                        return FileTransferLogService.GetFileTransferLog(attachment.Path);
+                    },
+                    (e1, e2) =>
+                    {
+                        ProjectService.DeleteAttachment(e1, e2);
+                    });
+            }
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         public Attachment[] GetAttachmentList(string projectId)
         {
-            throw new NotImplementedException();
+            long idLong = 0;
+            try
+            {
+                idLong = Convert.ToInt64(projectId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("projectId", HttpStatusCode.BadRequest);
+            }
+            try
+            {
+                IList<Attachment> list = ProjectService.GetAttachmentList(idLong);
+                if (list != null)
+                {
+                    return list.ToArray();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
         }
 
         #endregion

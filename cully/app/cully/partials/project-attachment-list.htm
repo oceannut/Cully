@@ -7,7 +7,7 @@
     <div class="page-header">
         <span class="lead"><i class="fa fa-upload"></i>&nbsp;文件</span>
         <ul class="list-inline pull-right">
-            <li><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;刷新</a></li>
+            <li><a href="javascript:void(0)" ng-click="query()"><i class="fa fa-refresh"></i>&nbsp;刷新</a></li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
@@ -23,4 +23,9 @@
         <div class="progress-bar progress-bar-success">
         </div>
     </div>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="attachment in events.attachmentList"><i class="fa fa-trash-o pull-right hidden-print"
+            ng-click="remove(attachment)"></i><a href="{{attachment.url}}" target="_blank">{{attachment.Title}}</a>
+        </li>
+    </ul>
 </div>

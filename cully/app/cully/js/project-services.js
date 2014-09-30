@@ -65,9 +65,15 @@ define(function (require) {
             } ])
         .factory('AttachmentService', ['$resource', 'wcfApp', 'projectWcfService',
             function ($resource, wcfApp, projectWcfService) {
-                return $resource(wcfApp + projectWcfService + '/project/:projectId/attachment/:attachment/', {}, {
-                    save: { method: 'POST', params: { 'projectId': '@projectId', 'attachment': '0', 'user': '@user', 'uploadFile': '@uploadFile'} },
-                    remove: { method: 'DELETE', params: { 'projectId': '@projectId', 'attachment': '@attachment'} }
+                return $resource(wcfApp + projectWcfService + '/project/:projectId/attachment/:attachmentId/', {}, {
+                    save: { method: 'POST', params: { 'projectId': '@projectId', 'attachmentId': '0', 'user': '@user', 'uploadFile': '@uploadFile'} },
+                    remove: { method: 'DELETE', params: { 'projectId': '@projectId', 'attachmentId': '@attachmentId'} }
+                });
+            } ])
+        .factory('AttachmentOfProjectService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/project/:projectId/attachment/', {}, {
+                    query: { method: 'GET', params: { 'projectId': '@projectId' }, isArray: true }
                 });
             } ]);
 

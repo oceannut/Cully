@@ -172,7 +172,9 @@ namespace ThinkInBio.Cully.BLL
 
         void SaveAttachment(Attachment attachment, FileTransferLog log);
 
-        void DeleteAttachment(Attachment attachment);
+        void DeleteAttachment(Attachment attachment, FileTransferLog log);
+
+        Attachment GetAttachment(long attachmentId);
 
         IList<Attachment> GetAttachmentList(long projectId);
 
