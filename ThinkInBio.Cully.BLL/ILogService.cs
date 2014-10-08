@@ -17,13 +17,13 @@ namespace ThinkInBio.Cully.BLL
 
         Log GetLog(long id);
 
-        IList<Log> GetLogList(DateTime startTime, DateTime endTime, 
+        IList<Log> GetLogList(DateTime? startTime, DateTime? endTime, 
             int startRowIndex, int maxRowsCount);
 
-        IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, 
+        IList<Log> GetLogList(DateTime? startTime, DateTime? endTime, string creator, 
             int startRowIndex, int maxRowsCount);
 
-        IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, string category,
+        IList<Log> GetLogList(DateTime? startTime, DateTime? endTime, string creator, string category,
             int startRowIndex, int maxRowsCount);
 
         IList<Log> GetLogList(long projectId);

@@ -1,5 +1,5 @@
 ﻿<div class="story container" ng-init="init()">
-    <ul class="breadcrumb">
+    <ul class="breadcrumb hidden-print">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <!--<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">项目 <span
             class="caret"></span></a>
@@ -15,26 +15,26 @@
             </ul>
         </li>-->
         <li><a href="#/project-details/{{events.activity.ProjectId}}/">项目</a>&nbsp;&nbsp;[&nbsp;<a
-            href="#/participant-list/{{events.activity.ProjectId}}/" class="text-light-gray"><i
-                class="fa fa-users fa-fw"> </i>&nbsp;成员</a>&nbsp;&middot&nbsp;<a href="#/calendar-list/{{events.activity.ProjectId}}/"
+            href="#/project-participant-list/{{events.activity.ProjectId}}/" class="text-light-gray"><i
+                class="fa fa-users fa-fw"> </i>&nbsp;成员</a>&nbsp;&middot&nbsp;<a href="#/project-calendar-list/{{events.activity.ProjectId}}/"
                     class="text-light-gray"><i class="fa fa-calendar-o fa-fw"> </i>&nbsp;日程</a>&nbsp;&middot&nbsp;<a
-                        href="#/log-list/{{events.activity.ProjectId}}/" class="text-light-gray"><i class="fa fa-magic fa-fw">
-                        </i>&nbsp;记事</a>&nbsp;&middot&nbsp;<a href="#/log-list/{{events.activity.ProjectId}}/"
-                            class="text-light-gray"><i class="fa fa-upload fa-fw"> </i>&nbsp;文件</a>&nbsp;]
+                        href="#/project-log-list/{{events.activity.ProjectId}}/" class="text-light-gray"><i
+                            class="fa fa-magic fa-fw"> </i>&nbsp;记事</a>&nbsp;&middot&nbsp;<a href="#/project-attachment-list/{{events.activity.ProjectId}}/"
+                                class="text-light-gray"><i class="fa fa-upload fa-fw"> </i>&nbsp;文件</a>&nbsp;]
         </li>
         <li class="active">活动</li>
     </ul>
     <div class="page-header">
         <span class="lead"><i class="{{events.activity.icon}}"></i>&nbsp;{{events.activity.Name}}</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
             <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/activity-edit/{{events.activity.Id}}/">
                 <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
             <li access="user,supvisor"><a href="#/activity-task-delay/{{events.activity.Id}}/"><i
                 class="fa fa-bar-chart-o"></i>&nbsp;延误</a></li>
-            <li access="user,supvisor"><a href="#/project-summary/false/"><i class="fa fa-level-up">
-            </i>&nbsp;返回</a></li>
+            <li access="user,supvisor"><a href="#/project-summary/false/"><i class="fa fa-list">
+            </i>&nbsp;列表</a></li>
         </ul>
     </div>
     <div ng-show="events.isLoading" class="text-center">

@@ -195,16 +195,20 @@ namespace ThinkInBio.Cully.WSL.Impl
                 throw new WebFaultException<string>("count", HttpStatusCode.BadRequest);
             }
 
-            DateTime startTime, endTime;
-            if (spanInt < 0)
+            DateTime? startTime = null;
+            DateTime? endTime = null;
+            if ("null" != date && "null" != span)
             {
-                startTime = d.AddDays(spanInt + 1);
-                endTime = new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
-            }
-            else
-            {
-                startTime = new DateTime(d.Year, d.Month, d.Day);
-                endTime = d.AddDays(spanInt).AddSeconds(-1);
+                if (spanInt < 0)
+                {
+                    startTime = d.AddDays(spanInt + 1);
+                    endTime = new DateTime(d.Year, d.Month, d.Day, 23, 59, 59);
+                }
+                else
+                {
+                    startTime = new DateTime(d.Year, d.Month, d.Day);
+                    endTime = d.AddDays(spanInt).AddSeconds(-1);
+                }
             }
             string creatorInput = "null" == creator ? null : creator;
             string categoryInput = "null" == category ? null : category;

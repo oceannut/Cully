@@ -50,7 +50,7 @@
             </div>
         </div>
     </div>
-    <ul class="breadcrumb">
+    <ul class="breadcrumb hidden-print">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <li><a href="#/project-details/{{activity.ProjectId}}/">项目</a></li>
         <li><a href="#/activity-details/{{task.ActivityId}}/">活动</a></li>
@@ -58,7 +58,7 @@
     </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-leaf"></i>&nbsp;任务</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
             <li style="display: {{navbarLinkVisible}};"><a data-toggle="modal" data-target="#removeTaskDialog">
                 <i class="fa fa-trash-o"></i>&nbsp;删除</a></li>
             <li style="display: {{navbarLinkVisible}};"><a href="#/task-edit/{{task.Id}}/"><i
@@ -113,7 +113,7 @@
                         | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;&nbsp;<mark>[{{item.index}}楼]</mark></span></p>
                 <p>
                     {{item.Content}}</p>
-                <p class="text-right">
+                <p class="text-right hidden-print">
                     <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
                         data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
                         </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"

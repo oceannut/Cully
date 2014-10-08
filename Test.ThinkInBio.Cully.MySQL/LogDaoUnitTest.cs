@@ -27,7 +27,7 @@ namespace Test.ThinkInBio.Cully.MySQL
         {
             Log log = new Log();
             log.Content = "测试";
-            log.StartTime = DateTime.Now;
+            //log.StartTime = DateTime.Now;
             log.Creator = "me";
             log.Creation = DateTime.Now;
             log.Modification = DateTime.Now;

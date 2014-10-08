@@ -17,10 +17,12 @@ define(function (require) {
     require('../../app/cully/js/index-controllers');
     require('../../app/cully/js/home-controllers');
     require('../../app/cully/js/project-controllers');
+    require('../../app/cully/js/project-participant-controllers');
+    require('../../app/cully/js/project-calendar-controllers');
+    require('../../app/cully/js/project-log-controllers');
+    require('../../app/cully/js/project-attachment-controllers');
     require('../../app/cully/js/activity-controllers');
     require('../../app/cully/js/task-controllers');
-    require('../../app/cully/js/participant-controllers');
-    require('../../app/cully/js/attachment-controllers');
     require('../../app/cully/js/log-controllers');
     require('../../app/cully/js/calendar-controllers');
 
@@ -38,10 +40,12 @@ define(function (require) {
             'index.controllers',
             'home.controllers',
             'project.controllers',
+            'project.participant.controllers',
+            'project.calendar.controllers',
+            'project.log.controllers',
+            'project.attachment.controllers',
             'activity.controllers',
             'task.controllers',
-            'participant.controllers',
-            'attachment.controllers',
             'log.controllers',
             'calendar.controllers'
         ])
@@ -244,15 +248,31 @@ define(function (require) {
                     })
                     .when('/project-participant-list/:projectId/', {
                         templateUrl: 'app/cully/partials/project-participant-list.htm',
-                        controller: 'ParticipantListCtrl',
+                        controller: 'ProjectParticipantListCtrl',
                         access: {
                             loginRequired: true,
                             roles: ['supvisor']
                         }
                     })
+                    .when('/project-calendar-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/project-calendar-list.htm',
+                        controller: 'ProjectCalendarListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
+                    .when('/project-log-list/:projectId/', {
+                        templateUrl: 'app/cully/partials/project-log-list.htm',
+                        controller: 'ProjectLogListCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
                     .when('/project-attachment-list/:projectId/', {
                         templateUrl: 'app/cully/partials/project-attachment-list.htm',
-                        controller: 'AttachmentListCtrl',
+                        controller: 'ProjectAttachmentListCtrl',
                         access: {
                             loginRequired: true,
                             roles: ['user', 'supvisor']
@@ -342,14 +362,6 @@ define(function (require) {
                             roles: ['user']
                         }
                     })
-                    .when('/project-log-list/:projectId/', {
-                        templateUrl: 'app/cully/partials/project-log-list.htm',
-                        controller: 'ProjectLogListCtrl',
-                        access: {
-                            loginRequired: true,
-                            roles: ['user', 'supvisor']
-                        }
-                    })
                     .when('/calendar-summary/:day/', {
                         templateUrl: 'app/cully/partials/calendar-summary.htm',
                         controller: 'CalendarSummaryCtrl',
@@ -358,7 +370,7 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
-                    .when('/calendar-list/:projectId/', {
+                    .when('/calendar-list/', {
                         templateUrl: 'app/cully/partials/calendar-list.htm',
                         controller: 'CalendarListCtrl',
                         access: {

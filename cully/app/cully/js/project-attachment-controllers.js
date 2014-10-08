@@ -17,8 +17,8 @@ define(function (require) {
     require('../../../lib/jquery-file-upload/css/style.css');
     require('../../../lib/jquery-file-upload/css/jquery.fileupload.css');
 
-    angular.module('attachment.controllers', ['configs', 'project.services', 'auth.models'])
-        .controller('AttachmentListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'fileApp', 'AttachmentService', 'AttachmentOfProjectService',
+    angular.module('project.attachment.controllers', ['configs', 'project.services', 'auth.models'])
+        .controller('ProjectAttachmentListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'fileApp', 'AttachmentService', 'AttachmentOfProjectService',
             function ($scope, $log, $routeParams, currentUser, fileApp, AttachmentService, AttachmentOfProjectService) {
 
                 $scope.init = function () {
@@ -92,6 +92,7 @@ define(function (require) {
                 }
 
                 $scope.query = function () {
+                    $scope.events.attachmentList.length = 0;
                     $scope.alertMessage = "";
                     AttachmentOfProjectService.query({
                         'projectId': $scope.faceModel.projectId

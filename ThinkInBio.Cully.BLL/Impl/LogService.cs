@@ -47,17 +47,17 @@ namespace ThinkInBio.Cully.BLL.Impl
             return LogDao.Get(id);
         }
 
-        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, int startRowIndex, int maxRowsCount)
+        public IList<Log> GetLogList(DateTime? startTime, DateTime? endTime, int startRowIndex, int maxRowsCount)
         {
             return GetLogList(startTime, endTime, null, null, startRowIndex, maxRowsCount);
         }
 
-        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, int startRowIndex, int maxRowsCount)
+        public IList<Log> GetLogList(DateTime? startTime, DateTime? endTime, string creator, int startRowIndex, int maxRowsCount)
         {
             return GetLogList(startTime, endTime, creator, null, startRowIndex, maxRowsCount);
         }
 
-        public IList<Log> GetLogList(DateTime startTime, DateTime endTime, string creator, string category, int startRowIndex, int maxRowsCount)
+        public IList<Log> GetLogList(DateTime? startTime, DateTime? endTime, string creator, string category, int startRowIndex, int maxRowsCount)
         {
             if (startTime >= endTime)
             {

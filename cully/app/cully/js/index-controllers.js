@@ -123,7 +123,13 @@ define(function (require) {
                     //初始化导航条。
                     $scope.appName = appName;
                     $scope.makeNavbarVisible();
-                    $scope.navList = [homeNav, activityNav, calendarNav, logNav, fileTransferNav, statNav];
+                    $scope.navList = [
+                        homeNav,
+                        activityNav,
+                        calendarNav,
+                        logNav,
+                        fileTransferNav
+                    ];
 
                     $scope.$on("$destroy", function (event) {
                         if (untreatedBizNotificationCountTimer !== undefined && untreatedBizNotificationCountTimer !== null) {

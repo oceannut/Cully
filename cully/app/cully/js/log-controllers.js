@@ -23,84 +23,108 @@ define(function (require) {
                 var pageSize = 20;
 
                 $scope.init = function () {
-                    $scope.alertMessageVisible = 'hidden';
-                    $scope.queryModel = {
+                    $scope.faceModel = {
                         'staff': '',
-                        'date': ''
+                        'date': '',
+                        'month': '',
+                        'monthInputVisible': 'none',
+                        'prevBtnClass': 'disabled',
+                        'nextBtnClass': '',
+                        'currentPage': -1,
+                        'users': null
                     }
-                    $scope.prevBtnClass = 'disabled';
-                    $scope.nextBtnClass = '';
-                    $scope.currentPage = -1;
-
                     userCache.list(function (e) {
-                        $scope.users = e;
+                        $scope.faceModel.users = e;
                     });
+
+                    $scope.events = {
+                        alertMessage: '',
+                        isLoading: false,
+                        logList: []
+                    };
+
                     $scope.query();
                 }
 
                 $scope.query = function () {
-                    $scope.currentPage = 0;
+                    $scope.faceModel.currentPage = 0;
                     getLogList();
                 }
 
                 $scope.prevPage = function () {
-                    if ($scope.prevBtnClass == 'disabled') {
+                    if ($scope.faceModel.prevBtnClass == 'disabled') {
                         return;
                     }
-                    if ($scope.currentPage > 0) {
-                        $scope.currentPage--;
+                    if ($scope.faceModel.currentPage > 0) {
+                        $scope.faceModel.currentPage--;
                         getLogList();
                     }
                 }
 
                 $scope.nextPage = function () {
-                    if ($scope.nextBtnClass == 'disabled') {
+                    if ($scope.faceModel.nextBtnClass == 'disabled') {
                         return;
                     }
-                    $scope.currentPage++;
+                    $scope.faceModel.currentPage++;
                     getLogList();
                 }
 
                 function getLogList() {
-                    var startRowIndex = $scope.currentPage * pageSize;
-                    var staff = $scope.queryModel.staff;
-                    var date = $scope.queryModel.date;
-                    var dateInput, spanInput;
-                    if (staff == '') {
+                    var startRowIndex = $scope.faceModel.currentPage * pageSize;
+                    var staff = $scope.faceModel.staff;
+                    var date = $scope.faceModel.date;
+
+                    if (staff === '') {
                         staff = 'null';
                     }
-                    if (date == '') {
-                        var now = new Date();
-                        var s = new Date(now - (1000 * 3600 * 24 * 365));
-                        dateInput = dateUtil.formatDateByYMD(s);
-                        spanInput = '366';
-                    } else {
-                        dateInput = dateUtil.getDate(date);
-                        spanInput = dateUtil.getSpan(date);
-                    }
+                    var startDay, span;
+                    if (date != '') {
+                        if (date == '-30') {
+                            $scope.faceModel.monthInputVisible = '';
+                            if ($scope.faceModel.month != '') {
+                                var array = $scope.faceModel.month.split('-');
+                                var d = new Date(array[0], parseInt(array[1]) - 1, 1);
+                                startDay = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+                                span = dateUtil.getDaysofMonth(d.getMonth() + 1);
+                            }
+                        } else {
+                            $scope.faceModel.monthInputVisible = 'none';
+                            startDay = dateUtil.getDate(date);
+                            span = dateUtil.getSpan(date);
+                        }
 
-                    $scope.alertMessageVisible = 'hidden';
-                    LogListService.query({
-                        'date': dateInput,
-                        'span': spanInput,
-                        'creator': staff,
-                        'category': 'null',
-                        'start': startRowIndex,
-                        'count': pageSize
-                    })
-                    .$promise
-                        .then(function (result) {
-                            interceptLogList(result);
-                        }, function (error) {
-                            $log.error(error);
-                            $scope.alertMessageVisible = 'show';
-                            $scope.alertMessage = "提示：项目列表加载失败";
-                        });
+                    } else {
+                        $scope.faceModel.monthInputVisible = 'none';
+                        startDay = 'null';
+                        span = 'null';
+                    }
+                    if (startDay != undefined && span != undefined) {
+                        $scope.events.alertMessage = '';
+                        $scope.events.isLoading = true;
+                        LogListService.query({
+                            'date': startDay,
+                            'span': span,
+                            'creator': staff,
+                            'category': 'null',
+                            'start': startRowIndex,
+                            'count': pageSize
+                        })
+                        .$promise
+                            .then(function (result) {
+                                interceptLogList(result);
+                            }, function (error) {
+                                $log.error(error);
+                                $scope.events.alertMessage = "提示：项目列表加载失败";
+                            })
+                            .then(function () {
+                                $scope.events.isLoading = false;
+                            });
+                    }
                 }
 
                 function interceptLogList(result) {
+                    $scope.events.logList.length = 0;
                     if (result != null && result.length > 0) {
-                        $scope.logList = [];
                         for (var i = 0; i < result.length; i++) {
                             var item = result[i];
                             categoryCache.get('log', item.Category, function (e) {
@@ -109,36 +133,41 @@ define(function (require) {
                                     item.categoryName = e.Name;
                                 }
                             });
+                            if (item.Creator === currentUser.getUsername()) {
+                                item.isEditable = true;
+                            } else {
+                                item.isEditable = false;
+                            }
                             item.creatorName = getCreatorName(item.Creator);
                             var content = stringUtil.removeHTML(item.Content);
                             item.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
                             if (item.Tags != null && item.Tags != '') {
                                 item.TagList = item.Tags.split(',');
                             }
-                            $scope.logList.push(item);
+                            $scope.events.logList.push(item);
                         }
-                        $scope.nextBtnClass = '';
+                        $scope.faceModel.nextBtnClass = '';
                     } else {
-                        if ($scope.currentPage > 0) {
-                            $scope.currentPage--;
+                        if ($scope.faceModel.currentPage > 0) {
+                            $scope.faceModel.currentPage--;
                         } else {
-                            $scope.logList = [];
+                            $scope.events.logList.length = 0;
                         }
-                        $scope.nextBtnClass = 'disabled';
+                        $scope.faceModel.nextBtnClass = 'disabled';
                     }
-                    if ($scope.currentPage == 0) {
-                        $scope.prevBtnClass = 'disabled';
+                    if ($scope.faceModel.currentPage == 0) {
+                        $scope.faceModel.prevBtnClass = 'disabled';
                     } else {
-                        $scope.prevBtnClass = '';
+                        $scope.faceModel.prevBtnClass = '';
                     }
-                    logCache.logList = $scope.logList;
+                    logCache.logList = $scope.events.logList;
                 }
 
                 function getCreatorName(creator) {
-                    if ($scope.users != undefined && $scope.users != null) {
-                        for (var i in $scope.users) {
-                            if ($scope.users[i].Username == creator) {
-                                creator = $scope.users[i].Name;
+                    if ($scope.faceModel.users != undefined && $scope.faceModel.users != null) {
+                        for (var i in $scope.faceModel.users) {
+                            if ($scope.faceModel.users[i].Username == creator) {
+                                creator = $scope.faceModel.users[i].Name;
                             }
                         }
                     }
@@ -200,6 +229,14 @@ define(function (require) {
                         .then(function () {
                             $scope.isLoading = false;
                         });
+                }
+
+                $scope.cancel = function () {
+                    if ($scope.log.projectId > 0) {
+                        $location.path('/project-log-list/' + $scope.log.projectId + '/');
+                    } else {
+                        $location.path('/log-summary/');
+                    }
                 }
 
             } ])
@@ -428,49 +465,12 @@ define(function (require) {
                         });
                 }
 
-            } ])
-        .controller('ProjectLogListCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'dateUtil', 'stringUtil', 'categoryCache', 'userCache', 'LogOfProjectService',
-            function ($scope, $routeParams, $log, currentUser, dateUtil, stringUtil, categoryCache, userCache, LogOfProjectService) {
-
-                $scope.init = function () {
-                    $scope.projectId = $routeParams.projectId;
-
-                    $scope.query();
-                }
-
-                $scope.query = function () {
-                    var currentUsername = currentUser.getUsername();
-                    LogOfProjectService.query({
-                        'projectId': $scope.projectId
-                    })
-                    .$promise
-                        .then(function (result) {
-                            $scope.logList = result;
-                            if ($scope.logList != null) {
-                                var len = $scope.logList.length;
-                                for (var i = 0; i < len; i++) {
-                                    var log = $scope.logList[i];
-                                    categoryCache.get('log', log.Category, function (e) {
-                                        if (e != null) {
-                                            log.icon = e.Icon;
-                                            log.categoryName = e.Name;
-                                        }
-                                    });
-                                    userCache.get(log.Creator, function (e) {
-                                        log.creatorName = (e == null) ? log.Creator : e.Name;
-                                    });
-                                    var content = stringUtil.removeHTML(log.Content);
-                                    log.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
-                                    if (currentUsername === log.Creator) {
-                                        log.isEidtable = true;
-                                    } else {
-                                        log.isEidtable = false;
-                                    }
-                                }
-                            }
-                        }, function (error) {
-                            $log.error(error);
-                        });
+                $scope.viewList = function () {
+                    if ($scope.log.ProjectId > 0) {
+                        $location.path('/project-log-list/' + $scope.log.ProjectId + '/');
+                    } else {
+                        $location.path('/log-summary/');
+                    }
                 }
 
             } ]);

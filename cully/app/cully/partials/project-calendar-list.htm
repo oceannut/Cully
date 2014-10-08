@@ -1,30 +1,25 @@
 ﻿<div class="story container" ng-init="init()">
+    <ul class="breadcrumb hidden-print">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li><a href="#/project-details/{{projectId}}/">项目</a></li>
+        <li class="active">日程</li>
+    </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-calendar-o"></i>&nbsp;日程</span>
         <ul class="list-inline pull-right hidden-print">
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li access="user"><a href="#/calendar-edit/0/0/"><i class="fa fa-plus"></i>
+            <li access="user"><a href="#/calendar-edit/{{projectId}}/0/"><i class="fa fa-plus"></i>
                 &nbsp;添加一条</a></li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
-    <div style="margin: 0 0 1em 0;">
-        <form class="form-inline hidden-print" role="form">
-        <label class="control-label">
-            筛选:</label>
-        <div class="form-group">
-            <input type="month" class="form-control input-sm" ng-model="queryModel.month" ng-change="query()" />
-        </div>
-        </form>
-    </div>
     <ol class="list-unstyled">
         <li ng-repeat="item in calendarList" class="biz-list-item">
             <p ng-class="item.textColor">
                 <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}<a
-                    ng-if="item.ProjectId>0" href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i
-                        class="fa fa-cube"></i></a></p>
+                    href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i class="fa fa-cube"></i></a></p>
             <ul class="list-unstyled list-inline pull-right hidden-print">
                 <li ng-show="item.isEidtable"><a href="#/calendar-edit/{{item.ProjectId}}/{{item.Id}}/"><i
                     class="fa fa-edit"></i>&nbsp;编辑</a></li>

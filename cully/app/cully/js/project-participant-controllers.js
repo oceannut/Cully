@@ -7,8 +7,8 @@ define(function (require) {
     require('../../auth/js/auth-models');
     require('../../common/js/common-cache');
 
-    angular.module('participant.controllers', ['project.services', 'auth.models', 'common.cache'])
-        .controller('ParticipantListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ParticipantService', 'ParticipantOfProjectService', 'userCache',
+    angular.module('project.participant.controllers', ['project.services', 'auth.models', 'common.cache'])
+        .controller('ProjectParticipantListCtrl', ['$scope', '$log', '$routeParams', 'currentUser', 'ParticipantService', 'ParticipantOfProjectService', 'userCache',
             function ($scope, $log, $routeParams, currentUser, ParticipantService, ParticipantOfProjectService, userCache) {
 
                 function render(participant) {

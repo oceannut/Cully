@@ -1,18 +1,21 @@
 ﻿<div class="story container" ng-init="init()">
-    <ul class="breadcrumb">
+    <ul class="breadcrumb hidden-print">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <li><a href="#/project-details/{{faceModel.projectId}}/">项目</a></li>
         <li class="active">文件</li>
     </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-upload"></i>&nbsp;文件</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
             <li><a href="javascript:void(0)" ng-click="query()"><i class="fa fa-refresh"></i>&nbsp;刷新</a></li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
-    <span class="btn btn-primary fileinput-button"><i class="fa fa-plus"></i>&nbsp;上传文件
+    <span class="btn btn-primary fileinput-button hidden-print"><i class="fa fa-plus"></i>
+        &nbsp;上传文件
         <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple>
     </span>

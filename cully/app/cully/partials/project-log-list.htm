@@ -1,12 +1,14 @@
 ﻿<div class="story container" ng-init="init()">
-    <ul class="breadcrumb" ng-hide="projectId==0">
+    <ul class="breadcrumb hidden-print" ng-hide="projectId==0">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <li><a href="#/project-details/{{projectId}}/">项目</a></li>
         <li class="active">记事</li>
     </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-magic"></i>&nbsp;记事</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
             <li access="user,supvisor"><a href="#/log-add/{{projectId}}/"><i class="fa fa-plus">
             </i>&nbsp;添加一条</a></li>
         </ul>
@@ -20,7 +22,7 @@
             <p class="text-justify" style="font-size: 10.5pt; color: #888;">
                 {{item.filterContent}}<a ng-if="item.ProjectId>0" href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i
                     class="fa fa-cube"></i></a></p>
-            <ul class="list-unstyled list-inline pull-right">
+            <ul class="list-unstyled list-inline pull-right hidden-print">
                 <li ng-show="item.isEidtable"><a href="#/calendar-edit/{{projectId}}/{{item.Id}}/"><i
                     class="fa fa-edit"></i>&nbsp;编辑</a></li>
             </ul>
@@ -29,5 +31,6 @@
                 <li><span>{{item.Modification | jsonDateFormat | date:'yyyy-MM-dd'}}</span></li>
                 <li><span>评论:{{item.CommentCount}}</span></li>
             </ul>
+        </li>
     </ol>
 </div>

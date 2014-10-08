@@ -1,18 +1,20 @@
 ﻿<div class="story container" ng-init="init()">
-    <ul class="breadcrumb">
+    <ul class="breadcrumb hidden-print">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <li><a href="#/project-details/{{projectId}}/">项目</a></li>
         <li class="active">成员</li>
     </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-users"></i>&nbsp;成员</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
             <li><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i>&nbsp;刷新</a></li>
         </ul>
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
-    <form class="form-horizontal css-form" role="form" name="form">
+    <form class="form-horizontal css-form hidden-print" role="form" name="form">
     <div class="form-group">
         <div class="col-sm-3">
             <div class="input-group-btn">
@@ -30,11 +32,8 @@
     </div>
     </form>
     <ol class="list-group">
-        <li class="list-group-item" ng-repeat="participant in participantList">
-            <h4>
-                {{participant.staffName}}&nbsp;&nbsp;<small>于&nbsp;{{participant.Creation | jsonDateFormat
-                    | date:'yyyy-MM-dd'}}&nbsp;加入</small><span class="pull-right glyphicon glyphicon-remove"
-                        ng-click="removeParticipant(participant)"></span></h4>
-        </li>
+        <li class="list-group-item" ng-repeat="participant in participantList"><span class="pull-right fa fa-trash-o hidden-print"
+            ng-click="removeParticipant(participant)"></span>{{participant.staffName}}&nbsp;&nbsp;<small>于&nbsp;{{participant.Creation
+                | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;加入</small> </li>
     </ol>
 </div>

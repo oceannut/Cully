@@ -171,8 +171,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('CalendarListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'currentUser', 'CalendarListService', 'CalendarOfProjectService',
-            function ($scope, $routeParams, $log, dateUtil, currentUser, CalendarListService, CalendarOfProjectService) {
+        .controller('CalendarListCtrl', ['$scope', '$routeParams', '$log', 'dateUtil', 'currentUser', 'CalendarListService',
+            function ($scope, $routeParams, $log, dateUtil, currentUser, CalendarListService) {
 
                 function renderList() {
                     if ($scope.calendarList != null) {
@@ -200,7 +200,6 @@ define(function (require) {
                 }
 
                 $scope.init = function () {
-                    $scope.projectId = $routeParams.projectId;
                     var timestamp = new Date();
                     $scope.queryModel = {
                         month: timestamp.getFullYear() + "-" + (timestamp.getMonth() + 1)
@@ -210,27 +209,14 @@ define(function (require) {
                 }
 
                 $scope.query = function () {
-                    if ($scope.projectId === 0) {
-                        if ($scope.queryModel.month !== "") {
-                            var year = $scope.queryModel.month.substr(0, 4);
-                            var month = $scope.queryModel.month.substr(5, 2);
-                            CalendarListService.query({
-                                'year': year,
-                                'month': month,
-                                'type': '0',
-                                'user': currentUsername
-                            })
-                            .$promise
-                                .then(function (result) {
-                                    $scope.calendarList = result;
-                                    renderList();
-                                }, function (error) {
-                                    $log.error(error);
-                                });
-                        }
-                    } else {
-                        CalendarOfProjectService.query({
-                            'projectId': $scope.projectId
+                    if ($scope.queryModel.month !== "") {
+                        var year = $scope.queryModel.month.substr(0, 4);
+                        var month = $scope.queryModel.month.substr(5, 2);
+                        CalendarListService.query({
+                            'year': year,
+                            'month': month,
+                            'type': '0',
+                            'user': currentUser.getUsername()
                         })
                         .$promise
                             .then(function (result) {
@@ -384,6 +370,14 @@ define(function (require) {
                     }
                 }
 
+                $scope.viewList = function () {
+                    if ($scope.projectId > 0) {
+                        $location.path("/project-calendar-list/" + $scope.projectId + "/");
+                    } else {
+                        $location.path("/calendar-list/");
+                    }
+                }
+
                 $scope.viewCalendar = function () {
                     $location.path("/calendar-summary/" + $scope.calendar.appointed + "/");
                 }
@@ -414,7 +408,11 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                $location.path('/calendar-list/' + $scope.projectId + '/');
+                                if ($scope.projectId > 0) {
+                                    $location.path("/project-calendar-list/" + $scope.projectId + "/");
+                                } else {
+                                    $location.path("/calendar-list/");
+                                }
                             }, function (error) {
                                 $scope.alertMessage = "提示：添加日程失败";
                                 $scope.alertMessageColor = "alert-danger";
