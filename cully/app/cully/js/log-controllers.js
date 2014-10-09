@@ -7,48 +7,56 @@ define(function (require) {
     require('textAngular');
     require('../../../static/js/filters');
     require('../../../static/js/utils');
-    require('./log-services');
+    require('../../../static/js/face-cache');
     require('../../auth/js/auth-models');
     require('../../auth/js/auth-directives');
     require('../../common/js/common-cache');
     require('../../common/js/common-utils');
+    require('./client-services');
+    require('./log-services');
+    require('./cully-constants');
 
-    angular.module('log.controllers', ['textAngular', 'filters', 'utils', 'log.services', 'auth.models', 'auth.directives', 'common.cache', 'common.utils'])
-        .value('logCache', { 'logList': [] })
-        .controller('LogSummaryCtrl', ['$scope', '$location', '$log', 'currentUser', 'dateUtil', 'stringUtil',
-            'LogListService', 'userCache', 'categoryCache', 'logCache',
-            function ($scope, $location, $log, currentUser, dateUtil, stringUtil,
-                LogListService, userCache, categoryCache, logCache) {
+    angular.module('log.controllers', ['textAngular', 'filters', 'utils', 'face.cache', 'auth.models', 'auth.directives', 'common.cache',
+                                        'common.utils', 'client.services', 'log.services', 'cully.constants'])
+        .controller('LogSummaryCtrl', ['$scope', '$routeParams', '$location', '$log', 'currentUser', 'dateUtil', 'stringUtil',
+            'userCache', 'categoryCache', 'localStorageUtil', 'logFace', 'faceCache', 'LogListService',
+            function ($scope, $routeParams, $location, $log, currentUser, dateUtil, stringUtil,
+                userCache, categoryCache, localStorageUtil, logFace, faceCache, LogListService) {
 
-                var pageSize = 20;
+                var pageSize = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.pageSize, localStorageUtil.pageSizeDV, true);
 
                 $scope.init = function () {
-                    $scope.faceModel = {
-                        'staff': '',
-                        'date': '',
-                        'month': '',
-                        'monthInputVisible': 'none',
-                        'prevBtnClass': 'disabled',
-                        'nextBtnClass': '',
-                        'currentPage': -1,
-                        'users': null
-                    }
-                    userCache.list(function (e) {
-                        $scope.faceModel.users = e;
-                    });
-
+                    var reload = $routeParams.reload;
                     $scope.events = {
                         alertMessage: '',
                         isLoading: false,
                         logList: []
                     };
+                    if (reload === 'true') {
+                        $scope.faceModel = {
+                            'staff': '',
+                            'date': '',
+                            'month': '',
+                            'monthInputVisible': 'none',
+                            'prevBtnClass': 'disabled',
+                            'nextBtnClass': '',
+                            'currentPage': -1,
+                            'users': null
+                        }
+                        userCache.list(function (e) {
+                            $scope.faceModel.users = e;
+                        });
 
-                    $scope.query();
+                        $scope.query();
+                    } else {
+                        $scope.faceModel = faceCache.getModel(logFace);
+                        faceCache.pull(logFace, $scope.events.logList);
+                    }
                 }
 
                 $scope.query = function () {
                     $scope.faceModel.currentPage = 0;
-                    getLogList();
+                    loadLogList();
                 }
 
                 $scope.prevPage = function () {
@@ -57,7 +65,7 @@ define(function (require) {
                     }
                     if ($scope.faceModel.currentPage > 0) {
                         $scope.faceModel.currentPage--;
-                        getLogList();
+                        loadLogList();
                     }
                 }
 
@@ -66,10 +74,10 @@ define(function (require) {
                         return;
                     }
                     $scope.faceModel.currentPage++;
-                    getLogList();
+                    loadLogList();
                 }
 
-                function getLogList() {
+                function loadLogList() {
                     var startRowIndex = $scope.faceModel.currentPage * pageSize;
                     var staff = $scope.faceModel.staff;
                     var date = $scope.faceModel.date;
@@ -112,6 +120,7 @@ define(function (require) {
                         .$promise
                             .then(function (result) {
                                 interceptLogList(result);
+                                faceCache.init(logFace, $scope.events.logList);
                             }, function (error) {
                                 $log.error(error);
                                 $scope.events.alertMessage = "提示：项目列表加载失败";
@@ -160,7 +169,6 @@ define(function (require) {
                     } else {
                         $scope.faceModel.prevBtnClass = '';
                     }
-                    logCache.logList = $scope.events.logList;
                 }
 
                 function getCreatorName(creator) {
@@ -175,8 +183,8 @@ define(function (require) {
                 }
 
             } ])
-        .controller('LogAddCtrl', ['$scope', '$routeParams', '$location', '$log', 'currentUser', 'LogService', 'commonUtil',
-            function ($scope, $routeParams, $location, $log, currentUser, LogService, commonUtil) {
+        .controller('LogAddCtrl', ['$scope', '$routeParams', '$location', '$log', 'currentUser', 'LogService', 'commonUtil', 'logFace', 'faceCache',
+            function ($scope, $routeParams, $location, $log, currentUser, LogService, commonUtil, logFace, faceCache) {
 
                 $scope.init = function () {
                     $scope.categoryList = [];
@@ -217,9 +225,9 @@ define(function (require) {
                     .$promise
                         .then(function (result) {
                             if ($scope.log.projectId > 0) {
-                                $location.path('/project-log-list/' + $scope.log.projectId + '/');
+                                $location.path('/project-log-list/' + $scope.log.projectId + '/false/');
                             } else {
-                                $location.path('/log-summary/');
+                                $location.path('/log-summary/false/');
                             }
                         }, function (error) {
                             $scope.alertMessageColor = "alert-danger";
@@ -233,21 +241,25 @@ define(function (require) {
 
                 $scope.cancel = function () {
                     if ($scope.log.projectId > 0) {
-                        $location.path('/project-log-list/' + $scope.log.projectId + '/');
+                        $location.path('/project-log-list/' + $scope.log.projectId + '/false/');
                     } else {
-                        $location.path('/log-summary/');
+                        $location.path('/log-summary/false/');
                     }
                 }
 
             } ])
-        .controller('LogEditCtrl', ['$scope', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'logCache', 'commonUtil',
-            function ($scope, $routeParams, currentUser, dateUtil, LogService, logCache, commonUtil) {
+        .controller('LogEditCtrl', ['$scope', '$routeParams', 'currentUser', 'dateUtil', 'LogService', 'commonUtil', 'logFace', 'faceCache',
+            function ($scope, $routeParams, currentUser, dateUtil, LogService, commonUtil, logFace, faceCache) {
 
                 function renderLog(editLog) {
                     commonUtil.selectCategory($scope.categoryList, editLog.Category, function (e) {
                         $scope.category = e;
                     });
-                    $scope.log = { 'id': editLog.Id, 'title': editLog.Title, 'content': editLog.Content };
+                    $scope.log = {
+                        'id': editLog.Id,
+                        'title': editLog.Title,
+                        'content': editLog.Content
+                    };
                     var tags = editLog.Tags;
                     if (tags != undefined && tags != null) {
                         var tagArray = tags.split(',');
@@ -269,15 +281,8 @@ define(function (require) {
                     $scope.alertMessageVisible = 'hidden';
                     commonUtil.bindCategoryList($scope.categoryList, 'log');
 
-                    var editLog = null;
-                    if (logCache.logList != null) {
-                        for (var i in logCache.logList) {
-                            if ($routeParams.id == logCache.logList[i].Id) {
-                                editLog = logCache.logList[i];
-                                break;
-                            }
-                        }
-                    }
+                    var editLog = faceCache.get(logFace, parseInt($routeParams.id));
+
                     commonUtil.selectCategory($scope.categoryList, editLog.Category, function (e) {
                         $scope.category = e;
                     });
@@ -308,14 +313,7 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                if (logCache.logList != null) {
-                                    for (var i in logCache.logList) {
-                                        if ($routeParams.id == logCache.logList[i].Id) {
-                                            logCache.logList[i] = result;
-                                            break;
-                                        }
-                                    }
-                                }
+                                faceCache.replace(logFace, result);
                                 renderLog(result);
                                 $scope.alertMessageVisible = 'show';
                                 $scope.alertMessageColor = 'alert-success';
@@ -334,9 +332,9 @@ define(function (require) {
 
             } ])
         .controller('LogDetailsCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'LogService', 'CommentService',
-                    'CommentListService', 'CommentOfLogService', 'userCache', 'logCache',
+                    'CommentListService', 'CommentOfLogService', 'userCache', 'logFace', 'faceCache',
             function ($scope, $location, $routeParams, $log, currentUser, LogService, CommentService,
-                    CommentListService, CommentOfLogService, userCache, logCache) {
+                    CommentListService, CommentOfLogService, userCache, logFace, faceCache) {
 
                 function render(comment, i) {
                     comment.index = (parseInt(i) + 1);
@@ -354,14 +352,8 @@ define(function (require) {
                     $scope.alertMessageVisible = 'hidden';
                     $scope.commentList = [];
                     $scope.comment = {};
-                    if (logCache.logList != null) {
-                        for (var i in logCache.logList) {
-                            if ($routeParams.id == logCache.logList[i].Id) {
-                                $scope.log = logCache.logList[i];
-                                break;
-                            }
-                        }
-                    }
+
+                    $scope.log = faceCache.get(logFace, parseInt($routeParams.id));
                     if ($scope.log === undefined || $scope.log === null) {
                         $scope.alertMessageVisible = 'show';
                         $scope.alertMessage = "提示：工作记录已被移除";
@@ -466,10 +458,13 @@ define(function (require) {
                 }
 
                 $scope.viewList = function () {
-                    if ($scope.log.ProjectId > 0) {
-                        $location.path('/project-log-list/' + $scope.log.ProjectId + '/');
+                    if ($scope.log === undefined) {
+                        history.back();
+                    }
+                    else if ($scope.log.ProjectId > 0) {
+                        $location.path('/project-log-list/' + $scope.log.ProjectId + '/false/');
                     } else {
-                        $location.path('/log-summary/');
+                        $location.path('/log-summary/false/');
                     }
                 }
 

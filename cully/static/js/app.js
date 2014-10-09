@@ -262,7 +262,7 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
-                    .when('/project-log-list/:projectId/', {
+                    .when('/project-log-list/:projectId/:reload/', {
                         templateUrl: 'app/cully/partials/project-log-list.htm',
                         controller: 'ProjectLogListCtrl',
                         access: {
@@ -330,7 +330,7 @@ define(function (require) {
                         templateUrl: 'app/cully/partials/task-notification-list.htm',
                         controller: 'TaskNotificationListCtrl'
                     })
-                    .when('/log-summary/', {
+                    .when('/log-summary/:reload/', {
                         templateUrl: 'app/cully/partials/log-summary.htm',
                         controller: 'LogSummaryCtrl',
                         access: {

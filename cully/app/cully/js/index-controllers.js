@@ -31,7 +31,7 @@ define(function (require) {
                 };
                 var logNav = {
                     "name": "记事",
-                    "url": "/log-summary/",
+                    "url": "/log-summary/true/",
                     "active": ""
                 };
                 var fileTransferNav = {

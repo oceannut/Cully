@@ -6,6 +6,7 @@ define(function (require) {
 
     angular.module('cully.constants', [])
         .constant('activityFace', 'activity')
-        .constant('projectFace', 'project');
+        .constant('projectFace', 'project')
+        .constant('logFace', 'log');
 
 });

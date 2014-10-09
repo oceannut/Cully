@@ -9,8 +9,10 @@ define(function (require) {
     require('../../common/js/common-cache');
 
     angular.module('project.log.controllers', ['utils', 'log.services', 'auth.models', 'common.cache'])
-        .controller('ProjectLogListCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'dateUtil', 'stringUtil', 'categoryCache', 'userCache', 'LogOfProjectService',
-            function ($scope, $routeParams, $log, currentUser, dateUtil, stringUtil, categoryCache, userCache, LogOfProjectService) {
+        .controller('ProjectLogListCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'dateUtil', 'stringUtil', 'categoryCache', 'userCache',
+                                            'LogOfProjectService', 'logFace', 'faceCache',
+            function ($scope, $routeParams, $log, currentUser, dateUtil, stringUtil, categoryCache, userCache,
+                        LogOfProjectService, logFace, faceCache) {
 
                 $scope.init = function () {
                     $scope.projectId = $routeParams.projectId;
@@ -48,6 +50,7 @@ define(function (require) {
                                     }
                                 }
                             }
+                            faceCache.init(logFace, $scope.logList);
                         }, function (error) {
                             $log.error(error);
                         });
