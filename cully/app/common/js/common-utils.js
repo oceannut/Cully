@@ -86,9 +86,34 @@ define(function (require) {
                         return;
                     }
                     if (angular.isObject(entity) && angular.isDefined(entity.Category)) {
-                        entity.icon = defaultIcon;
+                        entity.categoryIcon = defaultIcon;
                         categoryCache.get(scope, entity.Category, function (e) {
-                            entity.icon = (e == null) ? defaultIcon : e.Icon;
+                            entity.categoryIcon = (e == null) ? defaultIcon : e.Icon;
+                        });
+                    }
+                }
+
+                function buildCategoryName(entity, scope) {
+                    if (angular.isUndefined(scope)) {
+                        $log.error("undefined scope");
+                        return;
+                    }
+                    if (angular.isObject(entity) && angular.isDefined(entity.Category)) {
+                        categoryCache.get(scope, entity.Category, function (e) {
+                            entity.categoryName = (e == null) ? "未定义" : e.Name;
+                        });
+                    }
+                }
+
+                function buildCategory(entity, scope) {
+                    if (angular.isUndefined(scope)) {
+                        $log.error("undefined scope");
+                        return;
+                    }
+                    if (angular.isObject(entity) && angular.isDefined(entity.Category)) {
+                        categoryCache.get(scope, entity.Category, function (e) {
+                            entity.categoryIcon = (e == null) ? "" : e.Icon;
+                            entity.categoryName = (e == null) ? "未定义" : e.Name;
                         });
                     }
                 }
@@ -98,7 +123,9 @@ define(function (require) {
                     bindCategoryList: bindCategoryList,
                     selectCategory: selectCategory,
                     buildCreatorName: buildCreatorName,
-                    buildCategoryIcon: buildCategoryIcon
+                    buildCategoryIcon: buildCategoryIcon,
+                    buildCategoryName: buildCategoryName,
+                    buildCategory: buildCategory
                 }
             } ]);
 

@@ -9,50 +9,42 @@ define(function (require) {
     require('../../common/js/common-cache');
 
     angular.module('project.log.controllers', ['utils', 'log.services', 'auth.models', 'common.cache'])
-        .controller('ProjectLogListCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'dateUtil', 'stringUtil', 'categoryCache', 'userCache',
-                                            'LogOfProjectService', 'logFace', 'faceCache',
-            function ($scope, $routeParams, $log, currentUser, dateUtil, stringUtil, categoryCache, userCache,
-                        LogOfProjectService, logFace, faceCache) {
+        .controller('ProjectLogListCtrl', ['$scope', '$routeParams', '$log', 'currentUser', 'dateUtil', 'stringUtil', 'commonUtil',
+                                            'logFace', 'faceCache', 'LogOfProjectService', 'logUtil',
+            function ($scope, $routeParams, $log, currentUser, dateUtil, stringUtil, commonUtil,
+                        logFace, faceCache, LogOfProjectService, logUtil) {
 
                 $scope.init = function () {
+                    var reload = $routeParams.reload;
+                    $scope.logList = [];
                     $scope.projectId = $routeParams.projectId;
-
-                    $scope.query();
+                    if (reload === 'true') {
+                        $scope.query();
+                    } else {
+                        faceCache.pull(logFace, $scope.logList);
+                    }
                 }
 
                 $scope.query = function () {
-                    var currentUsername = currentUser.getUsername();
+                    $scope.logList.length = 0;
+                    $scope.alertMessage = '';
                     LogOfProjectService.query({
                         'projectId': $scope.projectId
                     })
                     .$promise
                         .then(function (result) {
-                            $scope.logList = result;
-                            if ($scope.logList != null) {
-                                var len = $scope.logList.length;
+                            faceCache.init(logFace, result);
+                            if (result !== null) {
+                                var len = result.length;
                                 for (var i = 0; i < len; i++) {
-                                    var log = $scope.logList[i];
-                                    categoryCache.get('log', log.Category, function (e) {
-                                        if (e != null) {
-                                            log.icon = e.Icon;
-                                            log.categoryName = e.Name;
-                                        }
-                                    });
-                                    userCache.get(log.Creator, function (e) {
-                                        log.creatorName = (e == null) ? log.Creator : e.Name;
-                                    });
-                                    var content = stringUtil.removeHTML(log.Content);
-                                    log.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
-                                    if (currentUsername === log.Creator) {
-                                        log.isEidtable = true;
-                                    } else {
-                                        log.isEidtable = false;
-                                    }
+                                    var item = result[i];
+                                    logUtil.renderLog(item);
+                                    $scope.logList.push(item);
                                 }
                             }
-                            faceCache.init(logFace, $scope.logList);
                         }, function (error) {
                             $log.error(error);
+                            $scope.alertMessage = "提示：项目列表加载失败";
                         });
                 }
 

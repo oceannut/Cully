@@ -178,6 +178,10 @@ namespace ThinkInBio.Cully.BLL
 
         IList<Attachment> GetAttachmentList(long projectId);
 
+        void SaveAttachmentComment(Attachment attachment, Comment comment, ICollection<BizNotification> notificationList);
+
+        void DeleteAttachmentComment(Attachment attachment, Comment comment, ICollection<BizNotification> notificationList);
+
     }
 
 }

@@ -24,40 +24,37 @@
         </div>
     </div>
     <div class="page-header">
-        <span class="lead"><i class="{{log.icon}}"></i>&nbsp;{{log.Title}}</span>
+        <span class="lead"><i class="fa fa-upload"></i>&nbsp;文件</span>
         <ul class="list-inline pull-right hidden-print">
-            <li style="display: {{navbarLinkVisible}};"><a href="#/log-edit/{{log.Id}}/"><i class="fa fa-edit">
-            </i>&nbsp;编辑</a></li>
             <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
                 &nbsp;打印</a></li>
-            <li><a ng-click="viewList()"><i class="fa fa-list"></i>&nbsp;列表</a></li>
+            <li><a href="#/project-attachment-list/{{attachment.ProjectId}}/"><i class="fa fa-list">
+            </i>&nbsp;列表</a></li>
         </ul>
     </div>
-    <div class="alert alert-danger" ng-show="alertMessage">
-        {{alertMessage}}</div>
-    <div class="biz-block">
+    <blockquote>
         <p>
-            <span class="pull-right">{{log.creatorName}}&nbsp;发表于&nbsp;{{log.Creation | jsonDateFormat
-                | date:'yyyy-MM-dd HH:mm:ss'}} </span>分类：{{log.categoryName}}&nbsp;&nbsp;&nbsp;&nbsp;日期：{{log.Modification
-            | jsonDateFormat | date:'yyyy-MM-dd'}}&nbsp;&nbsp;&nbsp;&nbsp;评论：{{log.CommentCount}}</p>
-        <p>
-            <ul style="list-style-type: none; float: left; margin-left: -2em; font-size: 10.5pt;">
-                <li style="float: left; margin-right: 0.6em;" ng-repeat="tag in log.TagList"><a href="#">
-                    <span class="badge">{{tag}}</span></a></li>
-            </ul>
-        </p>
-        <p ng-bind-html="log.Content" style="clear: both; margin-top: 16px;">
-        </p>
-    </div>
+            {{attachment.Title}}</p>
+        <footer> 
+            &nbsp; <a>{{attachment.creatorName}}</a>&nbsp;于&nbsp;{{attachment.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;上传
+        </footer>
+    </blockquote>
     <div class="page-header">
-        <span class="text-red biz-list-title"><i class="fa fa-list"></i>&nbsp;评论列表 <small>（共{{commentList.length}}个评论）</small></span>
+        <span class="text-red biz-list-title"><i class="fa fa-list"></i>&nbsp;评论列表<small>（共{{commentList.length}}个评论）</span>
         <ul class="list-inline pull-right hidden-print">
             <li><a href="javascript:void(0)" ng-click="refreshCommentList()"><i class="fa fa-refresh">
             </i>&nbsp;刷新列表</a></li>
         </ul>
     </div>
+    <div ng-show="isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="text-red">
+            努力加载中，请等待...</p>
+    </div>
+    <div class="alert alert-danger" ng-show="alertMessage">
+        {{alertMessage}}</div>
     <ol class="list-unstyled biz-block">
-        <li ng-repeat="item in commentList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
+        <li ng-repeat="item in commentList" class="biz-list-item">
             <p>
                 <a>{{item.creatorName}}</a><span class="pull-right">{{item.Creation | jsonDateFormat
                     | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;&nbsp;<mark>[{{item.index}}楼]</mark></span></p>
@@ -67,24 +64,28 @@
                 <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
                     data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
                     </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
-                        ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;|&nbsp;&nbsp;</a><a
-                            ng-click="replyComment(item)"> <i class="fa fa-reply"></i>&nbsp;回复</a></p>
+                        ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;</a>
+            </p>
         </li>
     </ol>
     <div class="biz-block hidden-print" name="editCommentPanel">
-        <form class="form-horizontal hidden-print" role="form">
+        <form class="form-horizontal css-form" role="form" name="form">
         <h3>
             发表评论</h3>
         <div class="form-group">
-            <div class="col-sm-7">
-                <textarea class="form-control" placeholder="内容" ng-model="comment.content" rows="6"
-                    required></textarea>
+            <div class="col-sm-6">
+                <textarea class="form-control" placeholder="内容" name="content" ng-model="comment.content"
+                    rows="6" ng-maxlength="1024" required autofocus></textarea>
+                <p class="help-block">
+                    （<span class="text-info">文本长度限制在1024个字符内</span>）</p>
+                <span class="text-danger" ng-show="form.content.$error.maxlength">警告：内容太长</span>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-4">
-                <button type="submit" class="btn btn-primary" ng-click="saveComment()">
-                    保存</button>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary" ng-click="saveComment()" ng-disabled="form.$invalid || isLoading"
+                    ng-switch="isLoading">
+                    <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存</span></button>
                 <button type="button" class="btn btn-default" ng-click="clearComment()">
                     清空</button>
             </div>

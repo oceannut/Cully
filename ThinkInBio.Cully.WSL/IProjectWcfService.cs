@@ -172,6 +172,22 @@ namespace ThinkInBio.Cully.WSL
             ResponseFormat = WebMessageFormat.Json)]
         Attachment[] GetAttachmentList(string projectId);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/attachment/{attachmentId}/comment/0/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        Comment SaveAttachmentComment(string attachmentId, string user, string content);
+
+        [OperationContract]
+        [WebInvoke(Method = "DELETE",
+            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+            UriTemplate = "/attachment/{attachmentId}/comment/{commentId}/",
+            RequestFormat = WebMessageFormat.Json,
+            ResponseFormat = WebMessageFormat.Json)]
+        void DeleteAttachmentComment(string attachmentId, string commentId);
+
         #endregion
 
     }

@@ -53,6 +53,7 @@ define(function (require) {
                 }
 
                 $scope.query = function () {
+                    $scope.calendarList = null;
                     CalendarOfProjectService.query({
                         'projectId': $scope.projectId
                     })

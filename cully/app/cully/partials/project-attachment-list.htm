@@ -26,9 +26,10 @@
         <div class="progress-bar progress-bar-success">
         </div>
     </div>
-    <ul class="list-group">
-        <li class="list-group-item" ng-repeat="attachment in events.attachmentList"><i class="fa fa-trash-o pull-right hidden-print"
-            ng-click="remove(attachment)"></i><a href="{{attachment.url}}" target="_blank">{{attachment.Title}}</a>
+    <ul class="list-unstyled">
+        <li class="biz-list-item" ng-repeat="attachment in events.attachmentList"><i class="fa fa-trash-o pull-right hidden-print"
+            ng-click="remove(attachment)"></i><a href="{{attachment.url}}" target="_blank">{{attachment.Title}}</a>&nbsp;<a
+                href="#/project-attachment-details/{{attachment.Id}}/">（共{{attachment.CommentCount}}个评论）</a>
         </li>
     </ul>
 </div>

@@ -13,27 +13,23 @@
                 &nbsp;打印</a></li>
             <li access="supvisor" ng-show="faceModel.isEditable"><a href="#/project-participant-list/{{events.project.Id}}/">
                 <i class="fa fa-users"></i>&nbsp;成员</a></li>
-            <li><a href="#/project-calendar-list/{{events.project.Id}}/"><i class="fa fa-calendar-o"></i>
-                &nbsp;日程</a></li>
-            <li><a href="#/project-log-list/{{events.project.Id}}/true/"><i class="fa fa-magic"></i>&nbsp;记事</a></li>
-            <li><a href="#/project-attachment-list/{{events.project.Id}}/"><i class="fa fa-upload"></i>&nbsp;文件</a></li>
+            <li><a href="#/project-calendar-list/{{events.project.Id}}/"><i class="fa fa-calendar-o">
+            </i>&nbsp;日程</a></li>
+            <li><a href="#/project-log-list/{{events.project.Id}}/true/"><i class="fa fa-magic">
+            </i>&nbsp;记事</a></li>
+            <li><a href="#/project-attachment-list/{{events.project.Id}}/"><i class="fa fa-upload">
+            </i>&nbsp;文件</a></li>
             <li access="user,supvisor"><a href="#/project-summary/false/"><i class="fa fa-list">
             </i>&nbsp;列表</a></li>
         </ul>
     </div>
-    <div ng-show="events.isLoading" class="text-center">
-        <i class="fa fa-spinner fa-spin fa-3x"></i>
-        <p class="text-red">
-            努力加载中，请等待...</p>
-    </div>
-    <div class="alert alert-danger" ng-show="events.alertMessage">
-        {{events.alertMessage}}</div>
     <blockquote>
         <p>
             {{events.project.Description}}</p>
         <footer> &nbsp; <a>{{events.project.creatorName}}</a>&nbsp;于&nbsp;{{events.project.Creation | jsonDateFormat | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;创建</footer>
     </blockquote>
-    <div>
+    <div class="page-header">
+        <span class="text-red biz-list-title"><i class="fa fa-list"></i>&nbsp;活动列表</span>
         <ul class="list-inline pull-right hidden-print">
             <li><a href="javascript:void(0)" ng-click="toggleAddActivityPanelVisibible()"><i
                 class="fa fa-plus"></i>&nbsp;添加活动</a></li>
@@ -41,9 +37,7 @@
             </i>&nbsp;刷新列表</a></li>
         </ul>
     </div>
-    <div class="clearfix">
-    </div>
-    <div class="well well-sm" ng-show="faceModel.addActivityPanelVisible">
+    <div class="well well-sm biz-block" ng-show="faceModel.addActivityPanelVisible">
         <form class="form-horizontal css-form" role="form" name="form">
         <div class="form-group">
             <label class="col-sm-1 control-label" style="margin-top: 24px;">
@@ -86,10 +80,17 @@
         </div>
         </form>
     </div>
-    <ol class="list-group">
-        <li class="list-group-item" ng-repeat="item in events.activityList"><span class="pull-right">
+    <div ng-show="events.isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="text-red">
+            努力加载中，请等待...</p>
+    </div>
+    <div class="alert alert-danger" ng-show="events.alertMessage">
+        {{events.alertMessage}}</div>
+    <ol class="list-unstyled">
+        <li class="biz-list-item" ng-repeat="item in events.activityList"><span class="pull-right">
             {{item.Creation | jsonDateFormat | date:'yyyy-MM-dd'}}</span> <a href="#/activity-details/{{item.Id}}/">
-                <i class="{{item.icon}} fa-fw"></i>&nbsp; {{item.Name}}</a>
+                <i class="{{item.categoryIcon}} fa-fw"></i>&nbsp; {{item.Name}}</a>
             <div class="clearfix">
                 <p>
                     {{item.Description}}</p>

@@ -20,6 +20,7 @@ namespace ThinkInBio.Cully.WSL.Impl
 
         internal IProjectService ProjectService { get; set; }
         internal IFileTransferLogService FileTransferLogService { get; set; }
+        internal ICommentService CommentService { get; set; }
         internal IExceptionHandler ExceptionHandler { get; set; }
 
         #region project
@@ -848,6 +849,100 @@ namespace ThinkInBio.Cully.WSL.Impl
                 {
                     return null;
                 }
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public Comment SaveAttachmentComment(string attachmentId, string user, string content)
+        {
+            if (string.IsNullOrWhiteSpace(user))
+            {
+                throw new WebFaultException<string>("user", HttpStatusCode.BadRequest);
+            }
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new WebFaultException<string>("content", HttpStatusCode.BadRequest);
+            }
+            long attachmentIdLong = 0;
+            try
+            {
+                attachmentIdLong = Convert.ToInt64(attachmentId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("attachmentId", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                Attachment attachment = ProjectService.GetAttachment(attachmentIdLong);
+                if (attachment == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                return attachment.AddRemark(user, content,
+                    (e1, e2, e3) =>
+                    {
+                        ProjectService.SaveAttachmentComment(e1, e2, e3);
+                    });
+            }
+            catch (WebFaultException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                ExceptionHandler.HandleException(ex);
+                throw new WebFaultException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        public void DeleteAttachmentComment(string attachmentId, string commentId)
+        {
+            long attachmentIdLong = 0;
+            try
+            {
+                attachmentIdLong = Convert.ToInt64(attachmentId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("attachmentId", HttpStatusCode.BadRequest);
+            }
+            long commentIdLong = 0;
+            try
+            {
+                commentIdLong = Convert.ToInt64(commentId);
+            }
+            catch
+            {
+                throw new WebFaultException<string>("commentId", HttpStatusCode.BadRequest);
+            }
+
+            try
+            {
+                Attachment attachment = ProjectService.GetAttachment(attachmentIdLong);
+                if (attachment == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                Comment comment = CommentService.GetComment(commentIdLong);
+                if (comment == null)
+                {
+                    throw new WebFaultException(HttpStatusCode.NotFound);
+                }
+                attachment.RemoveRemark(comment,
+                    (e1, e2, e3) =>
+                    {
+                        ProjectService.DeleteAttachmentComment(e1, e2, e3);
+                    });
+            }
+            catch (WebFaultException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {

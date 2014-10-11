@@ -7,6 +7,8 @@
     <property name="ActivityDao" ref="ActivityDao" />
     <property name="AttachmentDao" ref="AttachmentDao" />
     <property name="FileTransferLogService" ref="FileTransferLogService" />
+    <property name="CommentDao" ref="CommentDao" />
+    <property name="BizNotificationService" ref="BizNotificationService" />
   </object>
   <object id="ProjectService" parent="TxProxyConfigurationTemplate">
     <property name="Target" ref="ProjectServiceTarget"/>

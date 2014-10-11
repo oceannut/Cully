@@ -11,6 +11,8 @@ namespace ThinkInBio.Cully.DAL
     public interface IAttachmentDao : IDao<Attachment>
     {
 
+        bool Update4CommentCount(long id, int count);
+
         IList<Attachment> GetList(long projectId);
 
     }

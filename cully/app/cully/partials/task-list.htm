@@ -1,31 +1,18 @@
 ﻿<div ng-controller="TaskListCtrl" ng-init="init()">
-    <div class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#task-list-menu">
-                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span
-                        class="icon-bar"></span><span class="icon-bar"></span>
-                </button>
-                <span class="navbar-brand list-title" style="color: #cc0033;"><i class="fa fa-th-list">
-                </i>&nbsp;任务列表</span>
-            </div>
-            <div class="collapse navbar-collapse" id="task-list-menu">
-                <ul class="nav navbar-nav">
-                    <li><a ng-show="addTaskButtonVisible" href="javascript:void(0)" ng-click="createTask()">
-                        <i class="fa fa-plus"></i>&nbsp;添加任务</a></li>
-                    <li><a href="javascript:void(0)" class="navbar-link" ng-click="refreshTaskList()"><i
-                        class="fa fa-refresh"></i>&nbsp;刷新列表</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="{{sortByTimeActive}}"><a href="javascript:void(0)" ng-click="sortByTime()">
-                        <i class="fa fa-sort-numeric-desc"></i>&nbsp;按时间排序</a></li>
-                    <li class="{{sortByStaffActive}}"><a href="javascript:void(0)" ng-click="sortByStaff()">
-                        <i class="fa fa-sort-alpha-asc"></i>&nbsp;按人名排序</a></li>
-                </ul>
-            </div>
-        </div>
+    <div class="page-header">
+        <span class="text-red biz-list-title"><i class="fa fa-list"></i>&nbsp;任务列表</span>
+        <ul class="list-inline pull-right hidden-print">
+            <li><a ng-show="addTaskButtonVisible" href="javascript:void(0)" ng-click="createTask()">
+                <i class="fa fa-plus"></i>&nbsp;添加任务</a></li>
+            <li><a href="javascript:void(0)" ng-click="refreshTaskList()"><i class="fa fa-refresh">
+            </i>&nbsp;刷新列表</a></li>
+            <li class="{{sortByTimeActive}}"><a href="javascript:void(0)" ng-click="sortByTime()">
+                <i class="fa fa-sort-numeric-desc"></i>&nbsp;按时间排序</a></li>
+            <li class="{{sortByStaffActive}}"><a href="javascript:void(0)" ng-click="sortByStaff()">
+                <i class="fa fa-sort-alpha-asc"></i>&nbsp;按人名排序</a></li>
+        </ul>
     </div>
-    <div class="well well-sm" style="display: {{taskPanelDisplay}};">
+    <div class="well well-sm biz-block" style="display: {{taskPanelDisplay}};">
         <form class="form-horizontal css-form" role="form" name="form">
         <div class="form-group">
             <div class="col-sm-8">
@@ -67,13 +54,12 @@
                         取消</a>
             </div>
         </div>
-        <div class="alert alert-danger" ng-show="alertMessage">
-            {{alertMessage}}</div>
         </form>
     </div>
-    <ol class="list-unstyled" style="margin-top: 12px;">
-        <li ng-repeat="item in taskList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;"
-            ng-switch="item.isLabel">
+    <div class="alert alert-danger" ng-show="alertMessage">
+        {{alertMessage}}</div>
+    <ol class="list-unstyled biz-block">
+        <li ng-repeat="item in taskList" class="biz-list-item" ng-switch="item.isLabel">
             <p ng-switch-when="true">
                 <span class="text-green"><i class="fa fa-lemon-o"></i>&nbsp;{{item.label}}</span></p>
             <p ng-switch-when="false" style="font-weight: {{item.isUnderwayStatus}};">
@@ -95,8 +81,7 @@
             </p>
         </li>
     </ol>
-    <br />
-    <div class="row">
+    <div class="row biz-block">
         <div class="col-sm-12">
             <ul class="timeline">
                 <li><span class="bg-navy time-label">已完成的任务</span>

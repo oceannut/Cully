@@ -75,6 +75,13 @@ define(function (require) {
                 return $resource(wcfApp + projectWcfService + '/project/:projectId/attachment/', {}, {
                     query: { method: 'GET', params: { 'projectId': '@projectId' }, isArray: true }
                 });
+            } ])
+        .factory('CommentOfProjectAttachmentService', ['$resource', 'wcfApp', 'projectWcfService',
+            function ($resource, wcfApp, projectWcfService) {
+                return $resource(wcfApp + projectWcfService + '/attachment/:id/comment/:commentId/', {}, {
+                    save: { method: 'POST', params: { 'id': '@id', 'commentId': '0', 'user': '@user', 'content': '@content'} },
+                    remove: { method: 'DELETE', params: { 'id': '@id', 'commentId': '@commentId'} }
+                });
             } ]);
 
 });

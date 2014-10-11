@@ -179,7 +179,10 @@ create table cyAttachment
 	projectId				BIGINT				NOT NULL default 0,
 	title					VARCHAR(255)		NOT NULL,
 	path					VARCHAR(255)		NOT NULL,
+	commentCount			INT					NOT NULL default 0,
+	creator					VARCHAR(32)			NOT NULL,
 	creation				DATETIME			NOT NULL,
+	modification			DATETIME			NOT NULL,
 	PRIMARY KEY (id)
 );
 ALTER TABLE cyAttachment ADD INDEX project_id_index  (projectId);

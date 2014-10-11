@@ -285,7 +285,9 @@ namespace ThinkInBio.Cully
             attachment.ProjectId = this.Id;
             attachment.Title = uploadFile.Name;
             attachment.Path = uploadFile.Path;
+            attachment.Creator = user;
             attachment.Creation = uploadFile.TimeStamp.HasValue ? uploadFile.TimeStamp.Value : DateTime.Now;
+            attachment.Modification = attachment.Creation;
 
             if (action != null)
             {

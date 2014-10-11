@@ -14,13 +14,17 @@ namespace ThinkInBio.Cully
     public enum CommentTarget
     {
         /// <summary>
-        /// 工作记录。
+        /// 记事。
         /// </summary>
         Log,
         /// <summary>
         /// 任务。
         /// </summary>
-        Task
+        Task,
+        /// <summary>
+        /// 项目附件。
+        /// </summary>
+        ProjectAttachment
     }
 
     /// <summary>

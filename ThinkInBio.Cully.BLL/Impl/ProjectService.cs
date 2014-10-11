@@ -19,6 +19,8 @@ namespace ThinkInBio.Cully.BLL.Impl
         internal IParticipantDao ParticipantDao { get; set; }
         internal IAttachmentDao AttachmentDao { get; set; }
         internal IFileTransferLogService FileTransferLogService { get; set; }
+        internal ICommentDao CommentDao { get; set; }
+        internal IBizNotificationService BizNotificationService { get; set; }
 
         public void SaveProject(Project project,
             ICollection<Participant> participants)
@@ -262,6 +264,36 @@ namespace ThinkInBio.Cully.BLL.Impl
             }
 
             return AttachmentDao.GetList(projectId);
+        }
+
+        public void SaveAttachmentComment(Attachment attachment, Comment comment, ICollection<BizNotification> notificationList)
+        {
+            if (attachment == null || comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            AttachmentDao.Update4CommentCount(attachment.Id, attachment.CommentCount);
+            CommentDao.Save(comment);
+            if (notificationList != null && notificationList.Count > 0)
+            {
+                BizNotificationService.SaveNotification(notificationList);
+            }
+        }
+
+        public void DeleteAttachmentComment(Attachment attachment, Comment comment, ICollection<BizNotification> notificationList)
+        {
+            if (attachment == null || comment == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            AttachmentDao.Update4CommentCount(attachment.Id, attachment.CommentCount);
+            CommentDao.Delete(comment);
+            if (notificationList != null && notificationList.Count > 0)
+            {
+                BizNotificationService.SaveNotification(notificationList);
+            }
         }
 
     }

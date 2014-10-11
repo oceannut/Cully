@@ -125,6 +125,7 @@ namespace ThinkInBio.Cully.WSL.Impl
                 log.Title = title;
                 log.Category = category;
                 log.Content = content;
+                log.Tags = string.Empty;
                 log.AddTag(tags);
                 log.Update(
                     (e) =>

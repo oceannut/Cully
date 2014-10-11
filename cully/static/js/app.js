@@ -278,6 +278,14 @@ define(function (require) {
                             roles: ['user', 'supvisor']
                         }
                     })
+                    .when('/project-attachment-details/:attachmentId/', {
+                        templateUrl: 'app/cully/partials/project-attachment-details.htm',
+                        controller: 'ProjectAttachmentDetailsCtrl',
+                        access: {
+                            loginRequired: true,
+                            roles: ['user', 'supvisor']
+                        }
+                    })
                     .when('/activity-add/', {
                         templateUrl: 'app/cully/partials/activity-add.htm',
                         controller: 'ActivityAddCtrl',

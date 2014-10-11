@@ -76,6 +76,9 @@ namespace ThinkInBio.Cully.WSL.Impl
                 case "task":
                     target = CommentTarget.Task;
                     break;
+                case "attachment":
+                    target = CommentTarget.ProjectAttachment;
+                    break;
                 default:
                     throw new WebFaultException<string>("commentTarget", HttpStatusCode.BadRequest);
             }

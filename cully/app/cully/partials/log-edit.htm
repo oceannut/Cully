@@ -53,7 +53,7 @@
                 <span ng-switch-when="true">正在保存中...</span> <span ng-switch-when="false">保存修改</span></button>
         </div>
     </div>
-    <div class="alert {{alertMessageColor}} {{alertMessageVisible}}">
+    <div class="alert {{alertMessageColor}}" ng-show="alertMessage">
         {{alertMessage}}</div>
     </form>
 </div>

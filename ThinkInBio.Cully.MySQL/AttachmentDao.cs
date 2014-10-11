@@ -34,12 +34,14 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Save(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"insert into cyAttachment (id,projectId,title,path,creation) 
-                                                values (NULL,@projectId,@title,@path,@creation)";
+                    command.CommandText = @"insert into cyAttachment (id,projectId,title,path,creator,creation,modification) 
+                                                values (NULL,@projectId,@title,@path,@creator,@creation,@modification)";
                     command.Parameters.Add(DbFactory.CreateParameter("projectId", entity.ProjectId));
                     command.Parameters.Add(DbFactory.CreateParameter("title", entity.Title));
                     command.Parameters.Add(DbFactory.CreateParameter("path", entity.Path));
+                    command.Parameters.Add(DbFactory.CreateParameter("creator", entity.Creator));
                     command.Parameters.Add(DbFactory.CreateParameter("creation", entity.Creation));
+                    command.Parameters.Add(DbFactory.CreateParameter("modification", entity.Modification));
                 },
                 (id) =>
                 {
@@ -63,7 +65,7 @@ namespace ThinkInBio.Cully.MySQL
             return DbTemplate.Get<Attachment>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,projectId,title,path,creation from cyAttachment 
+                    command.CommandText = @"select id,projectId,title,path,commentCount,creator,creation,modification from cyAttachment 
                                                 where id=@id";
                     command.Parameters.Add(DbFactory.CreateParameter("id", id));
                 },
@@ -73,13 +75,27 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
+        public bool Update4CommentCount(long id, int count)
+        {
+            return DbTemplate.UpdateOrDelete(dataSource,
+                (command) =>
+                {
+                    command.CommandText = @"update cyAttachment 
+                                                set commentCount=@commentCount 
+                                                where id=@id";
+                    command.Parameters.Add(DbFactory.CreateParameter("commentCount", count));
+                    command.Parameters.Add(DbFactory.CreateParameter("id", id));
+                });
+        }
+
         public IList<Attachment> GetList(long projectId)
         {
             return DbTemplate.GetList<Attachment>(dataSource,
                 (command) =>
                 {
-                    command.CommandText = @"select id,projectId,title,path,creation from cyAttachment
-                                                where projectId=@projectId";
+                    command.CommandText = @"select id,projectId,title,path,commentCount,creator,creation,modification from cyAttachment
+                                                where projectId=@projectId 
+                                                order by modification desc";
                     command.Parameters.Add(DbFactory.CreateParameter("projectId", projectId));
                 },
                 (reader) =>
@@ -95,7 +111,10 @@ namespace ThinkInBio.Cully.MySQL
             entity.ProjectId = reader.GetInt64(1);
             entity.Title = reader.GetString(2);
             entity.Path = reader.GetString(3);
-            entity.Creation = reader.GetDateTime(4);
+            entity.CommentCount = reader.GetInt32(4);
+            entity.Creator = reader.GetString(5);
+            entity.Creation = reader.GetDateTime(6);
+            entity.Modification = reader.GetDateTime(7);
             return entity;
         }
 

@@ -68,8 +68,6 @@
             <li><a href="#/task-notification-list/{{task.Id}}/"><i class="fa fa-send-o"></i>&nbsp;通知</a></li>
         </ul>
     </div>
-    <div class="alert alert-danger {{alertMessageVisible}}">
-        {{alertMessage}}</div>
     <blockquote>
         <dl class="dl-horizontal" style="font-size: 10.5pt; line-height: 1.2em">
             <dt>任务内容</dt>
@@ -105,29 +103,41 @@
         <li ng-if="!isExcuted && task.IsCompleted"><a class="btn btn-default btn-sm" ng-click="resumeTask()">
             <i class="fa fa-play"></i>&nbsp;重启任务</a></li>
     </ul>
-    <div class="row" style="margin: 2em 2em 0 2em;">
-        <ol class="list-unstyled">
-            <li ng-repeat="item in commentList" style="border-bottom: dotted #ccc 1px; margin-top: 8px;">
-                <p>
-                    <a>{{item.creatorName}}</a><span class="pull-right">{{item.Creation | jsonDateFormat
-                        | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;&nbsp;<mark>[{{item.index}}楼]</mark></span></p>
-                <p>
-                    {{item.Content}}</p>
-                <p class="text-right hidden-print">
-                    <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
-                        data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
-                        </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
-                            ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;</a>
-                </p>
-                <!--<small><abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
+    <div class="page-header">
+        <span class="text-red biz-list-title"><i class="fa fa-list"></i>&nbsp;评论列表<small>（共{{commentList.length}}个评论）</span>
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" ng-click="refreshCommentList()"><i class="fa fa-refresh">
+            </i>&nbsp;刷新列表</a></li>
+        </ul>
+    </div>
+    <div ng-show="isLoading" class="text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="text-red">
+            努力加载中，请等待...</p>
+    </div>
+    <div class="alert alert-danger" ng-show="alertMessage">
+        {{alertMessage}}</div>
+    <ol class="list-unstyled biz-block">
+        <li ng-repeat="item in commentList" class="biz-list-item">
+            <p>
+                <a>{{item.creatorName}}</a><span class="pull-right">{{item.Creation | jsonDateFormat
+                    | date:'yyyy-MM-dd HH:mm:ss'}}&nbsp;&nbsp;<mark>[{{item.index}}楼]</mark></span></p>
+            <p>
+                {{item.Content}}</p>
+            <p class="text-right hidden-print">
+                <a style="display: {{item.editCommentButtonVisible}};" ng-click="removeComment(item)"
+                    data-toggle="modal" data-target="#removeCommentDialog"><i class="fa fa-trash-o">
+                    </i>&nbsp;删除&nbsp;&nbsp;|&nbsp;&nbsp;</a><a style="display: {{item.editCommentButtonVisible}};"
+                        ng-click="editComment(item)"> <i class="fa fa-edit"></i>&nbsp;编辑&nbsp;&nbsp;</a>
+            </p>
+            <!--<small><abbr title="发表评论后，系统会自动发系统通知给对方；此处为提供的其它通知手段。">
                                     其它通知：</abbr></small> &nbsp;&nbsp;<a href="mailto:#" class="btn btn-default btn-xs"><i
                                         class="fa fa-envelope"></i>&nbsp;邮件</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
                                             class="fa fa-qq"></i>&nbsp;QQ</a>&nbsp;&nbsp;<a class="btn btn-default btn-xs"><i
                                                 class="fa fa-phone"></i>&nbsp;电话</a>-->
-            </li>
-        </ol>
-    </div>
-    <div class="row hidden-print" style="margin: 2em 2em 0 2em;" name="editCommentPanel">
+        </li>
+    </ol>
+    <div class="biz-block hidden-print" name="editCommentPanel">
         <form class="form-horizontal css-form" role="form" name="form">
         <h3>
             发表评论</h3>

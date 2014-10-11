@@ -8,6 +8,30 @@ define(function (require) {
 
     angular.module('log.services', ['ngResource', 'configs'])
         .constant("logWcfService", "/wcf/LogWcfService.svc")
+        .factory('logUtil', ['currentUser', 'stringUtil', 'commonUtil', function (currentUser, stringUtil, commonUtil) {
+
+            function renderLog(item) {
+                if (item !== undefined && item !== null) {
+                    commonUtil.buildCategory(item, 'log');
+                    if (item.Creator === currentUser.getUsername()) {
+                        item.isEditable = true;
+                    } else {
+                        item.isEditable = false;
+                    }
+                    commonUtil.buildCreatorName(item);
+                    var content = stringUtil.removeHTML(item.Content);
+                    item.filterContent = (content != null && content.length > 108) ? content.substring(0, 108) + "..." : content;
+                    if (item.Tags != null && item.Tags != '') {
+                        item.TagList = item.Tags.split(',');
+                    }
+                }
+            }
+
+            return {
+                renderLog: renderLog
+            }
+
+        } ])
         .factory('LogService', ['$resource', 'wcfApp', 'logWcfService',
             function ($resource, wcfApp, logWcfService) {
                 return $resource(wcfApp + logWcfService + '/log/:id/', {}, {

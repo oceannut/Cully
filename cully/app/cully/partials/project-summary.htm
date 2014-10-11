@@ -58,7 +58,7 @@
             <ul class="timeline">
                 <li ng-repeat="item in events.activityList" ng-switch="item.isDate"><span ng-switch-when="true"
                     class="{{item.labelColor}} time-label">{{item.date}}</span> <i ng-switch-when="false"
-                        class="{{item.icon}} bg-blue"></i>
+                        class="{{item.categoryIcon}} bg-blue"></i>
                     <div ng-switch-when="false" class="timeline-item">
                         <span class="time"><i class="fa fa-user"></i>&nbsp;{{item.creatorName}}&nbsp;<i class="fa fa-clock-o"></i>&nbsp;{{item.Creation
                             | jsonDateFormat | date:'HH:mm:ss'}}</span>

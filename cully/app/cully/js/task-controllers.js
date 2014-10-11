@@ -16,7 +16,8 @@ define(function (require) {
     require('../../common/js/biz-notification-services');
     require('../../common/js/idiom-services');
 
-    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 'bizNotification.services', 'idiom.services'])
+    angular.module('task.controllers', ['configs', 'filters', 'directives', 'project.services', 'task.services', 'comment.services', 
+                                        'bizNotification.services', 'idiom.services'])
         .factory('taskServiceUtil', ['$log', 'currentUser', 'Update4IsUnderwayTaskService', 'Update4IsCompletedTaskService',
             function ($log, currentUser, Update4IsUnderwayTaskService, Update4IsCompletedTaskService) {
 
@@ -51,10 +52,10 @@ define(function (require) {
                 }
 
             } ])
-        .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'TaskService', 'TaskOfActivityService',
-                                 'ParticipantOfProjectService', 'userCache', 'dateUtil', 'taskServiceUtil', 'IdiomListService',
-            function ($scope, $location, $log, currentUser, TaskService, TaskOfActivityService,
-                      ParticipantOfProjectService, userCache, dateUtil, taskServiceUtil, IdiomListService) {
+        .controller('TaskListCtrl', ['$scope', '$location', '$log', 'currentUser', 'userCache', 'dateUtil', 'TaskService', 'TaskOfActivityService',
+                                 'ParticipantOfProjectService', 'IdiomListService', 'taskServiceUtil',
+            function ($scope, $location, $log, currentUser, userCache, dateUtil, TaskService, TaskOfActivityService,
+                      ParticipantOfProjectService, IdiomListService, taskServiceUtil) {
 
                 function clear() {
                     $scope.task = {};
@@ -218,7 +219,6 @@ define(function (require) {
                             }
                         }, function (error) {
                             $log.error(error);
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessage = "提示：任务列表加载失败";
                         });
                 }
@@ -250,7 +250,6 @@ define(function (require) {
                             }
                         }, function (error) {
                             $log.error(error);
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessage = "提示：成员列表加载失败";
                         });
 
@@ -283,7 +282,6 @@ define(function (require) {
                             .then(function (result) {
                                 $scope.idiomList = result;
                             }, function (error) {
-                                scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：获取短语列表失败";
                                 $log.error(error);
                             });
@@ -357,7 +355,6 @@ define(function (require) {
                                 }
                             }, function (error) {
                                 $log.error(error);
-                                $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：任务保存失败";
                             });
                     } else {
@@ -389,7 +386,6 @@ define(function (require) {
                                 }
                             }, function (error) {
                                 $log.error(error);
-                                $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：任务修改失败";
                             });
                     }
@@ -460,11 +456,10 @@ define(function (require) {
                 }
 
             } ])
-        .controller('TaskEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'TaskService', 'userCache', 'dateUtil',
-            function ($scope, $location, $routeParams, $log, currentUser, TaskService, userCache, dateUtil) {
+        .controller('TaskEditCtrl', ['$scope', '$location', '$routeParams', '$log', 'currentUser', 'userCache', 'dateUtil', 'TaskService',
+            function ($scope, $location, $routeParams, $log, currentUser, userCache, dateUtil, TaskService) {
 
                 $scope.isLoading = false;
-                $scope.alertMessageVisible = 'hidden';
 
                 $scope.init = function () {
                     TaskService.get({
@@ -473,9 +468,7 @@ define(function (require) {
                     .$promise
                         .then(function (result) {
                             $scope.task = result;
-                            $scope.alertMessageVisible = 'hidden';
                         }, function (error) {
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessageColor = 'alert-danger';
                             $scope.alertMessage = "提示：加载任务详细信息失败";
                             $log.error(error);
@@ -499,12 +492,10 @@ define(function (require) {
                         .then(function (result) {
                             $scope.isLoading = false;
                             $scope.task = result;
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessageColor = 'alert-success';
                             $scope.alertMessage = "提示：修改任务成功";
                         }, function (error) {
                             $scope.isLoading = false;
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessageColor = 'alert-danger';
                             $scope.alertMessage = "提示：修改任务失败";
                             $log.error(error);
@@ -522,21 +513,15 @@ define(function (require) {
                         }, function (error) {
                             $('#removeTaskDialog').modal('hide');
                             $log.error(error);
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessage = "提示：删除任务失败";
                         });
                 }
 
             } ])
         .controller('TaskDetailsCtrl', ['$scope', '$location', '$log', '$routeParams', 'currentUser', 'ActivityService', 'TaskService',
-                                        'CommentOfTaskService', 'CommentListService', 'CommentService', 'userCache', 'dateUtil', 'taskServiceUtil',
+                                        'activityFace', 'faceCache', 'CommentOfTaskService', 'CommentListService', 'CommentService', 'userCache', 'dateUtil', 'taskServiceUtil',
             function ($scope, $location, $log, $routeParams, currentUser, ActivityService, TaskService,
-                        CommentOfTaskService, CommentListService, CommentService, userCache, dateUtil, taskServiceUtil) {
-
-                $scope.isLoading = false;
-                $scope.navbarLinkVisible = 'none';
-                $scope.alertMessageVisible = 'hidden';
-                $scope.comment = {};
+                        activityFace, faceCache, CommentOfTaskService, CommentListService, CommentService, userCache, dateUtil, taskServiceUtil) {
 
                 function render(comment, i) {
                     comment.index = (parseInt(i) + 1);
@@ -548,14 +533,46 @@ define(function (require) {
                     } else {
                         comment.editCommentButtonVisible = 'none';
                     }
+                    $scope.commentList.push(comment);
+                }
+
+                function loadCommentList() {
+                    $scope.commentList.length = 0;
+                    $scope.isLoading = true;
+                    CommentListService.query({
+                        'commentTarget': 'task',
+                        'targetId': $routeParams.id
+                    })
+                    .$promise
+                        .then(function (result) {
+                            if (angular.isArray(result)) {
+                                var len = result.length;
+                                for (var i = 0; i < len; i++) {
+                                    render(result[i], i);
+                                }
+                            }
+                        }, function (error) {
+                            $log.error(error);
+                            $scope.alertMessage = "提示：加载评论列表失败";
+                        })
+                        .then(function () {
+                            $scope.isLoading = false;
+                        });
                 }
 
                 $scope.init = function () {
+                    $scope.isLoading = false;
+                    $scope.navbarLinkVisible = 'none';
+                    $scope.comment = {};
+                    $scope.commentList = [];
+
+                    $scope.isLoading = true;
                     TaskService.get({
                         'id': $routeParams.id
                     })
                     .$promise
                         .then(function (result) {
+                            $scope.isLoading = false;
                             $scope.task = result;
                             if ($scope.task.Id === undefined) {
                                 $scope.alertMessageVisible = 'show';
@@ -582,50 +599,25 @@ define(function (require) {
                                 }
                             }
                         }, function (error) {
+                            $scope.isLoading = false;
                             $log.error(error);
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessage = "提示：加载任务详细信息失败";
                         })
                         .then(function () {
                             if ($scope.task.ActivityId !== undefined && $scope.task.ActivityId !== null) {
-                                ActivityService.get({
-                                    'activityId': $scope.task.ActivityId
-                                })
-                                .$promise
-                                    .then(function (result) {
-                                        $scope.activity = result;
-                                        userCache.get($scope.activity.Creator, function (e) {
-                                            $scope.activity.CreatorName = (e == null) ? $scope.activity.Creator : e.Name;
-                                        });
-                                        if ($scope.activity.Creator == currentUser.getUsername()) {
-                                            $scope.navbarLinkVisible = '';
-                                        } else {
-                                            $scope.navbarLinkVisible = 'none';
-                                        }
-                                    }, function (error) {
-                                        $scope.alertMessageVisible = 'show';
-                                        $scope.alertMessage = "提示：加载活动详细信息失败";
-                                        $log.error(error);
-                                    });
+                                $scope.activity = faceCache.get(activityFace, parseInt($scope.task.ActivityId));
+                                userCache.get($scope.activity.Creator, function (e) {
+                                    $scope.activity.CreatorName = (e == null) ? $scope.activity.Creator : e.Name;
+                                });
+                                if ($scope.activity.Creator == currentUser.getUsername()) {
+                                    $scope.navbarLinkVisible = '';
+                                } else {
+                                    $scope.navbarLinkVisible = 'none';
+                                }
                             }
                         });
 
-                    CommentListService.query({
-                        'commentTarget': 'task',
-                        'targetId': $routeParams.id
-                    })
-                    .$promise
-                        .then(function (result) {
-                            $scope.commentList = result;
-                            for (var i in $scope.commentList) {
-                                var comment = $scope.commentList[i];
-                                render(comment, i);
-                            }
-                        }, function (error) {
-                            $log.error(error);
-                            $scope.alertMessageVisible = 'show';
-                            $scope.alertMessage = "提示：加载评论列表失败";
-                        });
+                    loadCommentList();
                 }
 
                 $scope.deleteTask = function () {
@@ -644,6 +636,10 @@ define(function (require) {
                         });
                 }
 
+                $scope.refreshCommentList = function () {
+                    loadCommentList();
+                }
+
                 $scope.saveComment = function () {
                     if ($scope.comment.id == null || $scope.comment.id == '') {
                         var observers = [];
@@ -660,12 +656,10 @@ define(function (require) {
                         })
                         .$promise
                             .then(function (result) {
-                                $scope.commentList.push(result);
-                                render(result, $scope.commentList.length - 1);
+                                render(result, $scope.commentList.length);
                                 $scope.clearComment();
                             }, function (error) {
                                 $log.error(error);
-                                $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：保存评论失败";
                             });
                     } else {
@@ -684,7 +678,6 @@ define(function (require) {
                                 $scope.clearComment();
                             }, function (error) {
                                 $log.error(error);
-                                $scope.alertMessageVisible = 'show';
                                 $scope.alertMessage = "提示：修改评论失败";
                             });
                     }
@@ -732,7 +725,6 @@ define(function (require) {
                         }, function (error) {
                             $('#removeCommentDialog').modal('hide');
                             $log.error(error);
-                            $scope.alertMessageVisible = 'show';
                             $scope.alertMessage = "提示：删除评论失败";
                         });
                 }
