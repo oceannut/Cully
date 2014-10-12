@@ -31,7 +31,7 @@
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="#/untreated-notification/"><i class="fa " ng-class="{true:'fa-bell text-red',false:'fa-bell-slash-o'}[untreatedNotificationCount>0]">
-                            </i>&nbsp;提醒<span ng-if="untreatedNotificationCount>0" class="text-red">({{untreatedNotificationCount}})</span><audio
+                            </i>&nbsp;通知<span ng-if="untreatedNotificationCount>0" class="text-red">({{untreatedNotificationCount}})</span><audio
                                 id="untreatedNotificationAudio" src="static/audio/1.wav"></audio></a> </li>
                             <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 <img class="media-object pull-left" data-src="holder.js/32x32" src="static/img/duke.png"
@@ -48,6 +48,7 @@
                                     <li class="divider"></li>
                                     <li><a href="#/notification-list/inbox/"><i class="fa fa-mail-reply fa-fw"></i>&nbsp;收件箱</a></li>
                                     <li><a href="#/notification-list/outbox/"><i class="fa fa-mail-forward fa-fw"></i>&nbsp;已发送通知</a></li>
+                                    <li><a ng-click="isCautionClosed=false"><i class="fa fa-bullhorn fa-fw"></i>&nbsp;时钟提醒</a></li>
                                 </ul>
                             </li>
                             <li class="dropdown" ng-show="loginUser.isAdmin || loginUser.isSupvisor"><a class="dropdown-toggle"
@@ -70,6 +71,12 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="bg-olive" role="alert" style="margin: -8px 0 8px 0;
+        padding: 8px 32px 8px 16px;" ng-hide="isCautionClosed">
+        <button type="button" class="close" ng-click="isCautionClosed=true">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <strong>Warning!</strong> Better check yourself, you're not looking too good.
     </div>
     <div ng-view>
     </div>

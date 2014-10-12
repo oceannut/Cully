@@ -19,11 +19,10 @@
     <ol class="list-unstyled">
         <li ng-repeat="item in calendarList" class="biz-list-item">
             <p ng-class="item.textColor">
-                <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}<a
-                    href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i class="fa fa-cube"></i></a></p>
+                <span ng-show="item.IsCaution"><i class="fa fa-bell-o fa-fw"></i>&nbsp;&middot;&nbsp;</span>{{item.Content}}</p>
             <ul class="list-unstyled list-inline pull-right hidden-print">
-                <li ng-show="item.isEidtable"><a href="#/calendar-edit/{{item.ProjectId}}/{{item.Id}}/"><i
-                    class="fa fa-edit"></i>&nbsp;编辑</a></li>
+                <li ng-show="item.isEidtable"><a href="#/calendar-edit/{{item.ProjectId}}/{{item.Id}}/">
+                    <i class="fa fa-edit"></i>&nbsp;编辑</a></li>
             </ul>
             <small>时间范围：从
                 <mark>{{item.Appointed | jsonDateFormat | date:'yyyy-MM-dd'}}</mark>

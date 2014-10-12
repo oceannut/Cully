@@ -51,12 +51,15 @@
     <br />
     <ol class="list-unstyled">
         <li ng-repeat="item in events.logList" class="biz-list-item">
-            <h4>
-                <i class="fa {{item.categoryIcon}}"></i>&nbsp;<a href="#/log-details/{{item.Id}}/">{{item.Title}}</a></h4>
+            <p>
+                <i class="fa {{item.categoryIcon}}"></i>&nbsp;&nbsp;<a href="#/log-details/{{item.Id}}/"><strong>{{item.Title}}</strong></a><a
+                    ng-if="item.ProjectId>0" href="#/project-details/{{item.ProjectId}}/">&nbsp;&middot;&nbsp;<i
+                        class="fa fa-cube"></i></a></p>
             <p class="text-justify" style="font-size: 10.5pt; color: #888;">
                 {{item.filterContent}}</p>
             <ul class="list-inline pull-right hidden-print">
-                <li><a class="fa fa-edit" ng-show="item.isEditable" title="编辑信息" href="#/log-edit/{{item.Id}}/"></a></li>
+                <li><a class="fa fa-edit" ng-show="item.isEditable" title="编辑信息" href="#/log-edit/{{item.Id}}/">
+                </a></li>
             </ul>
             <ul class="list-inline">
                 <li><span>{{item.creatorName}}</span></li>

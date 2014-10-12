@@ -65,6 +65,8 @@ define(function (require) {
 
                 $scope.init = function () {
 
+                    $scope.isCautionClosed = true;
+
                     //订阅事件。
                     eventbus.subscribe("userSignIn", function (e, data) {
                         $scope.makeNavbarVisible();

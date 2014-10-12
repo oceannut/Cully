@@ -23,6 +23,11 @@
             </div>
         </div>
     </div>
+    <ul class="breadcrumb hidden-print" ng-hide="log.ProjectId==0">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li><a href="#/project-details/{{log.ProjectId}}/">项目</a></li>
+        <li class="active">记事</li>
+    </ul>
     <div class="page-header">
         <span class="lead"><i class="{{log.icon}}"></i>&nbsp;{{log.Title}}</span>
         <ul class="list-inline pull-right hidden-print">

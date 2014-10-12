@@ -23,6 +23,11 @@
             </div>
         </div>
     </div>
+    <ul class="breadcrumb hidden-print" ng-hide="attachment.ProjectId==0">
+        <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
+        <li><a href="#/project-details/{{attachment.ProjectId}}/">项目</a></li>
+        <li class="active">文件</li>
+    </ul>
     <div class="page-header">
         <span class="lead"><i class="fa fa-upload"></i>&nbsp;文件</span>
         <ul class="list-inline pull-right hidden-print">

@@ -1,7 +1,9 @@
 ﻿<div class="story container" ng-init="init()">
     <div class="page-header">
         <span class="lead"><i class="fa fa-clock-o"></i>&nbsp;时钟</span>
-        <ul class="list-inline pull-right">
+        <ul class="list-inline pull-right hidden-print">
+            <li><a href="javascript:void(0)" onclick="window.print()"><i class="fa fa-print"></i>
+                &nbsp;打印</a></li>
             <li access="user"><a href="#/clock-edit/0/"><i class="fa fa-plus"></i>&nbsp;添加一条</a></li>
         </ul>
     </div>
@@ -9,7 +11,7 @@
         {{alertMessage}}</div>
     <ol class="list-unstyled">
         <li ng-repeat="item in calendarList" class="biz-list-item">
-            <ul class="list-inline pull-right">
+            <ul class="list-inline pull-right hidden-print">
                 <li ng-show="item.isEidtable"><a href="#/clock-edit/{{item.Id}}/"><i class="fa fa-edit">
                 </i>&nbsp;编辑</a></li>
                 <li ng-show="item.isEidtable"><a href="javascript:void(0)" ng-click="toggleCaution(item)"

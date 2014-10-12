@@ -1,4 +1,26 @@
 ﻿<div class="story container" ng-init="init()">
+    <!-- Modal -->
+    <div class="modal fade" id="fileDialog" tabindex="-1" role="dialog" aria-labelledby="fileDialogLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="fileDialogLabel">
+                        <i class="fa fa-trash-o"></i>&nbsp;已上传文件对话框</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="">
+                        确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <ul class="breadcrumb hidden-print">
         <li><i class="fa fa-location-arrow"></i>&nbsp;当前位置</li>
         <li><a href="#/project-details/{{faceModel.projectId}}/">项目</a></li>
@@ -14,11 +36,13 @@
     </div>
     <div class="alert alert-danger" ng-show="alertMessage">
         {{alertMessage}}</div>
-    <span class="btn btn-primary fileinput-button hidden-print"><i class="fa fa-plus"></i>
+    <span class="btn btn-info fileinput-button hidden-print"><i class="fa fa-plus"></i>
         &nbsp;上传文件
         <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple>
     </span>
+    <button class="btn btn-success hidden-print" data-toggle="modal" data-target="#fileDialog">
+        <i class="fa fa-search"></i>&nbsp;查找文件</button>
     <br />
     <br />
     <!-- The global progress bar -->
