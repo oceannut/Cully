@@ -30,6 +30,11 @@
     <property name="CalendarService" ref="CalendarService" />
     <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
   </object>
+
+  <object id="CautionCalendarWcfService" type="ThinkInBio.Cully.WSL.Impl.CautionCalendarWcfService, ThinkInBio.Cully.WSL" singleton="false">
+    <property name="CalendarService" ref="CalendarService" />
+    <property name="ExceptionHandler" ref="LogOnlyExceptionHandler" />
+  </object>
   
 </objects>
 

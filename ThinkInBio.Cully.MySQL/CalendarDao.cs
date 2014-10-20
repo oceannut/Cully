@@ -98,8 +98,9 @@ namespace ThinkInBio.Cully.MySQL
                 });
         }
 
-        public IList<Calendar> GetList(string participant, long? projectId, CalendarType? type, DateTime? startTime, DateTime? endTime, 
-            bool asc, int startRowIndex, int maxRowsCount)
+        public IList<Calendar> GetList(string participant, long? projectId, CalendarType? type, bool? isCaution, 
+            DateTime? startTime, DateTime? endTime, bool asc, 
+            int startRowIndex, int maxRowsCount)
         {
             List<KeyValuePair<string, object>> parameters = new List<KeyValuePair<string, object>>();
             return DbTemplate.GetList<Calendar>(dataSource,
@@ -111,7 +112,7 @@ namespace ThinkInBio.Cully.MySQL
                     {
                         sql.Append(" inner join cyCalendarCaution p on t.id=p.calendarId ");
                     }
-                    BuildSql(sql, parameters, participant, projectId, type, startTime, endTime);
+                    BuildSql(sql, parameters, participant, projectId, type, isCaution, startTime, endTime);
                     sql.Append(" order by t.appointed ");
                     if (!asc)
                     {
@@ -131,7 +132,8 @@ namespace ThinkInBio.Cully.MySQL
         }
 
         private void BuildSql(StringBuilder sql, List<KeyValuePair<string, object>> parameters,
-            string participant, long? projectId, CalendarType? type, DateTime? startTime, DateTime? endTime)
+            string participant, long? projectId, CalendarType? type, bool? isCaution, 
+            DateTime? startTime, DateTime? endTime)
         {
             if (startTime.HasValue && startTime.Value != DateTime.MinValue
                     && endTime.HasValue && endTime.Value != DateTime.MinValue
@@ -159,6 +161,12 @@ namespace ThinkInBio.Cully.MySQL
                 SQLHelper.AppendOp(sql, parameters);
                 sql.Append(" t.type=@type ");
                 parameters.Add(new KeyValuePair<string, object>("type", (int)type.Value));
+            }
+            if (isCaution != null && isCaution.HasValue)
+            {
+                SQLHelper.AppendOp(sql, parameters);
+                sql.Append(" t.isCaution=@isCaution ");
+                parameters.Add(new KeyValuePair<string, object>("isCaution", isCaution.Value));
             }
         }
 

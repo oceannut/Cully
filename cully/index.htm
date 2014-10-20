@@ -72,11 +72,18 @@
             </div>
         </div>
     </div>
-    <div class="bg-olive" role="alert" style="margin: -8px 0 8px 0;
-        padding: 8px 32px 8px 16px;" ng-hide="isCautionClosed">
+    <div class="bg-olive" role="alert" style="margin: -8px 0 8px 0; padding: 8px 16px 8px 16px;"
+        ng-hide="isCautionClosed">
         <button type="button" class="close" ng-click="isCautionClosed=true">
             <span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <strong>Warning!</strong> Better check yourself, you're not looking too good.
+        <p ng-show="calendarList.length===0">
+            没有提醒！
+        </p>
+        <ul class="list-unstyled">
+            <li ng-repeat="item in calendarList" ng-switch="item.Type"><i ng-switch-when="0"
+                class="fa fa-calendar-o"></i><i ng-switch-when="1" class="fa fa-clock-o"></i>&nbsp;&middot;&nbsp;{{item.Content}}（{{item.Caution
+                | jsonDateFormat | date:'HH:mm'}}）</li>
+        </ul>
     </div>
     <div ng-view>
     </div>

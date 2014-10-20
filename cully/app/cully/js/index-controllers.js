@@ -9,10 +9,13 @@ define(function (require) {
     require('../../common/js/biz-notification-services');
     require('../../auth/js/auth-models');
     require('./client-services');
+    require('./calendar-services');
 
     angular.module('index.controllers', ['configs', 'events', 'auth.models', 'bizNotification.services', 'client.services'])
-        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName', 'UntreatedBizNotificationListService', 'localStorageUtil',
-            function ($scope, $location, $log, $interval, currentUser, eventbus, appName, UntreatedBizNotificationListService, localStorageUtil) {
+        .controller('IndexCtrl', ['$scope', '$location', '$log', '$interval', 'currentUser', 'eventbus', 'appName',
+                                    'UntreatedBizNotificationListService', 'CalendarOfCautionService', 'localStorageUtil',
+            function ($scope, $location, $log, $interval, currentUser, eventbus, appName,
+                        UntreatedBizNotificationListService, CalendarOfCautionService, localStorageUtil) {
 
                 var homeNav = {
                     "name": "首页",
@@ -63,9 +66,35 @@ define(function (require) {
                                 });
                 }
 
+                function loadCautionCalendarList() {
+                    $scope.calendarList.length = 0;
+                    var date = new Date();
+                    CalendarOfCautionService.query({
+                        'year': date.getFullYear(),
+                        'month': date.getMonth() + 1,
+                        'day': date.getDate(),
+                        'user': currentUser.getUsername()
+                    })
+                    .$promise
+                        .then(function (result) {
+                            if (angular.isArray(result)) {
+                                var len = result.length;
+                                if (len > 0) {
+                                    $scope.isCautionClosed = false;
+                                    for (var i = 0; i < len; i++) {
+                                        $scope.calendarList.push(result[i]);
+                                    }
+                                }
+                            }
+                        }, function (error) {
+                            $log.error(error);
+                        });
+                }
+
                 $scope.init = function () {
 
                     $scope.isCautionClosed = true;
+                    $scope.calendarList = [];
 
                     //订阅事件。
                     eventbus.subscribe("userSignIn", function (e, data) {
@@ -86,10 +115,12 @@ define(function (require) {
                         }
 
                         loadUntreatedNotificationCount();
+                        loadCautionCalendarList();
                         cautionInterval = localStorageUtil.getUserData(currentUser.getUsername(), localStorageUtil.caution, localStorageUtil.cautionDV, true);
                         if (cautionInterval > 0) {
                             untreatedBizNotificationCountTimer = $interval(function () {
                                 loadUntreatedNotificationCount();
+                                loadCautionCalendarList();
                             }, cautionInterval * 1000);
                         }
 

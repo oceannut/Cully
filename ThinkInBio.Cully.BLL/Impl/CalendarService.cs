@@ -102,12 +102,31 @@ namespace ThinkInBio.Cully.BLL.Impl
                 startTime = new DateTime(year, 1, 1);
                 endTime = startTime.AddYears(1);
             }
-            return CalendarDao.GetList(participant, null, type, startTime, endTime, false, 0, int.MaxValue);
+            return CalendarDao.GetList(participant, null, type, null, startTime, endTime, false, 0, int.MaxValue);
         }
 
         public IList<Calendar> GetCalendarList(long projectId)
         {
-            return CalendarDao.GetList(null, projectId, null, null, null, false, 0, int.MaxValue);
+            return CalendarDao.GetList(null, projectId, null, null, null, null, false, 0, int.MaxValue);
+        }
+
+        public IList<Calendar> GetCalendarList4Caution(int year, int month, int day, string participant)
+        {
+            if (year < 1970)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (month < 1 || month > 12)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            if (day < 1 || day > DateTime.DaysInMonth(year, month))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            DateTime startTime = new DateTime(year, month, day, 0, 0, 0);
+            DateTime endTime = new DateTime(year, month, day, 23, 59, 59);
+            return CalendarDao.GetList(participant, null, null, true, startTime, endTime, false, 0, int.MaxValue);
         }
 
         public void SaveCalendarCaution(CalendarCaution calendarCaution, BizNotification notification)

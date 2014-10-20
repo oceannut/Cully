@@ -8,6 +8,7 @@ define(function (require) {
 
     angular.module('calendar.services', ['ngResource', 'configs'])
         .constant("calendarWcfService", "/wcf/CalendarWcfService.svc")
+        .constant("cautionCalendarWcfService", "/wcf/CautionCalendarWcfService.svc")
         .factory('CalendarService', ['$resource', 'wcfApp', 'calendarWcfService',
             function ($resource, wcfApp, calendarWcfService) {
                 return $resource(wcfApp + calendarWcfService + '/calendar/:id/', {}, {
@@ -33,6 +34,12 @@ define(function (require) {
             function ($resource, wcfApp, calendarWcfService) {
                 return $resource(wcfApp + calendarWcfService + '/project/:projectId/calendar/', {}, {
                     query: { method: 'GET', params: { 'projectId': '@projectId' }, isArray: true }
+                });
+            } ])
+        .factory('CalendarOfCautionService', ['$resource', 'wcfApp', 'cautionCalendarWcfService',
+            function ($resource, wcfApp, cautionCalendarWcfService) {
+                return $resource(wcfApp + cautionCalendarWcfService + '/calendar/:year/:month/:day/:user/caution/', {}, {
+                    query: { method: 'GET', params: { 'year': '@year', 'month': '@month', 'day': '@day', 'user': '@user' }, isArray: true }
                 });
             } ])
         .factory('ClockService', ['$resource', 'wcfApp', 'calendarWcfService',
