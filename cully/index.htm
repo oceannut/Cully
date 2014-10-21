@@ -32,7 +32,7 @@
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="#/untreated-notification/"><i class="fa " ng-class="{true:'fa-bell text-red',false:'fa-bell-slash-o'}[untreatedNotificationCount>0]">
                             </i>&nbsp;通知<span ng-if="untreatedNotificationCount>0" class="text-red">({{untreatedNotificationCount}})</span><audio
-                                id="untreatedNotificationAudio" src="static/audio/1.wav"></audio></a> </li>
+                                id="untreatedNotificationAudio" src="static/audio/2.wav"></audio></a> </li>
                             <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">
                                 <img class="media-object pull-left" data-src="holder.js/32x32" src="static/img/duke.png"
                                     style="margin: -6px 0 6px 0; width: 32px; height: 32px; border: 0px" alt="{{loginUser.name}}"
@@ -72,6 +72,7 @@
             </div>
         </div>
     </div>
+    <audio id="cautionCalendarAudio" src="static/audio/1.wav"></audio>
     <div class="bg-olive" role="alert" style="margin: -8px 0 8px 0; padding: 8px 16px 8px 16px;"
         ng-hide="isCautionClosed">
         <button type="button" class="close" ng-click="isCautionClosed=true">
@@ -81,7 +82,7 @@
         </p>
         <ul class="list-unstyled">
             <li ng-repeat="item in calendarList" ng-switch="item.Type"><i ng-switch-when="0"
-                class="fa fa-calendar-o"></i><i ng-switch-when="1" class="fa fa-clock-o"></i>&nbsp;&middot;&nbsp;{{item.Content}}（{{item.Caution
+                class="fa fa-calendar-o"></i><i ng-switch-when="1" class="fa fa-clock-o"></i>&nbsp;&middot;&nbsp;{{item.Content}}（{{item.repeatDesc}}&nbsp;{{item.Caution
                 | jsonDateFormat | date:'HH:mm'}}）</li>
         </ul>
     </div>
